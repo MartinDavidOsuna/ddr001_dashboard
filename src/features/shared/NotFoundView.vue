@@ -1,0 +1,1 @@
+<template><main class="nf"><div><h1>404</h1><p>La página solicitada no existe.</p><RouterLink class="btn btn--primary" to="/dashboard">Volver al dashboard</RouterLink></div></main></template><style scoped>.nf{min-height:100vh;display:grid;place-items:center;text-align:center}.nf h1{font-size:5rem;margin:0}</style>

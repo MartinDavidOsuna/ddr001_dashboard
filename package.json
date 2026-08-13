@@ -1,0 +1,43 @@
+{
+  "name": "ddr001-dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22 <23"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit -p tsconfig.app.json && vite build",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.app.json",
+    "lint": "eslint \"src/**/*.ts\" vite.config.ts eslint.config.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@lucide/vue": "^1.31.0",
+    "@primeuix/themes": "latest",
+    "axios": "latest",
+    "echarts": "latest",
+    "leaflet": "latest",
+    "pinia": "latest",
+    "primevue": "latest",
+    "vue": "latest",
+    "vue-router": "latest"
+  },
+  "devDependencies": {
+    "@eslint/js": "latest",
+    "@types/leaflet": "latest",
+    "@vitejs/plugin-vue": "latest",
+    "@vue/eslint-config-typescript": "latest",
+    "@vue/test-utils": "latest",
+    "eslint": "latest",
+    "eslint-plugin-vue": "latest",
+    "globals": "latest",
+    "happy-dom": "latest",
+    "typescript": "latest",
+    "vite": "latest",
+    "vitest": "latest",
+    "vue-tsc": "latest"
+  }
+}

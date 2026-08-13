@@ -1,0 +1,47 @@
+# Matriz Figma ↔ datos reales
+
+Fecha de corte: 2026-08-13. Figma gobierna lenguaje visual; código/contrato/BD gobiernan contenido.
+
+| Pantalla | Campo/componente Figma | Fuente real | Endpoint | Decisión | Observaciones |
+|---|---|---|---|---|---|
+| Login | email/contraseña | `rv.admin_users` | `/api/v1/admin/auth/login` | Mantener | Sin “recuperar contraseña” porque no existe contrato |
+| Login | branding DDR001 | assets Figma | local | Mantener | Sin credenciales de campo |
+| Dashboard | hidrantes totales/revisados/pendientes/avance | agregados definidos | `/api/v1/admin/dashboard/summary` | Mantener/corregir | Fórmulas en `dashboard-metrics.md` |
+| Dashboard | estados ilustrativos | `rv.inspections.status` | summary | Corregir | Mostrar sólo estados realmente presentes |
+| Dashboard | avance acumulado/meta diaria | no existe meta diaria | summary | Corregir | Actividad real; eliminar meta inventada |
+| Dashboard | revisiones por técnico | join user/inspection | summary | Mantener | Agregado servidor, sin N+1 |
+| Dashboard | localidad/territorio | columnas legacy | ninguno nuevo | Eliminar | Concepto descartado |
+| Revisiones | cuenta hidrante | `hydrants.account_number` | `/admin/dashboard/inspections` | Mantener | Identificador principal |
+| Revisiones | técnico/cuadrilla | user + work session + crew | idem | Mantener | La cuadrilla es la de la jornada |
+| Revisiones | fecha/hora/revisión/estado | inspection | idem | Mantener | Zona local explícita |
+| Revisiones | localidad | legacy `locality` | — | **Eliminar** | No buscar ni filtrar |
+| Revisiones | municipio | legacy `municipality` | — | **Eliminar** | No buscar ni filtrar |
+| Revisiones | fotos x/7 | checklist + photos | idem | Corregir | x/requeridas aplicables, total dinámico |
+| Revisiones | GPS “1.8m” | latest location sample | idem | Corregir | La lista muestra presencia y precisión si existe |
+| Revisiones | señal | latest signal sample | idem | Mantener | Sin clasificar Buena/Mala |
+| Revisiones | filtros | queries server-side | idem | Corregir | Búsqueda, técnico, cuadrilla, estado, fechas, fotos, GPS; sin territorio |
+| Detalle/Resumen | hidrante, técnico, cuadrilla, fechas, revisión, estado | joins de inspección | `/admin/dashboard/inspections/:id` | Mantener | Datos reales |
+| Detalle/Resumen | tipo hidrante | no confirmado | — | Eliminar | No inventar atributo |
+| Detalle/Resumen | localidad/municipio | legacy | — | **Eliminar** | Sustituir espacio por datos vigentes |
+| Detalle/Resumen | dispositivo | work session + device | detalle | Mantener | Sólo si existe |
+| Detalle/Resumen | checklist 77/77 | versión/items/respuestas | detalle | Corregir | Conteo dinámico y aplicabilidad |
+| Detalle/Resumen | anomalías derivadas | sin regla vigente | — | Eliminar | Mostrar comentarios/revisión reales |
+| Checklist | acordeones/secciones | checklist version/sections/items | detalle | Mantener | Orden dinámico; no hardcodear preguntas |
+| Checklist | valores humanos | answer + tipo/unidad/opciones | detalle | Corregir | Sí/No, No aplica, número+unidad, JSON/select |
+| Fotografías | siete tarjetas | checklist slots + photos | detalle | Corregir | Slots y generales reales, ausentes visibles |
+| Fotografías | imagen ilustrativa repetida | archivo privado | `/admin/dashboard/inspections/:id/photos/:photoId/{thumbnail,content}` | Eliminar | Nunca placeholder como evidencia |
+| Fotografías | lightbox/zoom/navegación | contenido original autenticado | content | Mantener | Miniatura en galería, original bajo demanda |
+| Ubicación | mapa, captura y precisión | hydrant + latest location sample | detalle | Mantener/corregir | Diferenciar coordenada maestra/capturada |
+| Ubicación | dirección/localidad | no vigente | — | Eliminar | OSM no se usa para inventar territorio |
+| Señal | generación/dBm/operador/fecha | signal sample | detalle | Mantener | Sin thresholds humanos |
+| Historial | timeline | status history | detalle | Mantener | Resolver actor en servidor |
+| Auditoría | before/after | audit_log | detalle | Mantener | JSON expandible; sin edición |
+| Hidrantes/Mapa/Usuarios/Cuadrillas/Jornadas/Dispositivos/Exportaciones | pantallas completas | datos existen parcialmente | varios | Preparar/Fase 2 | Navegación visible, sin datos ficticios ni inversión fuera de alcance |
+
+## Cambios visuales justificados
+
+- En móvil, la lista se convierte en tarjetas accionables; no se fuerza una tabla de 12 columnas.
+- Los filtros avanzados se alojan en panel/drawer en tablet y móvil.
+- La banda de completitud muestra denominadores reales y estados “no disponible”, no siempre verde.
+- Localidad y municipio desaparecen de listas, detalle, búsqueda y mapa aunque estén en capturas.
+

@@ -1,0 +1,3 @@
+<script setup lang="ts">defineProps<{status:string}>();const labels:Record<string,string>={draft:'Borrador',in_progress:'En progreso',pending_sync:'Pendiente de sincronizar',submitted:'Enviada',validated:'Validada',rejected:'Rechazada',cancelled:'Cancelada'}</script>
+<template><span class="status" :class="`status--${status}`">● {{labels[status]||status}}</span></template>
+
