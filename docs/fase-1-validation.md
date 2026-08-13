@@ -52,10 +52,10 @@ El identificador operativo es `account_number`; la cuadrilla histórica proviene
 
 - `npm run typecheck`: correcto.
 - `npm run lint`: correcto.
-- `npm test`: 4 pruebas correctas (false booleano, N/A, unidad/arrays, agrupación/conteo dinámico).
+- `npm test`: 5 pruebas correctas (false booleano, N/A, unidad/arrays, agrupación/conteo dinámico y siete slots obligatorios).
 - `npm run build`: correcto con chunks por ruta.
 
-Resumen exacto: 1 archivo de pruebas, 4 tests passed, 0 failed, 0 skipped. Typecheck, lint y build terminaron con exit code 0.
+Resumen exacto: 1 archivo de pruebas, 5 tests passed, 0 failed, 0 skipped. Typecheck, lint y build terminaron con exit code 0.
 
 ### API
 
@@ -63,6 +63,7 @@ Resumen exacto: 1 archivo de pruebas, 4 tests passed, 0 failed, 0 skipped. Typec
 - `npm run lint`: correcto.
 - `npm test`: comando correcto; 13 integraciones existentes omitidas por configuración de entorno, ninguna falla.
 - `npm run build`: correcto.
+- Test unitario de clasificación fotográfica ejecutado directamente: 1 archivo, 2 passed, 0 failed, 0 skipped.
 - Readiness local contra DB configurada: HTTP 200.
 - Acceso anónimo a endpoint nuevo: HTTP 401 Problem Details, confirmando protección administrativa.
 
@@ -142,6 +143,18 @@ No se usaron mocks para reemplazar esta evidencia y no se marcó el E2E como apr
 - La persistencia de refresh en `sessionStorage` es una solución razonable SPA, pero una cookie HttpOnly requeriría un cambio contractual coordinado.
 - El filtro de completitud fotográfica no se expuso: la aplicabilidad condicional no puede resolverse correctamente con una simple comparación de conteos en el contrato `main`. Se evitó un filtro falso.
 - READ_ONLY usa el rol real `viewer` del backend; no se implementó seguridad simulada sólo en UI.
+
+## Integración y pre-deploy
+
+- Commit de implementación API: `0f93b6b`.
+- PR de integración: `#5`, integrada a `main`.
+- Merge commit en `main`: `28ca304`.
+- Commit dashboard publicado: `3aad950`.
+- No existen migraciones, DDL, seeds, dependencias o configuración productiva en el diff.
+- Pre-deploy público posterior al merge: `health/live` HTTP 200, `health/ready` HTTP 200 y `version` HTTP 200.
+- La ruta protegida `/api/v1/admin/dashboard/summary` continúa HTTP 404, por lo que el merge de GitHub todavía no está desplegado.
+- El endpoint de versión del servidor reporta commit y fecha de build desconocidos. La documentación admite NSSM o PM2, pero este entorno no permite identificar el proceso, directorio/artefacto activo ni un respaldo recuperable. Se detuvo el despliegue antes del restart conforme al checklist; no hubo incidente ni rollback.
+- Rollback previsto cuando el operador identifique el servicio: respaldar el artefacto activo, restaurar ese `dist`/commit si falla, reiniciar mediante el gestor confirmado y repetir live/ready/ruta móvil.
 
 ## Integridad de repositorios
 

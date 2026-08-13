@@ -71,6 +71,8 @@ No se requiere nueva tabla ni migración.
 - [x] Implementar detalle, checklist dinámico, fotos/lightbox, mapa, señal, historial y auditoría.
 - [x] Ejecutar lint, typecheck, unitarias y builds.
 - [ ] Ejecutar E2E manual autenticado real y responsive mediante navegador. Autenticación READ_ONLY, refresh, CORS y endpoints legacy se certificaron contra el servicio real; bloqueo externo: los endpoints `/api/v1/admin/dashboard/...` de esta rama responden 404 en el ambiente indicado (rama API no desplegada) y el navegador de automatización no estuvo disponible.
+- [x] Integrar extensión API mediante PR #5; merge commit `28ca304`.
+- [ ] Desplegar merge API. Pre-deploy detenido de forma segura: no se pudo identificar proceso NSSM/PM2, directorio activo ni artefacto de rollback; el servicio aún responde 404 en las rutas nuevas.
 - [x] Actualizar este plan y `docs/fase-1-validation.md`.
 
 ## Criterios de aceptación
