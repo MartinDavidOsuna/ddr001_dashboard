@@ -37,6 +37,16 @@ Fecha de corte: 2026-08-13. Figma gobierna lenguaje visual; código/contrato/BD 
 | Historial | timeline | status history | detalle | Mantener | Resolver actor en servidor |
 | Auditoría | before/after | audit_log | detalle | Mantener | JSON expandible; sin edición |
 | Hidrantes/Mapa/Usuarios/Cuadrillas/Jornadas/Dispositivos/Exportaciones | pantallas completas | datos existen parcialmente | varios | Preparar/Fase 2 | Navegación visible, sin datos ficticios ni inversión fuera de alcance |
+| Hidrantes | cuenta | `rv.hydrants.account_number` | `/admin/dashboard/hydrants` | Mantener | Identificador operativo y búsqueda principal |
+| Hidrantes | localidad/municipio | columnas legacy | — | **Eliminar** | Fuera de cards, tabla, filtros y búsqueda |
+| Hidrantes | tipo “lateral/final de línea” | sin propiedad vigente confirmada | — | Eliminar | No derivar de metadata o Figma |
+| Hidrantes | año, gasto, coordenadas | maestro vigente | `/admin/dashboard/hydrants` | Mantener | Campos nullable con estado N/D |
+| Hidrantes | revisiones/última/estado | agregados RV | `/admin/dashboard/hydrants` | Corregir | Estado RV global y estado de última revisión son distintos |
+| Hidrantes | fotos x/7 | `rv.photos` | `/admin/dashboard/hydrants` | Corregir | `x/7 obligatorias · N total`; sin revisión no muestra 0/7 |
+| Expediente hidrante | encabezado y resumen | maestro + agregados | `/admin/dashboard/hydrants/:id` | Mantener/corregir | Sin territorio ni alertas inventadas |
+| Expediente hidrante | observaciones/anomalías | sin regla objetiva vigente | — | Eliminar | Sustituido por alertas factuales: coordenadas, revisión, evidencia y GPS |
+| Expediente hidrante | mapa | latitude/longitude maestras | detalle hidrante | Mantener | `source_x/y/crs` se etiqueta aparte; CRS histórico no confirmado |
+| Expediente hidrante | historial | revisiones RV livianas | `/admin/dashboard/hydrants/:id/inspections` | Mantener | Más reciente primero; detalle se carga al abrir revisión |
 
 ## Cambios visuales justificados
 
@@ -44,4 +54,3 @@ Fecha de corte: 2026-08-13. Figma gobierna lenguaje visual; código/contrato/BD 
 - Los filtros avanzados se alojan en panel/drawer en tablet y móvil.
 - La banda de completitud muestra denominadores reales y estados “no disponible”, no siempre verde.
 - Localidad y municipio desaparecen de listas, detalle, búsqueda y mapa aunque estén en capturas.
-

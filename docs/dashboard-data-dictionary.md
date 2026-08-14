@@ -215,6 +215,45 @@ Origen: `rv.audit_log`. ID: `audit_id`. Endpoint: detalle administrativo filtrad
 | request_id/ip_address/user_agent | string | sí | Trazabilidad | DDL | expandible | sensible | Mostrar con prudencia |
 | occurred_at | datetime UTC | no | Momento | DDL | auditoría | no | Orden descendente o timeline |
 
+## HYDRANT MASTER RECORD
+
+Origen: `rv.hydrants` con agregados de `rv.inspections`, `rv.users`, `rv.work_sessions`, `rv.crews`, `rv.photos`, `rv.location_samples` y `rv.signal_samples`. Endpoints Fase 2: `GET /api/v1/admin/dashboard/hydrants`, `GET /api/v1/admin/dashboard/hydrants/:id` y `GET /api/v1/admin/dashboard/hydrants/:id/inspections`.
+
+| Clasificación | DB | API dashboard | Flutter | Tipo / nullable | Vigente | Calculada | Mostrable | Editable futuro | Descripción |
+|---|---|---|---|---|---|---|---|---|---|
+| A Maestra | hydrant_id | hydrantId | hydrantId | UUID / no | sí | no | secundaria | no previsto | Identidad relacional; la cuenta sigue siendo protagonista |
+| A Maestra | account_number | accountNumber | accountNumber | string / no | sí | no | sí | controlado | Identificador operativo usado en campo y búsqueda |
+| A Maestra | installation_year | installationYear | installationYear | int / sí | sí | no | sí | controlado | Año de instalación si fue importado |
+| A Maestra | flow_lps | flowLps | flowLps | decimal / sí | sí | no | sí, L/s | controlado | Gasto/caudal nominal del catálogo |
+| A Maestra | section_code | sectionCode | sectionCode | string / sí | sí | no | sí | controlado | Sección de catálogo; no equivale a territorio municipal |
+| A Maestra | installation_angle_deg | installationAngleDeg | installationAngleDeg | decimal / sí | sí | no | sí, grados | controlado | Ángulo de instalación importado |
+| A Maestra | elevation_m | elevationM | elevationM | decimal / sí | sí | no | sí, m | controlado | Elevación maestra |
+| A Maestra | outlet_count | outletCount | outletCount | int / sí | sí | no | sí | controlado | Número de salidas |
+| A Maestra | latitude/longitude | latitude/longitude | latitude/longitude | decimal / sí | sí | no | sí/mapa | controlado | Coordenada maestra compatible con mapa cuando ambos valores existen |
+| A Maestra | source_x/source_y/source_crs | sourceX/sourceY/sourceCrs | sourceX/sourceY/sourceCrs | mixto / sí | sí | no | técnica | no hasta confirmar CRS | Coordenada de origen; el CRS histórico permanece no confirmado |
+| A Maestra | source_type | sourceType | source | enum / no | sí | no | sí | no | Catálogo o alta manual vigente |
+| A Maestra | is_active | isActive | isActive | boolean / no | sí | no | implícita | futuro | Sólo activos forman el universo de Fase 2 |
+| A Maestra | created_at/updated_at | createdAt/updatedAt | updatedAt | datetime / no | sí | no | secundaria | no | Trazabilidad del catálogo |
+| B Derivada | inspecciones RV | inspectionCount | latestInspection* | int / no | sí | sí | sí | no | Total histórico del hidrante |
+| B Derivada | estados RV | rvStatus | rvStatus | pending/completed / no | sí | sí | sí | no | Completed si alguna RV está submitted o validated |
+| B Derivada | estados RV | reviewed | — | boolean / no | sí | sí | filtro/KPI | no | Alguna RV recibida: submitted, validated o rejected |
+| B Derivada | última RV | latestInspection* | latestInspection* | mixto / sí | sí | sí | sí | no | Revisión más reciente por fecha efectiva y número |
+| B Derivada | usuarios/jornadas | latestTechnicianName/latestCrewName | reviewedBy* | string / sí | sí | sí | sí | no | Técnico y cuadrilla históricos de la última revisión |
+| B Derivada | fotos | mandatoryPhotosCompleted/Required/Complete | requiredPhotosVerified | int/bool / sí | sí | sí | sí | no | Cobertura de siete slots obligatorios; no total de fotos |
+| B Derivada | fotos | additionalPhotos/totalPhotos | — | int / sí | sí | sí | sí | no | Adicionales y N total de última revisión |
+| B Derivada | revisiones | submitted/validated/rejected/cancelledCount | — | int / no | sí | sí | estadísticas | no | Conteos objetivos por estado |
+| B Derivada | revisiones | completeEvidenceCount | — | int / no | sí | sí | estadísticas | no | Revisiones históricas con 7/7 |
+| C Captura | location_samples | hasGps + detalle revisión | captura local RV | boolean/detalle | sí | sí | resumen/enlace | no | GPS pertenece a una revisión, no reemplaza la coordenada maestra |
+| C Captura | signal_samples | hasSignal + detalle revisión | captura local RV | boolean/detalle | sí | sí | resumen/enlace | no | Señal pertenece a una revisión |
+| D Metadata | metadata_json | metadataJson | metadata | JSON text / sí | condicional | no | pares escalares + JSON técnico | no automático | Claves desconocidas no se convierten en propiedades oficiales |
+| D Metadata | source_import_id | no expuesto | no | UUID / sí | técnico | no | no | no | Relación de importación, no dato operativo principal |
+| D Metadata | created_by_user_id/created_in_crew_id/local_reference/source_environment/manual_reason | no expuestos | varios internos | mixto / sí | sólo alta manual | no | no en Fase 2 | futuro controlado | Trazabilidad de altas manuales; no se usa para búsqueda global |
+| E Legacy | locality | — | locality | string / sí | no plataforma | no | **no** | no | Descartado explícitamente |
+| E Legacy | municipality | — | municipality | string / sí | no plataforma | no | **no** | no | Descartado explícitamente |
+| E Legacy | normalized_account/row_version | — | — | técnico / no | interno | sí DB | no | no | Implementación de unicidad/concurrencia |
+
+La lista y el expediente no exponen `locality` ni `municipality`, aunque Flutter todavía pueda deserializarlos por compatibilidad histórica. La búsqueda administrativa nueva se limita a `account_number`; no recorre JSON ni campos territoriales.
+
 ## Campos descartados / legacy
 
 | Campo/concepto | Decisión | Evidencia | Tratamiento |
