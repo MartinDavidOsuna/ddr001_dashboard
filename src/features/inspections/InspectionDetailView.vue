@@ -182,6 +182,7 @@ onBeforeUnmount(() => {
               {{ data.technicianName }} · Cuadrilla:
               {{ data.crewName || "Sin cuadrilla" }}
             </p>
+            <RouterLink class="hydrant-link" :to="`/hidrantes/${data.hydrantId}`">Ver expediente del hidrante</RouterLink>
           </div>
         </div>
         <div class="completion">

@@ -224,3 +224,84 @@ export interface InspectionDetail {
   history: HistoryEntry[];
   audit: AuditEntry[];
 }
+export type HydrantRvStatus = "pending" | "completed";
+export interface HydrantFilters {
+  page: number;
+  pageSize: 25 | 50 | 100;
+  search?: string;
+  rvStatus?: HydrantRvStatus;
+  reviewed?: boolean;
+  hasInspections?: boolean;
+  installationYear?: number;
+  flowMin?: number;
+  flowMax?: number;
+  outletCount?: number;
+  coordinates?: "present" | "absent";
+  lastFrom?: string;
+  lastTo?: string;
+  sort?: "accountNumber" | "installationYear" | "flowLps" | "inspectionCount" | "lastInspectionAt";
+  direction?: "asc" | "desc";
+}
+export interface HydrantMasterRecord {
+  hydrantId: string;
+  accountNumber: string;
+  installationYear?: number;
+  flowLps?: number;
+  sourceX?: number;
+  sourceY?: number;
+  sourceCrs?: string;
+  latitude?: number;
+  longitude?: number;
+  sectionCode?: string;
+  installationAngleDeg?: number;
+  elevationM?: number;
+  outletCount?: number;
+  metadataJson?: string;
+  isActive: boolean;
+  sourceType: "catalog" | "manual";
+  createdAt: string;
+  updatedAt: string;
+  inspectionCount: number;
+  firstInspectionAt?: string;
+  submittedCount: number;
+  validatedCount: number;
+  rejectedCount: number;
+  cancelledCount: number;
+  completeEvidenceCount: number;
+  rvStatus: HydrantRvStatus;
+  reviewed: boolean;
+  latestInspectionId?: string;
+  latestRevisionNumber?: number;
+  latestInspectionStatus?: string;
+  latestStartedAt?: string;
+  latestSubmittedAt?: string;
+  latestTechnicianName?: string;
+  latestCrewName?: string;
+  mandatoryPhotosCompleted?: number;
+  mandatoryPhotosRequired: number;
+  mandatoryPhotosMissing?: number;
+  mandatoryPhotosComplete: boolean;
+  additionalPhotos?: number;
+  totalPhotos?: number;
+  hasGps?: boolean;
+  hasSignal?: boolean;
+  lastInspectionAt?: string;
+}
+export interface HydrantInspectionHistoryItem {
+  inspectionId: string;
+  revisionNumber: number;
+  status: string;
+  startedAt: string;
+  submittedAt?: string;
+  validatedAt?: string;
+  technicianName: string;
+  crewName?: string;
+  mandatoryPhotosCompleted: number;
+  mandatoryPhotosRequired: number;
+  mandatoryPhotosMissing: number;
+  mandatoryPhotosComplete: boolean;
+  additionalPhotos: number;
+  totalPhotos: number;
+  hasGps: boolean;
+  hasSignal: boolean;
+}

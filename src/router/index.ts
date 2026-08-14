@@ -8,7 +8,9 @@ const router = createRouter({ history: createWebHistory(), routes: [
     { path: 'dashboard', name: 'dashboard', component: () => import('@/features/dashboard/DashboardView.vue') },
     { path: 'revisiones', name: 'inspections', component: () => import('@/features/inspections/InspectionListView.vue') },
     { path: 'revisiones/:id', name: 'inspection-detail', component: () => import('@/features/inspections/InspectionDetailView.vue') },
-    { path: ':module(hidrantes|mapa|usuarios|cuadrillas|jornadas|dispositivos|exportaciones)', name: 'future', component: () => import('@/features/shared/FutureModuleView.vue') },
+    { path: 'hidrantes', name: 'hydrants', component: () => import('@/features/hydrants/HydrantListView.vue') },
+    { path: 'hidrantes/:id', name: 'hydrant-detail', component: () => import('@/features/hydrants/HydrantDetailView.vue') },
+    { path: ':module(mapa|usuarios|cuadrillas|jornadas|dispositivos|exportaciones)', name: 'future', component: () => import('@/features/shared/FutureModuleView.vue') },
   ]},
   { path: '/:pathMatch(.*)*', component: () => import('@/features/shared/NotFoundView.vue') },
 ] })
