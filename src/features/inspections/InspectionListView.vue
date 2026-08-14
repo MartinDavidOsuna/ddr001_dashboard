@@ -481,7 +481,7 @@ watch(() => filters.page, load);
     grid-template-columns: repeat(3, 1fr);
   }
 }
-@media (max-width: 750px) {
+@media (max-width: 900px) {
   .filters {
     grid-template-columns: 1fr 1fr;
   }

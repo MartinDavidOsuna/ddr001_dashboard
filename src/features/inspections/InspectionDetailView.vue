@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import {
   ArrowLeft,
@@ -11,6 +11,7 @@ import {
   Signal,
   Wifi,
   ZoomIn,
+  ZoomOut,
   X,
   ChevronLeft,
   ChevronRight,
@@ -36,7 +37,8 @@ const route = useRoute(),
   photoUrls = ref(new Map<string, string>()),
   photoErrors = ref(new Set<string>()),
   lightbox = ref<number | null>(null),
-  fullUrl = ref("");
+  fullUrl = ref(""),
+  zoomLevel = ref(1);
 const tabs: [string, string][] = [
   ["summary", "Resumen"],
   ["checklist", "Checklist"],
@@ -100,6 +102,7 @@ async function openPhoto(index: number) {
   const p = photoCards.value[index]?.photo;
   if (!p) return;
   lightbox.value = index;
+  zoomLevel.value = 1;
   fullUrl.value = "";
   try {
     fullUrl.value = await dashboardService.photo(p.contentUrl);
@@ -119,6 +122,10 @@ function close() {
     URL.revokeObjectURL(fullUrl.value);
   fullUrl.value = "";
   lightbox.value = null;
+  zoomLevel.value = 1;
+}
+function changeZoom(delta: number) {
+  zoomLevel.value = Math.min(3, Math.max(1, zoomLevel.value + delta));
 }
 function key(e: KeyboardEvent) {
   if (lightbox.value === null) return;
@@ -126,12 +133,14 @@ function key(e: KeyboardEvent) {
   if (e.key === "ArrowLeft") move(-1);
   if (e.key === "ArrowRight") move(1);
 }
+watch(tab, (value) => {
+  if (value === "photos") for (const photo of data.value?.photos || []) loadPhoto(photo);
+});
 onMounted(async () => {
   window.addEventListener("keydown", key);
   try {
     data.value = await dashboardService.inspection(String(route.params.id));
     if (groups.value[0]) openSections.value.add(groups.value[0].id);
-    for (const p of data.value.photos) loadPhoto(p);
   } catch (e) {
     error.value = problemMessage(e, "No fue posible cargar la revisión.");
   } finally {
@@ -602,20 +611,39 @@ onBeforeUnmount(() => {
         >
           <ChevronLeft />
         </button>
-        <div>
-          <img
-            v-if="fullUrl && fullUrl !== 'error'"
-            :src="fullUrl"
-            :alt="photoCards[lightbox]?.label"
-          /><span v-else-if="fullUrl === 'error'">Imagen no disponible</span
-          ><span v-else class="skeleton lightbox-loading"></span>
+        <div class="lightbox-content">
+          <div class="lightbox-image">
+            <img
+              v-if="fullUrl && fullUrl !== 'error'"
+              :src="fullUrl"
+              :alt="photoCards[lightbox]?.label"
+              :style="{ transform: `scale(${zoomLevel})` }"
+            /><span v-else-if="fullUrl === 'error'">Imagen no disponible</span
+            ><span v-else class="skeleton lightbox-loading"></span>
+          </div>
           <footer>
-            <b>{{ photoCards[lightbox]?.label }}</b
-            ><small
-              >{{ photoCards[lightbox]?.photo?.widthPx || "—" }} ×
-              {{ photoCards[lightbox]?.photo?.heightPx || "—" }} px ·
-              {{ formatDate(photoCards[lightbox]?.photo?.capturedAt) }}</small
-            >
+            <span
+              ><b>{{ photoCards[lightbox]?.label }}</b
+              ><small
+                >{{ photoCards[lightbox]?.photo?.widthPx || "—" }} ×
+                {{ photoCards[lightbox]?.photo?.heightPx || "—" }} px ·
+                {{ formatDate(photoCards[lightbox]?.photo?.capturedAt) }}</small
+              ></span
+            ><span class="zoom-controls"
+              ><button
+                aria-label="Alejar fotografía"
+                :disabled="zoomLevel <= 1"
+                @click="changeZoom(-0.5)"
+              >
+                <ZoomOut /></button
+              ><output aria-live="polite">{{ Math.round(zoomLevel * 100) }}%</output
+              ><button
+                aria-label="Acercar fotografía"
+                :disabled="zoomLevel >= 3"
+                @click="changeZoom(0.5)"
+              >
+                <ZoomIn /></button
+            ></span>
           </footer>
         </div>
         <button class="next" aria-label="Fotografía siguiente" @click="move(1)">
@@ -1013,21 +1041,54 @@ onBeforeUnmount(() => {
   color: white;
   padding: 35px;
 }
-.lightbox > div {
+.lightbox-content {
   max-width: 1200px;
   max-height: 90vh;
   margin: auto;
   display: grid;
+  min-width: 0;
+}
+.lightbox-image {
+  overflow: auto;
+  display: grid;
+  place-items: center;
+  max-height: 75vh;
 }
 .lightbox img {
   max-width: 100%;
-  max-height: 78vh;
+  max-height: 75vh;
   object-fit: contain;
+  transform-origin: center;
+  transition: transform 0.15s ease;
 }
 .lightbox footer {
-  display: grid;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
   padding: 12px;
   background: #0e1b2b;
+}
+.lightbox footer > span:first-child {
+  display: grid;
+}
+.zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.zoom-controls button {
+  width: 38px;
+  height: 38px;
+}
+.zoom-controls button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.zoom-controls output {
+  min-width: 44px;
+  text-align: center;
+  font-size: 0.75rem;
 }
 .lightbox footer small {
   color: #9eafc3;
@@ -1135,6 +1196,10 @@ onBeforeUnmount(() => {
   .lightbox button {
     width: 40px;
     height: 40px;
+  }
+  .lightbox footer {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
 </style>

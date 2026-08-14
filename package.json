@@ -16,12 +16,12 @@
   },
   "dependencies": {
     "@lucide/vue": "^1.31.0",
-    "@primeuix/themes": "latest",
+    "@primeuix/themes": "1.2.3",
     "axios": "latest",
     "echarts": "latest",
     "leaflet": "latest",
     "pinia": "latest",
-    "primevue": "latest",
+    "primevue": "4.3.9",
     "vue": "latest",
     "vue-router": "latest"
   },

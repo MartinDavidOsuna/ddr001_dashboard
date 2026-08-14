@@ -1,6 +1,6 @@
 # Fase 1 — Fundamentos + visor RV
 
-Estado: **IMPLEMENTADA — API CERTIFICADA — PENDIENTE CERTIFICACIÓN E2E VISUAL RESPONSIVE**. Actualizado: 2026-08-13.
+Estado: **FASE 1 — CERTIFICADA**. Actualizado: 2026-08-13.
 
 ## Alcance
 
@@ -70,7 +70,7 @@ No se requiere nueva tabla ni migración.
 - [x] Implementar lista, filtros y paginación server-side.
 - [x] Implementar detalle, checklist dinámico, fotos/lightbox, mapa, señal, historial y auditoría.
 - [x] Ejecutar lint, typecheck, unitarias y builds.
-- [ ] Ejecutar E2E manual autenticado real y responsive mediante navegador. API, autenticación viewer, refresh, logout, contratos completos y frontend local están certificados; la herramienta visual reportó `No browser is available`.
+- [x] Ejecutar E2E manual autenticado real en Codex In-app Browser a 1440, 768 y 390 px: login, dashboard, revisiones, filtros, detalle, checklist, fotos/lightbox, GPS, señal, historial, auditoría, refresh, navegación y logout.
 - [x] Integrar extensión API mediante PR #5; merge commit `28ca304`.
 - [x] Despliegue API aplicado manualmente por el operador y certificado: las rutas nuevas responden 401 sin token y 200 con viewer.
 - [x] Actualizar este plan y `docs/fase-1-validation.md`.

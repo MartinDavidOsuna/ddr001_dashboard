@@ -8,6 +8,10 @@ export const mandatoryPhotoSlots = [
   ["front_open", "Frente abierto"],
   ["serial_plate", "Placa o número de serie"],
 ] as const;
+const discardedChecklistItemCodes = new Set(["municipality", "locality"]);
+export function isDashboardChecklistItem(item: ChecklistItem) {
+  return !discardedChecklistItemCodes.has(item.itemCode);
+}
 export function parseJson(value?: string) {
   if (!value) return null;
   try {
@@ -40,7 +44,7 @@ export function groupChecklist(items: ChecklistItem[]) {
       items: ChecklistItem[];
     }
   >();
-  for (const item of items) {
+  for (const item of items.filter(isDashboardChecklistItem)) {
     const group = groups.get(item.sectionId) || {
       id: item.sectionId,
       code: item.sectionCode,
@@ -56,6 +60,7 @@ export function groupChecklist(items: ChecklistItem[]) {
 export function checklistCounts(items: ChecklistItem[]) {
   const answerable = items.filter(
     (i) =>
+      isDashboardChecklistItem(i) &&
       !["photo", "coordinates", "signal", "readonly"].includes(i.fieldType),
   );
   return {

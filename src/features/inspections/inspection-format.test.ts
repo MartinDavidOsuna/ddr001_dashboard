@@ -3,6 +3,7 @@ import {
   answerDisplay,
   checklistCounts,
   groupChecklist,
+  isDashboardChecklistItem,
   mandatoryPhotoSlots,
 } from "./inspection-format";
 
@@ -65,5 +66,15 @@ describe("inspection formatting", () => {
       "front_open",
       "serial_plate",
     ]);
+  });
+
+  it("excludes discarded territorial checklist fields from the dashboard", () => {
+    expect(isDashboardChecklistItem({ ...base, itemCode: "municipality" })).toBe(false);
+    expect(isDashboardChecklistItem({ ...base, itemCode: "locality" })).toBe(false);
+    expect(groupChecklist([
+      base,
+      { ...base, itemId: "legacy-1", itemCode: "municipality" },
+      { ...base, itemId: "legacy-2", itemCode: "locality" },
+    ])[0]?.items).toHaveLength(1);
   });
 });

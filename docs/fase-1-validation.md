@@ -1,6 +1,6 @@
 # Validación de Fase 1
 
-Fecha: 2026-08-13. Estado: **IMPLEMENTADA — API CERTIFICADA — PENDIENTE CERTIFICACIÓN E2E VISUAL RESPONSIVE**.
+Fecha: 2026-08-13. Estado: **FASE 1 — CERTIFICADA**.
 
 Ambiente de certificación: dashboard local Vite y servicio real `http://cifra.aquafim.com:3002` (`/api/v1`). Autenticación realizada con usuario READ_ONLY configurado para certificación. No se almacenaron ni documentaron contraseña, tokens o headers Authorization.
 
@@ -55,7 +55,7 @@ El identificador operativo es `account_number`; la cuadrilla histórica proviene
 - `npm test`: 5 pruebas correctas (false booleano, N/A, unidad/arrays, agrupación/conteo dinámico y siete slots obligatorios).
 - `npm run build`: correcto con chunks por ruta.
 
-Resumen exacto: 1 archivo de pruebas, 5 tests passed, 0 failed, 0 skipped. Typecheck, lint y build terminaron con exit code 0.
+Resumen exacto final: 1 archivo de pruebas, 6 tests passed, 0 failed, 0 skipped. Typecheck, lint y build terminaron con exit code 0.
 
 ### API
 
@@ -122,7 +122,7 @@ No fue posible comparar estos datos con la UI: ésta consume correctamente los c
 
 Clasificación confirmada contra los registros reales: los siete slots obligatorios `front_closed`, `left_side`, `right_side`, `back`, `top`, `front_open` y `serial_plate` están cubiertos; faltantes: ninguno. Existen dos fotos adicionales: una con código `general:<UUID>` y un segundo registro `right_side`. Resultado: **7/7 obligatorias, 2 adicionales, 9 totales**. Ningún registro fue modificado, eliminado u ocultado.
 
-## E2E obligatorio
+## E2E obligatorio — registro histórico previo al despliegue
 
 | Paso | Resultado |
 |---|---|
@@ -136,7 +136,7 @@ Clasificación confirmada contra los registros reales: los siete slots obligator
 | Refresh en ruta detalle | Lógica validada por build y refresh real, pero recorrido visual bloqueado |
 | Logout/protección SPA | Logout API HTTP 204 y limpieza/guard implementados; recorrido visual bloqueado |
 
-No se usaron mocks para reemplazar esta evidencia y no se marcó el E2E como aprobado artificialmente.
+No se usaron mocks para reemplazar esta evidencia. Este bloqueo histórico quedó resuelto por la certificación visual final descrita al cierre del documento.
 
 ## Riesgos conocidos y pendientes
 
@@ -202,17 +202,66 @@ Revisión `89E9B8A5-2517-4642-9E03-0162688426F6`: HTTP 200; hidrante `002`, revi
 - Historial: 1 evento real, `in_progress → submitted`, actor de campo y fecha presentes; comentario ausente en este evento.
 - Auditoría: 7 eventos; acciones de respuestas, ubicación, señal y envío. Actor/fecha presentes; 5 eventos tienen `beforeJson` y los 7 tienen `afterJson`, conservados para expansión.
 
-### Frontend local y límites de certificación
+### Frontend local — registro previo a la certificación visual
 
 - Vite levantó contra la API productiva usando `.env.local` ignorado; no contiene credenciales.
 - Las rutas SPA `/`, `/login`, `/dashboard`, `/revisiones` y el detalle directo respondieron HTTP 200.
 - No existen `console.log` o `console.debug` en `src`.
-- Typecheck, lint y build: exit 0. Vitest: 1 archivo, 5 passed, 0 failed, 0 skipped.
-- Build: `DashboardView` 535.64 kB minificado/182.02 kB gzip. La causa principal es ECharts en el chunk lazy del dashboard. Leaflet queda en el chunk lazy de detalle (166.93 kB); PrimeVue se inicializa globalmente y contribuye al chunk base (273.01 kB). Optimización futura: carga aún más granular de gráficas/componentes, sin bloquear Fase 1.
-- La herramienta de navegador indicó `No browser is available`. Por ello no se certifican visualmente login/redirect, persistencia tras refresh, navegación/lightbox/logout desde UI ni breakpoints 1440/768/390. La autenticación, refresh, logout, contratos y rutas se certificaron programáticamente, pero no se presenta esto como E2E visual.
+- Typecheck, lint y build: exit 0. En aquel corte Vitest tenía 1 archivo y 5 pruebas; el resultado final actualizado aparece en la sección de certificación visual.
+- El build ya identificaba ECharts como causa del warning de tamaño. La medición final y la decisión de optimización están registradas al cierre.
+- En este primer intento la herramienta reportó `No browser is available`. La limitación dejó de aplicar y el recorrido visual posterior completó los breakpoints 1440/768/390.
 
 ## Integridad de repositorios
 
 - Dashboard: cambios sólo en `feature/fase-1-visor-rv`.
 - API: cambios sólo en `feature/dashboard-fase-1-api`.
 - Flutter: ninguna modificación, rama o commit; usado exclusivamente como lectura.
+
+## Certificación visual E2E
+
+Fecha: 2026-08-13. Navegador: Codex In-app Browser sobre el frontend Vite local conectado a la API productiva.
+
+### Recorrido funcional
+
+- Login administrativo real: formulario, validación, redirect y rol `viewer` correctos. No se observaron tokens, credenciales, errores JavaScript ni errores CORS en consola.
+- Dashboard: sidebar, header, breadcrumbs, KPIs, gráficas y actividad renderizaron datos reales. Al corte visual se mostraron 1,216 hidrantes, 300 revisados, 916 pendientes, 24.67%, 376 revisiones y 3,254 fotos verificadas.
+- Revisiones: tabla desktop, tarjetas responsive, badges, filtros, limpieza de filtros y paginación server-side funcionaron. Se comprobó página siguiente, estado `submitted`, búsqueda `002` y rango de fechas.
+- Revisión `89E9B8A5-2517-4642-9E03-0162688426F6`: hidrante `002`, revisión 2 y estado `submitted`, con técnico, cuadrilla, fecha y completitud reales.
+- Checklist: nueve secciones dinámicas; booleanos y valores humanos, unidades y orden correctos. Municipio y localidad legacy se excluyen de la representación.
+- Fotografías: sección separada de siete evidencias obligatorias y dos adicionales, nueve totales. Se muestra `7/7 obligatorias · 9 total`, nunca `9/7`.
+- Lightbox: originales reales, cierre, anterior/siguiente, zoom de 100% a 300% y metadata; comprobado con una foto obligatoria y una adicional.
+- Ubicación, señal, historial y auditoría: mapa/coordenadas reales, 4G/LTE y -104 dBm sin clasificación inventada, transición `in_progress → submitted` y siete eventos expandibles sin romper el layout.
+- Refresh en ruta profunda: conservó sesión y ruta, recargó la revisión y no produjo loops. La navegación mediante sidebar, breadcrumbs y atrás del navegador fue estable.
+- Logout: redirigió a login y una navegación posterior a `/dashboard` fue protegida por el guard.
+
+### Responsive y Figma
+
+- Desktop 1440 × 900: layout de alta densidad, tablas, gráficas, tabs, galería y lightbox sin overflow inesperado.
+- Tablet 768 × 900: drawer y tarjetas de revisiones utilizables; filtros, detalle, checklist, galería y lightbox sin overflow de página.
+- Móvil 390 × 844: login, KPI, revisiones en tarjetas, filtros, detalle, tabs desplazables, checklist, galería de una columna y lightbox utilizables, sin comprimir una tabla desktop ni desbordar horizontalmente la aplicación.
+- Se conservó la jerarquía visual de Figma. Las diferencias intencionales son datos reales, ausencia de municipio/localidad, checklist dinámico y semántica 7 obligatorias + N totales.
+
+### Consola y red
+
+- Cero errores Vue/JavaScript, promesas no manejadas, CORS, 404 o 500 inesperados.
+- Login, `/me`, refresh, summary, lista, detalle, thumbnails y contenido completo respondieron correctamente.
+- Las miniaturas se solicitan al abrir la pestaña Fotografías, no al cargar el detalle; el original se solicita únicamente al abrir el lightbox.
+- La lista mantiene paginación server-side. No hubo loops de refresh ni peticiones masivas de originales.
+
+### Correcciones de certificación
+
+- Se excluyeron explícitamente los campos legacy `municipality` y `locality` de agrupación y conteo del checklist, con prueba unitaria.
+- El breakpoint de revisiones se ajustó para usar tarjetas también en tablet y eliminar overflow.
+- Se incorporaron controles reales de zoom y ajustes responsive al lightbox.
+- Se difirió la carga de thumbnails hasta abrir Fotografías.
+- PrimeVue y su theme quedaron fijados a versiones estables compatibles. Como Fase 1 no usa componentes PrimeVue directamente, se retiró la inicialización global que producía un aviso visual de licencia; el resto del stack no cambia.
+
+### Pruebas finales y riesgo no bloqueante
+
+- `npm run typecheck`: exit 0.
+- `npm run lint`: exit 0.
+- `npm test -- --run`: 1 archivo, 6 passed, 0 failed, 0 skipped.
+- `npm run build`: exit 0; 2,474 módulos transformados.
+- Warning no bloqueante: `DashboardView` mide 535.65 kB minificado (182.02 kB gzip), principalmente por ECharts. Se recomienda carga granular futura; Leaflet permanece en el chunk lazy del detalle y no afecta el arranque inicial.
+
+Con API, recorrido funcional y tres breakpoints certificados, el estado final es **FASE 1 — CERTIFICADA**.
