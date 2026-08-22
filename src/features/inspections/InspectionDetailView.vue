@@ -134,13 +134,21 @@ function key(e: KeyboardEvent) {
   if (e.key === "ArrowRight") move(1);
 }
 watch(tab, (value) => {
-  if (value === "photos") for (const photo of data.value?.photos || []) loadPhoto(photo);
+  if (value === "photos")
+    for (const photo of data.value?.photos || []) loadPhoto(photo);
 });
 onMounted(async () => {
   window.addEventListener("keydown", key);
   try {
     data.value = await dashboardService.inspection(String(route.params.id));
     if (groups.value[0]) openSections.value.add(groups.value[0].id);
+    if (typeof route.query.foto === "string") {
+      tab.value = "photos";
+      const index = photoCards.value.findIndex(
+        (card) => card.photo?.photoId === route.query.foto,
+      );
+      if (index >= 0) await openPhoto(index);
+    }
   } catch (e) {
     error.value = problemMessage(e, "No fue posible cargar la revisión.");
   } finally {
@@ -182,7 +190,11 @@ onBeforeUnmount(() => {
               {{ data.technicianName }} · Cuadrilla:
               {{ data.crewName || "Sin cuadrilla" }}
             </p>
-            <RouterLink class="hydrant-link" :to="`/hidrantes/${data.hydrantId}`">Ver expediente del hidrante</RouterLink>
+            <RouterLink
+              class="hydrant-link"
+              :to="`/hidrantes/${data.hydrantId}`"
+              >Ver expediente del hidrante</RouterLink
+            >
           </div>
         </div>
         <div class="completion">
@@ -637,7 +649,8 @@ onBeforeUnmount(() => {
                 @click="changeZoom(-0.5)"
               >
                 <ZoomOut /></button
-              ><output aria-live="polite">{{ Math.round(zoomLevel * 100) }}%</output
+              ><output aria-live="polite"
+                >{{ Math.round(zoomLevel * 100) }}%</output
               ><button
                 aria-label="Acercar fotografía"
                 :disabled="zoomLevel >= 3"

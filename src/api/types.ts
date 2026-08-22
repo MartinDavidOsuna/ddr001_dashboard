@@ -121,6 +121,27 @@ export interface Photo {
   thumbnailUrl: string;
   contentUrl: string;
 }
+export interface GalleryPhoto extends Photo {
+  inspectionId: string;
+  accountNumber: string;
+  revisionNumber: number;
+  technicianName: string;
+  crewName?: string;
+}
+export interface PhotoSlotOption {
+  slotCode: string;
+  label: string;
+  count: number;
+}
+export interface GalleryFilters {
+  page: number;
+  pageSize: number;
+  search?: string;
+  slotCode?: string;
+  category?: "mandatory" | "additional";
+  from?: string;
+  to?: string;
+}
 export interface LocationSample {
   latitude: number;
   longitude: number;
@@ -239,7 +260,12 @@ export interface HydrantFilters {
   coordinates?: "present" | "absent";
   lastFrom?: string;
   lastTo?: string;
-  sort?: "accountNumber" | "installationYear" | "flowLps" | "inspectionCount" | "lastInspectionAt";
+  sort?:
+    | "accountNumber"
+    | "installationYear"
+    | "flowLps"
+    | "inspectionCount"
+    | "lastInspectionAt";
   direction?: "asc" | "desc";
 }
 export interface HydrantMasterRecord {
