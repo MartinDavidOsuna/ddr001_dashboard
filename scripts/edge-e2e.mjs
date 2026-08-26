@@ -76,21 +76,54 @@ page.setDefaultNavigationTimeout(timeoutMs);
 page.setDefaultTimeout(timeoutMs);
 const consoleErrors = [];
 const failedResponses = [];
+const requestFailures = [];
 page.on("console", (message) => {
-  if (message.type() === "error") consoleErrors.push(redact(message.text()));
+  if (message.type() === "error") {
+    const location = message.location();
+    consoleErrors.push({
+      text: redact(message.text()),
+      target: location.url ? safeHttpTarget(location.url) : "Ubicación no disponible",
+      line: location.lineNumber,
+      column: location.columnNumber,
+    });
+  }
 });
-page.on("pageerror", (error) => consoleErrors.push(redact(error.message)));
+page.on("pageerror", (error) =>
+  consoleErrors.push({
+    text: redact(error.message),
+    target: "Error JavaScript sin URL",
+    line: undefined,
+    column: undefined,
+  }),
+);
+page.on("requestfailed", (request) => {
+  requestFailures.push({
+    method: request.method(),
+    target: safeHttpTarget(request.url()),
+    errorText: redact(request.failure()?.errorText || "Fallo desconocido"),
+  });
+});
 page.on("response", (response) => {
   const status = response.status();
   if (status >= 400) {
     const url = new URL(response.url());
+    const request = response.request();
     failedResponses.push({
       status,
+      method: request.method(),
       pathname: url.pathname,
       target: safeHttpTarget(response.url()),
+      resourceType: request.resourceType(),
     });
   }
 });
+
+const formatConsoleError = (item) =>
+  `${item.text} @ ${item.target}${item.line == null ? "" : `:${item.line}:${item.column ?? 0}`}`;
+const formatResponse = (item) =>
+  `${item.method} ${item.target} [${item.resourceType}] -> ${item.status}`;
+const formatRequestFailure = (item) =>
+  `${item.method} ${item.target} -> ${item.errorText}`;
 
 async function pageDiagnostic(label) {
   const location = safeLocation(page.url());
@@ -110,8 +143,9 @@ async function pageDiagnostic(label) {
     `URL: ${location}`,
     `Pathname: ${pathname}`,
     `Título: ${title || "Sin título"}`,
-    `Responses >= 400: ${failedResponses.map((item) => `${item.status} ${item.target}`).join(" | ") || "ninguna"}`,
-    `Errores de consola: ${consoleErrors.join(" | ") || "ninguno"}`,
+    `Responses >= 400: ${failedResponses.map(formatResponse).join(" | ") || "ninguna"}`,
+    `Request failed: ${requestFailures.map(formatRequestFailure).join(" | ") || "ninguno"}`,
+    `Errores de consola: ${consoleErrors.map(formatConsoleError).join(" | ") || "ninguno"}`,
     `Texto visible (máx. 2000):\n${visibleText || "Sin texto visible"}`,
   ];
   return lines.join("\n");
@@ -202,10 +236,16 @@ try {
   }
 
   if (consoleErrors.length)
-    throw new Error(`Errores de consola: ${consoleErrors.join(" | ")}`);
+    throw new Error(
+      `Errores de consola: ${consoleErrors.map(formatConsoleError).join(" | ")}`,
+    );
+  if (requestFailures.length)
+    throw new Error(
+      `Requests fallidos: ${requestFailures.map(formatRequestFailure).join(" | ")}`,
+    );
   if (failedResponses.length)
     throw new Error(
-      `Respuestas HTTP fallidas: ${failedResponses.map((item) => `${item.status} ${item.target}`).join(" | ")}`,
+      `Respuestas HTTP fallidas: ${failedResponses.map(formatResponse).join(" | ")}`,
     );
 
   process.stdout.write(

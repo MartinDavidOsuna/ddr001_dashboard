@@ -24,6 +24,8 @@ El refresh token sólo se siembra cuando `sessionStorage` está vacío. La aplic
 
 Si falla un paso, se generan `.artifacts/edge/error.png` y `error-page.txt`. El diagnóstico limita el texto visible a 2,000 caracteres y registra únicamente URL sin query, pathname, título, status/pathname HTTP y errores de consola sanitizados.
 
+Los errores de consola incluyen ubicación y línea/columna; `requestfailed` incluye método, destino seguro y `errorText`; las respuestas 404 incluyen método, `protocol + host + pathname` y tipo de recurso. El 2026-08-26 esta telemetría identificó el 404 benigno implícito de `/favicon.ico`; se corrigió declarando `/favicon.svg` en `index.html`, sin excluir globalmente errores de consola o respuestas 404.
+
 Opcionales:
 
 - `E2E_APP_URL`: frontend distinto de `http://localhost:5173`.
