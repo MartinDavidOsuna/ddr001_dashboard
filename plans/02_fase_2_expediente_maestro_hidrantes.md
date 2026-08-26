@@ -1,73 +1,86 @@
 # Fase 2 — Expediente maestro de hidrantes
 
-Estado: **IMPLEMENTADA — PENDIENTE DESPLIEGUE API**. Inicio: 2026-08-13. Actualizado: 2026-08-13.
+Estado: **IMPLEMENTADA — PENDIENTE CERTIFICACIÓN**. Inicio: 2026-08-13. Actualizado: 2026-08-26.
 
-## Alcance
+## Alcance oficial
 
-Listado administrativo paginado de hidrantes activos y expediente de lectura con información maestra vigente, estado RV derivado, última revisión, historial completo, coordenadas maestras, mapa y alertas objetivas. Incluye navegación revisión ↔ hidrante y responsive 1440/768/390. No incluye CRUD, migraciones, escrituras ni cambios Flutter.
+La Fase 2 comprende exclusivamente el listado maestro paginado de hidrantes activos y su expediente administrativo de lectura: búsqueda, filtros, ordenamiento y paginación server-side; datos maestros vigentes; coordenadas y mapa individual; estado RV; estadísticas básicas; última revisión; alertas objetivas; metadata; historial completo; navegación revisión ↔ hidrante; enlaces de KPI al listado y responsive 1440/768/390.
 
-## Modelo real identificado
+Municipio y localidad permanecen excluidos. No forman parte de esta fase CRUD, usuarios, cuadrillas, jornadas, dispositivos, mapa global, validación/rechazo, comparador de revisiones, nuevas exportaciones ni otras escrituras.
 
-- Maestro: `rv.hydrants`; identificación operativa `account_number`, atributos hidráulicos/físicos, coordenadas originales y WGS84, origen, metadata y vigencia.
-- Revisiones: `rv.inspections`, técnico `rv.users`, cuadrilla histórica mediante `rv.work_sessions`/`rv.crews`.
-- Evidencia: `rv.photos`; siete slots obligatorios y N fotografías totales.
-- Captura: `rv.location_samples` y `rv.signal_samples` pertenecen a la revisión, no al maestro.
-- Regla Flutter vigente: existe RV completado cuando alguna revisión está en `submitted` o `validated`; la última revisión y su estado se muestran aparte.
+## Modelo y reglas vigentes
 
-## Datos incluidos
+- Maestro: `rv.hydrants`; identificación operativa `account_number`.
+- Revisiones RV: `rv.inspections`; técnico de `rv.users` y cuadrilla histórica de `rv.work_sessions`/`rv.crews`.
+- Evidencia: siete slots obligatorios más N fotografías totales de `rv.photos`.
+- GPS y señal pertenecen a la revisión; las coordenadas maestras pertenecen al hidrante.
+- `rvStatus=completed` cuando existe al menos una RV en `submitted` o `validated`; en otro caso es `pending`.
+- `latestInspectionStatus` conserva por separado el estado exacto de la revisión más reciente.
+- El KPI “revisados” mantiene su fórmula certificada (`submitted|validated|rejected`) y no se debe confundir con `rvStatus`.
 
-Cuenta, año de instalación, gasto L/s, sección, ángulo, elevación, número de salidas, coordenadas maestras, coordenadas de origen con CRS etiquetado, origen catalog/manual, timestamps y metadata legible. Derivados: revisiones, primera/última, estados, último técnico/cuadrilla, cobertura obligatoria, fotos totales, GPS/señal y porcentaje de revisiones con evidencia completa.
+## Endpoints de Fase 2
 
-## Datos excluidos
-
-Municipio y localidad; IDs o razones internas como protagonistas; claves metadata desconocidas como campos oficiales; criticidad hidráulica, anomalías o interpretación territorial no respaldadas.
-
-## Endpoints
-
-Reutilizados: auth admin y detalle de revisión de Fase 1. El endpoint de campo `/hydrants` no se reutiliza porque su autorización, visibilidad y contrato están congelados.
-
-Nuevos, aditivos y sólo lectura:
-
-- `GET /api/v1/admin/dashboard/hydrants`: lista/filtros/orden/paginación server-side.
+- `GET /api/v1/admin/dashboard/hydrants`: lista, búsqueda, filtros, ordenamiento y paginación server-side.
 - `GET /api/v1/admin/dashboard/hydrants/:id`: maestro, agregados y última revisión.
-- `GET /api/v1/admin/dashboard/hydrants/:id/inspections`: historial paginado y liviano.
+- `GET /api/v1/admin/dashboard/hydrants/:id/inspections`: historial paginado y liviano, más reciente primero.
+- Rutas privadas de miniatura/contenido de Fase 1: sólo se usan al abrir una revisión; el expediente no descarga fotos.
 
-## Consultas
+El endpoint de campo `/hydrants` no se reutiliza: su autorización y contrato permanecen congelados. No se requiere DDL, migración ni cambio Flutter.
 
-CTE y funciones de ventana para ordenar revisiones por hidrante; agregados agrupados para conteos/estados; cobertura fotográfica por `COUNT(DISTINCT slot_code)` de los siete códigos; `OFFSET/FETCH`; parámetros tipados y allowlist de ordenamiento. Cero escrituras y cero N+1 HTTP. No se necesita migración.
+## Implementación presente
 
-## Arquitectura frontend y UX
+- `25b9d42`: listado, expediente, tipos/servicio, transformadores, pruebas, rutas, navegación cruzada y enlaces KPI.
+- `ac7c495`: plan, diccionario, métricas, reconciliación Figma y registro inicial de validación.
+- API documentada: PR #6, merge `20085c8`; endpoints aditivos de sólo lectura.
+- Producción al 2026-08-26: live/ready 200; lista, detalle e historial responden 401 Problem Details sin token, no 404; CORS localhost responde 204.
 
-Tipos y servicio en la capa API, transformadores puros probados, `HydrantListView` y `HydrantDetailView` lazy. Desktop usa tabla compacta e historial; tablet/móvil usan cards. Leaflet sólo se carga con el expediente. Empty states explícitos para nunca revisado, sin coordenadas y sin metadata.
+## Consultas y rendimiento
 
-## Rendimiento
+La implementación API documentada usa CTE, funciones de ventana, agregados set-based, `OFFSET/FETCH`, parámetros tipados y allowlist de ordenamiento compatibles con SQL Server 2014. La lista realiza una petición por página. El expediente realiza una petición de maestro y otra de historial; no solicita detalle de cada revisión ni fotografías. Leaflet queda dentro del chunk lazy del expediente.
 
-Page sizes 25/50/100, filtros/agregados server-side, historial bajo demanda, sin fotos/listado ni detalles por hidrante. Se revisarán planes/índices existentes; cualquier índice adicional sólo se documentará.
+## Casos obligatorios de certificación
 
-## Pruebas
+- Cuenta `10`: sin revisiones.
+- Cuenta `1`: múltiples revisiones.
+- Cuenta `1279`: última evidencia incompleta.
+- Cuenta `002`: caso productivo conocido.
+- Lista: primera y otra página; búsqueda exacta/parcial; `pending`, `completed`, con/sin revisiones; filtros, orden y tamaños 25/50/100.
+- Expediente: campos vigentes, regla RV, última revisión separada, 7 obligatorias + N total, coordenadas/CRS, mapa/empty state, metadata e historial newest first.
+- Navegación: Dashboard → Hidrantes → Expediente → Revisión; Revisión → Hidrante; KPI total/revisados/pendientes → lista filtrada.
+- Responsive y operación real: 1440, 768 y 390 px; consola/red sin errores, CORS, N+1, secretos ni descarga masiva de fotos.
 
-- API: schemas, viewer, paginación/filtros, 404, sin revisiones, múltiples revisiones y evidencia.
-- Frontend: estado RV, metadata, empty states, fotos 7+N, filtros e historial.
-- E2E real: hidrante 002, uno sin revisión, uno con múltiples y uno incompleto si existe; 1440/768/390; consola/network.
+## Pruebas ejecutadas el 2026-08-26
 
-## Riesgos
+- Dashboard `npm run typecheck`: correcto.
+- Dashboard `npm run lint`: correcto.
+- Dashboard `npm test -- --run`: 2 archivos, 10 passed, 0 failed, 0 skipped.
+- Dashboard `npm run build`: correcto, 2,488 módulos; warning no bloqueante conocido de ECharts (535.92 kB minificado).
+- API: no existe checkout local disponible; no se atribuyen pruebas nuevas.
+- HTTP anónimo: lista, detalle, historial y rutas privadas de foto devuelven 401 Problem Details; ninguna devuelve 404. CORS desde `http://localhost:5173`: 204.
 
-- `source_crs` no está confirmado para el catálogo histórico; nunca se etiqueta como WGS84 salvo lat/lng válidos.
-- Estado “revisado” del KPI incluye `rejected`, mientras “RV completado” móvil sólo usa `submitted|validated`; ambos conceptos se mostrarán con etiquetas distintas.
-- La API nueva requerirá despliegue manual antes de certificación productiva visual.
+## Bloqueo de certificación
+
+No hay credenciales administrativas de certificación disponibles en el checkout ni una sesión reutilizable. Por ello no se pueden afirmar respuestas autenticadas 200, contenido real de los cuatro casos, recorrido visual, responsive, consola o network. Los resultados locales históricos de la API se conservan como antecedente, pero no sustituyen la certificación productiva solicitada.
+
+## Funciones detectadas fuera de alcance
+
+El commit posterior `d5aa482` agregó una galería administrativa global y una exportación XLSX de revisiones, además de cambios visuales en login/layout y ajustes menores de integración. Son independientes del expediente y no son requisito ni parte certificada de Fase 2.
+
+- Galería: `/fotografias`, `PhotoGalleryView.vue`, tipos/servicio y rutas `/admin/dashboard/photos` y `/filters`. No tiene pruebas dedicadas. La ruta productiva está montada/protegida (401 anónimo), pero no se certificó autenticada.
+- Exportación: `/exportaciones`, `ExportView.vue` y `/admin/dashboard/exports/inspections.xlsx`. No tiene pruebas dedicadas. La ruta productiva está montada/protegida (401 anónimo), pero no se certificó descarga ni contenido.
+- Los cambios visuales amplios de login/layout del mismo commit no son dependencia funcional del expediente y requieren validación propia en una fase futura.
+
+No se elimina ni amplía ese código en esta consolidación.
 
 ## Secuencia y aceptación
 
-- [x] Publicar cierre certificado de Fase 1.
-- [x] Auditar modelo API/Flutter/Figma y decidir extensión administrativa.
-- [x] Implementar/probar API aditiva, abrir PR #6 e integrar a `main` (`20085c8`).
-- [x] Implementar listado y expediente frontend.
-- [x] Completar navegación cruzada y enlaces KPI.
-- [ ] Certificar E2E real, responsive, consola y network después del despliegue manual de API.
-- [x] Actualizar documentación; commits y push se registran al cierre.
+- [x] Implementar y documentar API aditiva; integrar PR #6 (`20085c8`).
+- [x] Implementar listado, expediente, historial y navegación.
+- [x] Exponer los filtros/orden soportados y paginar el historial completo sin cargar detalles individuales.
+- [x] Ejecutar pruebas estáticas/unitarias/build del dashboard.
+- [x] Confirmar montaje, protección y CORS de rutas productivas sin token.
+- [ ] Ejecutar certificación autenticada de lista, filtros, orden y cuatro casos reales.
+- [ ] Completar recorrido visual 1440/768/390, consola y network.
+- [ ] Registrar respuestas/datos sin almacenar credenciales, tokens ni secretos.
 
-Aceptación: datos reales; viewer; server-side; sin municipio/localidad; estado coherente con Flutter; expediente recargable; historial completo sin N+1; 7 obligatorias + N totales; mapa/empty states; tres breakpoints; pruebas/build; todo publicado.
-
-## Futuro
-
-Comparador de revisiones, CRUD controlado, alertas técnicas formalizadas, exportaciones y optimización por índice sólo con evidencia.
+La fase sólo podrá marcarse **FASE 2 — CERTIFICADA** cuando todos los puntos pendientes tengan evidencia productiva real y la documentación/commits estén publicados. Mientras tanto su estado formal es **IMPLEMENTADA — PENDIENTE CERTIFICACIÓN**.

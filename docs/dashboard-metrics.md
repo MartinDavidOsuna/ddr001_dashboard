@@ -1,6 +1,6 @@
 # Métricas del Dashboard
 
-Fecha de corte: 2026-08-13. Todos los agregados son server-side y se calculan en una misma ventana de lectura. Fase 1 no descarga revisiones para recomputarlos.
+Fecha de corte: 2026-08-26. Todos los agregados son server-side y se calculan en una misma ventana de lectura. El dashboard no descarga revisiones para recomputarlos.
 
 | Métrica | Fórmula formal | Notas |
 |---|---|---|
@@ -45,3 +45,7 @@ Métricas de expediente:
 | Enviadas/validadas/rechazadas/canceladas | Conteo condicional por estado persistido |
 | Evidencia completa histórica | Revisiones cuyo conteo distinto de los siete slots obligatorios es 7 |
 | Porcentaje completo | `100 * completeEvidenceCount / inspectionCount`; no disponible sin revisiones |
+
+## Límite de Fase 2
+
+Estas son las únicas métricas derivadas aceptadas para el expediente maestro. La galería global y la exportación XLSX detectadas en `d5aa482` no alteran las fórmulas ni forman parte de la certificación de Fase 2. Tampoco se agregan métricas de administración, mapa global, dispositivos, validación/rechazo o comparación de revisiones.

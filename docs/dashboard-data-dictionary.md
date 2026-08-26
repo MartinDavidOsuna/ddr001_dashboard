@@ -254,6 +254,12 @@ Origen: `rv.hydrants` con agregados de `rv.inspections`, `rv.users`, `rv.work_se
 
 La lista y el expediente no exponen `locality` ni `municipality`, aunque Flutter todavía pueda deserializarlos por compatibilidad histórica. La búsqueda administrativa nueva se limita a `account_number`; no recorre JSON ni campos territoriales.
 
+### Estado de consolidación de Fase 2 — 2026-08-26
+
+El contrato del expediente se mantiene sin cambios: lista, detalle e historial de hidrante. `rvStatus` global y `latestInspectionStatus` son conceptos distintos. La evidencia se expresa como siete obligatorias más N totales. La verificación productiva anónima confirmó que las tres rutas están montadas y protegidas (401 Problem Details, no 404), pero falta repetir la lectura autenticada de casos reales.
+
+La galería global y la exportación XLSX introducidas por `d5aa482` no son fuentes ni dependencias del expediente maestro. Se conservan como extensiones no certificadas de fase futura; no deben ampliar este diccionario de aceptación de Fase 2.
+
 ## Campos descartados / legacy
 
 | Campo/concepto | Decisión | Evidencia | Tratamiento |

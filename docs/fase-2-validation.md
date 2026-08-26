@@ -1,98 +1,97 @@
 # Validación de Fase 2 — Expediente maestro de hidrantes
 
-Fecha: 2026-08-13. Estado: **IMPLEMENTADA — PENDIENTE DESPLIEGUE API**.
+Fecha de consolidación: 2026-08-26. Estado: **IMPLEMENTADA — PENDIENTE CERTIFICACIÓN**.
 
-## Cierre de Fase 1 y ramas
+## Alcance certificado y límite
 
-- Dashboard Fase 1: commits pendientes `09c9331` y `4f461cb` publicados en `origin/feature/fase-1-visor-rv`; worktree limpio al crear Fase 2.
-- Dashboard Fase 2: `feature/fase-2-hydrant-master-record`, creada desde `4f461cb` certificado.
-- API: `main` remoto contenía merge `28ca304`; rama `feature/dashboard-fase-2-api` creada desde esa base.
-- Flutter `backup/first-on-field-test-mac`: sin modificaciones; exclusivamente lectura.
+La Fase 2 oficial es únicamente el listado y expediente maestro de hidrantes. No incluye administración, CRUD, mapa global, validación/rechazo, comparador, galería global ni exportaciones. Municipio y localidad están excluidos de contratos, búsqueda, filtros y presentación.
 
-## Modelo y campos
+## Línea base y commits posteriores
 
-Maestro real: `rv.hydrants`. Se incluyen cuenta, año, gasto L/s, sección, ángulo, elevación, salidas, coordenadas maestras, coordenadas/CRS de origen, origen catalog/manual, timestamps y metadata escalar. Se agregan conteos RV, estado global, última revisión, técnico/cuadrilla, evidencia, fotos y presencia GPS/señal.
+| Cambio | Commit | Archivos principales | Fase 2 | Requiere certificación | Destino |
+|---|---|---|---|---|---|
+| Listado, expediente, historial, tipos, servicio, navegación y pruebas | `25b9d42` | `src/features/hydrants/*`, `src/api/types.ts`, `src/services/dashboard.ts`, router/layout/dashboard/detalle RV | sí | sí | Fase 2 |
+| Plan, validación, diccionario, métricas y reconciliación | `ac7c495` | `plans/02_*`, `docs/*` | sí | sí | Fase 2 |
+| Galería global | `d5aa482` | `PhotoGalleryView.vue`, tipos, servicio, router/layout | no | no como Fase 2 | Fase futura/extensión no certificada |
+| Exportación XLSX | `d5aa482` | `ExportView.vue`, servicio, router/layout | no | no como Fase 2 | Fase futura/extensión no certificada |
+| Rediseño de login/layout y ajustes fotográficos | `d5aa482` | `LoginView.vue`, `AppLayout.vue`, `InspectionDetailView.vue` | no, salvo conservar navegación existente | no como criterio de Fase 2 | Validación futura propia |
 
-Municipio y localidad están excluidos de contratos, búsqueda, filtros, listado y expediente. El “tipo” ilustrativo, territorio y anomalías de Figma no tienen fuente funcional vigente y tampoco se presentan.
+La rama revisada es `feature/fase-2-hydrant-master-record`, basada en `4f461cb`. No se creó otra rama.
 
-## Endpoints administrativos
+## Implementación del expediente
 
-| Método | Ruta | Propósito | Autorización | Escritura |
-|---|---|---|---|---|
-| GET | `/api/v1/admin/dashboard/hydrants` | Lista, búsqueda, filtros, orden y paginación | admin principal, incluido `viewer` | no |
-| GET | `/api/v1/admin/dashboard/hydrants/:id` | Maestro, estadísticas y última RV | idem | no |
-| GET | `/api/v1/admin/dashboard/hydrants/:id/inspections` | Historial RV liviano y paginado | idem | no |
+- Lista server-side con búsqueda por cuenta; filtros de estado RV, existencia de revisiones, coordenadas, año, gasto, salidas y fecha; allowlist de orden y tamaños 25/50/100.
+- Expediente `/hidrantes/:id` con cuenta, origen, sección, año, gasto, salidas, ángulo, elevación, metadata escalar/JSON técnico, estadísticas, última revisión, alertas objetivas y coordenadas/CRS.
+- Regla RV: `completed` si existe alguna RV `submitted|validated`; `pending` en caso contrario. El estado exacto de la última revisión se muestra aparte.
+- Evidencia: `x/7 obligatorias · N total`; un hidrante sin revisiones muestra “Sin revisión”, nunca `0/7` como error.
+- Historial liviano, newest first, con revisión, fecha, técnico, cuadrilla, estado, evidencia, GPS, señal y enlace. Los detalles completos sólo se solicitan al abrir la revisión.
+- La consolidación agregó gasto máximo, fecha final y dirección de orden a los controles existentes, y sustituyó el corte silencioso de 100 revisiones por historial paginado de 25 registros.
+- Navegación implementada: KPI → listado, revisión → hidrante, expediente → revisión y breadcrumbs.
+- Mapa individual con coordenada maestra; empty state si no hay latitud/longitud. Leaflet está en el chunk lazy del expediente.
 
-Los endpoints de campo no cambiaron. No hubo dependencias, DDL, migración, seed ni datos modificados.
+## API productiva — verificación anónima
 
-## SQL y rendimiento
+Base: `http://cifra.aquafim.com:3002/api/v1`. No se hizo despliegue ni escritura.
 
-- CTE, `ROW_NUMBER`, agregados y paginación `OFFSET/FETCH` compatibles con SQL Server 2014.
-- Parámetros tipados para todos los valores; ordenamiento por allowlist.
-- Agregados de fotos/GPS/señal set-based y filtro por hidrante en detalle.
-- Page sizes de lista: 25, 50 y 100. Historial máximo 100.
-- No hay requests por hidrante, fotos en lista, originales ni N+1 HTTP.
-- El primer test real detectó una columna duplicada en `ORDER BY` para el sort por cuenta; se corrigió y la repetición completa pasó.
+| Ruta | Resultado 2026-08-26 |
+|---|---|
+| `GET /health/live` | 200 JSON |
+| `GET /health/ready` | 200 JSON |
+| `GET /version` | 200 JSON |
+| `GET /admin/dashboard/hydrants` | 401 Problem Details, no 404 |
+| `GET /admin/dashboard/hydrants/:id` | 401 Problem Details, no 404 |
+| `GET /admin/dashboard/hydrants/:id/inspections` | 401 Problem Details, no 404 |
+| Ruta privada de thumbnail de revisión | 401 Problem Details, no 404 |
+| Preflight desde `http://localhost:5173` | 204; origen y header Authorization permitidos |
 
-## Funcionalidad frontend
+Esto confirma que las rutas necesarias están montadas y protegidas. No demuestra contenido autenticado.
 
-- Listado real server-side con búsqueda por cuenta; filtros de estado RV, existencia de revisiones, coordenadas, año, gasto, salidas y fecha; orden seguro y paginación.
-- Desktop usa tabla; tablet/móvil usan cards.
-- Expediente recargable `/hidrantes/:id`: encabezado, copiar cuenta, datos maestros, metadata legible/JSON técnico, estadísticas, alertas objetivas, resumen RV, mapa lazy y cronología completa.
-- Empty states: nunca revisado, sin coordenadas, sin metadata, historial vacío, 404 y error de historial.
-- Navegación Dashboard KPI → Hidrantes, revisión → hidrante e hidrante → revisión.
-- Regla fotográfica: sin revisión muestra “Sin revisión”; con revisión muestra `x/7 obligatorias · N total`.
+## Casos reales
 
-## Regla RV
+La documentación anterior registra pruebas locales de sólo lectura contra `RevisionVisualStarter_Test`: cuenta `10` sin revisiones, cuenta `1` con varias y cuenta `1279` con evidencia incompleta. La cuenta productiva conocida es `002`.
 
-`completed` significa que existe alguna RV `submitted` o `validated`, igual que la función vigente usada por Flutter. La última revisión y su estado exacto se muestran por separado. “Revisado” del KPI conserva la fórmula certificada que también cuenta `rejected`.
+En esta consolidación no existe checkout de API ni credencial/sesión administrativa reutilizable. Por ello no se repitieron ni se elevan a certificación productiva los siguientes puntos:
 
-## Casos reales de prueba
+- total, páginas, búsqueda exacta/parcial, filtros, orden y tamaños de página;
+- contenido de `10`, `1`, `1279` y `002`;
+- campos maestros, estado RV, última revisión e historial real;
+- navegación autenticada, mapa y responsive 1440/768/390;
+- consola y patrón de red autenticado.
 
-Base local separada `RevisionVisualStarter_Test`, sólo SELECT:
+No se usaron mocks ni registros artificiales para sustituir esta evidencia.
 
-- Cuenta `10`: sin revisiones; valida empty state y ausencia de completitud ficticia.
-- Cuenta `1`: dos revisiones; última con 7/7 obligatorias; valida historial múltiple.
-- Cuenta `1279`: una revisión y 0/7 en la última; valida evidencia incompleta.
-- Producción conocida `002`: se conserva como caso de certificación post-deploy; su nueva ruta todavía no puede probarse hasta el despliegue manual.
+## Galería y exportación fuera de alcance
 
-No se crearon ni modificaron registros.
+Ambas fueron introducidas juntas por `d5aa482`, después del plan formal.
 
-## Pruebas
+### Galería
 
-### API
+- Independiente del expediente; éste no consume `/admin/dashboard/photos`.
+- Contiene listado paginado, filtros de slot/categoría/fecha, thumbnails y original bajo demanda.
+- No tiene archivo de pruebas dedicado.
+- `/admin/dashboard/photos` y `/filters` responden 401 sin token, por lo que están desplegadas/protegidas; no se validó respuesta 200 ni UI.
+- Clasificación: **extensión no certificada / fase futura**.
 
-- `npm run type-check`: exit 0.
-- `npm run lint`: exit 0.
-- Unitarias directas: 2 archivos, 5 passed, 0 failed, 0 skipped.
-- Integración SQL nueva: 1 archivo, 2 passed, 0 failed, 0 skipped; viewer lista/detalle/historial y 404.
-- `npm run build`: exit 0.
-- `npm test`: 13 integraciones skipped por el script normal que excluye `tests/integration/**`; las unitarias relevantes se ejecutaron directamente.
+### Exportación
 
-### Dashboard
+- Independiente del expediente; descarga un XLSX completo mediante `/admin/dashboard/exports/inspections.xlsx`.
+- No tiene archivo de pruebas dedicado.
+- La ruta responde 401 sin token, por lo que está desplegada/protegida; no se validaron descarga, contenido, volumen ni permisos autenticados.
+- Clasificación: **extensión no certificada / fase futura**.
+
+## Pruebas del dashboard
+
+Ejecutadas después de las correcciones de consolidación sobre la rama basada en `d5aa482`:
 
 - `npm run typecheck`: exit 0.
 - `npm run lint`: exit 0.
-- Vitest: 2 archivos, 10 passed, 0 failed, 0 skipped.
-- `npm run build`: exit 0; 2,481 módulos.
-- Warning no bloqueante conocido: chunk ECharts 535.92 kB minificado. Leaflet permanece separado en el chunk lazy `InspectionMap`.
+- `npm test -- --run`: 2 archivos, 10 passed, 0 failed, 0 skipped.
+- `npm run build`: exit 0; 2,488 módulos transformados.
+- Leaflet: chunk separado `InspectionMap`, 150.14 kB minificado/44.07 kB gzip.
+- Warning no bloqueante conocido: `DashboardView`, principalmente ECharts, 535.92 kB minificado/182.06 kB gzip.
 
-## Responsive, consola y network
+No existe checkout local de la API. No se inventan resultados actuales de typecheck, lint, tests ni build de ese repositorio; se conserva únicamente la evidencia histórica documentada del PR #6/merge `20085c8`.
 
-La estructura y build cubren tabla/cards y breakpoints 1440/768/390, pero el E2E real no se declara certificado: la API productiva aún no contiene las tres rutas de Fase 2 y no se usaron mocks. Después del despliegue manual deben comprobarse los tres casos, mapa, navegación cruzada, consola sin errores y network con tres requests máximos por expediente (maestro, historial y tiles), sin fotos.
+## Estado final
 
-## Integración y despliegue pendiente
-
-- API commit de feature: `3bbcc96`.
-- PR API: `#6`, integrada a `main`.
-- Merge que debe desplegarse: `20085c8a6a9cd140e6a0c2dc3b6fa67f6962ea98`.
-- `npm install`: no requerido; package/lock sin cambios.
-- Build: sí, `npm run build`.
-- Migración: **no**.
-- Deployment automático: no realizado; corresponde al responsable del Windows Server.
-
-Smoke post-deploy: live/ready 200; rutas móviles anónimas continúan 401; `/admin/dashboard/hydrants` anónimo 401 (no 404); login viewer; lista 25; búsqueda `002`; detalle e historial; cuenta sin revisión; cuenta múltiple; evidencia incompleta; CORS localhost.
-
-## Estado
-
-Implementación, pruebas locales, documentación y merge API completos. Falta exclusivamente desplegar manualmente el merge API y repetir certificación funcional/visual real. Estado: **IMPLEMENTADA — PENDIENTE DESPLIEGUE API**.
+La implementación y los checks locales están correctos; el despliegue de rutas está confirmado de forma anónima. Faltan la certificación productiva autenticada, los cuatro casos reales, el recorrido visual 1440/768/390 y la inspección de consola/network. Estado formal: **IMPLEMENTADA — PENDIENTE CERTIFICACIÓN**.

@@ -36,7 +36,7 @@ Fecha de corte: 2026-08-13. Figma gobierna lenguaje visual; código/contrato/BD 
 | Señal | generación/dBm/operador/fecha | signal sample | detalle | Mantener | Sin thresholds humanos |
 | Historial | timeline | status history | detalle | Mantener | Resolver actor en servidor |
 | Auditoría | before/after | audit_log | detalle | Mantener | JSON expandible; sin edición |
-| Hidrantes/Mapa/Usuarios/Cuadrillas/Jornadas/Dispositivos/Exportaciones | pantallas completas | datos existen parcialmente | varios | Preparar/Fase 2 | Navegación visible, sin datos ficticios ni inversión fuera de alcance |
+| Mapa/Usuarios/Cuadrillas/Jornadas/Dispositivos/Exportaciones | pantallas completas | datos existen parcialmente | varios | **Fases futuras** | No forman parte de Fase 2; la navegación visible no implica certificación ni autorización para desarrollarlos |
 | Hidrantes | cuenta | `rv.hydrants.account_number` | `/admin/dashboard/hydrants` | Mantener | Identificador operativo y búsqueda principal |
 | Hidrantes | localidad/municipio | columnas legacy | — | **Eliminar** | Fuera de cards, tabla, filtros y búsqueda |
 | Hidrantes | tipo “lateral/final de línea” | sin propiedad vigente confirmada | — | Eliminar | No derivar de metadata o Figma |
@@ -54,3 +54,7 @@ Fecha de corte: 2026-08-13. Figma gobierna lenguaje visual; código/contrato/BD 
 - Los filtros avanzados se alojan en panel/drawer en tablet y móvil.
 - La banda de completitud muestra denominadores reales y estados “no disponible”, no siempre verde.
 - Localidad y municipio desaparecen de listas, detalle, búsqueda y mapa aunque estén en capturas.
+
+## Corte de consolidación 2026-08-26
+
+La Fase 2 oficial se limita al listado y expediente maestro de hidrantes. La galería global y la exportación XLSX agregadas por `d5aa482` son extensiones independientes, no dependencias del expediente, y permanecen sin certificación dentro de una fase futura. El mapa aceptado en Fase 2 es exclusivamente el mapa individual de la coordenada maestra; no se contempla un mapa global.
