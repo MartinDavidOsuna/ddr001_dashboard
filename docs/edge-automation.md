@@ -1,0 +1,26 @@
+# Automatización local con Microsoft Edge
+
+La automatización usa `playwright-core` y el Microsoft Edge ya instalado; no descarga Chromium. Las capturas se guardan en `.artifacts/edge/`, que está ignorado por Git.
+
+## Preparación
+
+1. Levantar el dashboard:
+
+   `npm run dev`
+
+2. En otra terminal PowerShell, asignar el refresh token únicamente al proceso actual:
+
+   `$env:E2E_REFRESH_TOKEN = Read-Host -MaskInput "Refresh token READ_ONLY"`
+
+3. Ejecutar:
+
+   `npm run e2e:edge`
+
+El script restaura la sesión mediante el flujo normal de refresh, confirma el rol “Solo lectura”, abre Dashboard e Hidrantes y captura 1440×900, 768×900 y 390×844. No imprime tokens, headers Authorization ni cuerpos de autenticación.
+
+Opcionales:
+
+- `E2E_APP_URL`: frontend distinto de `http://localhost:5173`.
+- `EDGE_EXECUTABLE`: ruta no estándar de `msedge.exe`.
+
+No guardar tokens en `.env`, `.env.local`, scripts, historial compartido ni archivos versionados. El token compartido por chat debe rotarse al finalizar la certificación.

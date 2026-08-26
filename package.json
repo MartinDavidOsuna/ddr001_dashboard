@@ -12,7 +12,8 @@
     "typecheck": "vue-tsc --noEmit -p tsconfig.app.json",
     "lint": "eslint \"src/**/*.ts\" vite.config.ts eslint.config.js",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "e2e:edge": "node scripts/edge-e2e.mjs"
   },
   "dependencies": {
     "@lucide/vue": "^1.31.0",
@@ -35,6 +36,7 @@
     "eslint-plugin-vue": "latest",
     "globals": "latest",
     "happy-dom": "latest",
+    "playwright-core": "^1.62.1",
     "typescript": "latest",
     "vite": "latest",
     "vitest": "latest",
