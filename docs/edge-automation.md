@@ -18,9 +18,14 @@ La automatización usa `playwright-core` y el Microsoft Edge ya instalado; no de
 
 El script restaura la sesión mediante el flujo normal de refresh, confirma el rol “Solo lectura”, abre Dashboard e Hidrantes y captura 1440×900, 768×900 y 390×844. No imprime tokens, headers Authorization ni cuerpos de autenticación.
 
+El refresh token sólo se siembra cuando `sessionStorage` está vacío. La aplicación rota el token durante la restauración y el script conserva esa nueva versión en las navegaciones posteriores; nunca vuelve a sobrescribirla con el valor inicial ya consumido.
+
+Si falla un paso, se generan `.artifacts/edge/error.png` y `error-page.txt`. El diagnóstico limita el texto visible a 2,000 caracteres y registra únicamente URL sin query, pathname, título, status/pathname HTTP y errores de consola sanitizados.
+
 Opcionales:
 
 - `E2E_APP_URL`: frontend distinto de `http://localhost:5173`.
 - `EDGE_EXECUTABLE`: ruta no estándar de `msedge.exe`.
+- `E2E_TIMEOUT_MS`: timeout diagnóstico; por defecto 30000 ms.
 
 No guardar tokens en `.env`, `.env.local`, scripts, historial compartido ni archivos versionados. El token compartido por chat debe rotarse al finalizar la certificación.
