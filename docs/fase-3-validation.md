@@ -14,7 +14,7 @@ Fecha de apertura: 2026-08-26. Estado: **AUDITORÍA COMPLETA — PENDIENTE IMPLE
 
 | Área | Resultado | Certificación Fase 3 |
 |---|---|---|
-| Galería | implementación parcial con paginación, miniatura, original lazy y lightbox; filtros incompletos | pendiente |
+| Galería | implementación completada en código: paginación, búsqueda, filtros explícitos, miniatura/original lazy, lightbox, metadata y navegación | pendiente de despliegue API y E2E |
 | Exportaciones | XLSX de revisiones server-side sin filtros; CSV legado limitado; sin XLSX de hidrantes | pendiente |
 | Usuarios | endpoint genérico de lectura; sin módulo dashboard ni comandos controlados | pendiente |
 | Cuadrillas | endpoint genérico de lectura; sin módulo dashboard ni comandos controlados | pendiente |
@@ -43,7 +43,8 @@ El flujo Flutter usa `/field-sessions/start`, `/current`, `/refresh`, `/:id/end`
 - [x] Auditoría de dashboard, API, Flutter, commits, esquema, roles y módulos parciales.
 - [x] Inventario de endpoints existentes y ausentes.
 - [x] Plan formal, dependencias, riesgos, orden y criterio final.
-- [ ] Galería global funcional y responsive.
+- [x] Galería global implementada y cubierta por pruebas estáticas/unitarias/build.
+- [ ] Galería desplegada y certificada autenticada/responsive contra API productiva.
 - [ ] Exportaciones filtradas CSV/XLSX y XLSX de hidrantes.
 - [ ] Usuarios y CRUD explícito con baja lógica.
 - [ ] Cuadrillas y CRUD explícito con baja lógica.
@@ -61,3 +62,11 @@ El flujo Flutter usa `/field-sessions/start`, `/current`, `/refresh`, `/:id/end`
 ## Evidencia requerida por módulo
 
 Cada hito registrará endpoints reutilizados/nuevos, roles, escrituras permitidas, eventos de auditoría, pruebas y limitaciones. Las pruebas de escritura usarán DB local/test o fixtures aislados. Producción permanecerá en sólo lectura salvo autorización explícita. Si una extensión API queda pendiente de despliegue manual, la fase usará el estado **IMPLEMENTADA — PENDIENTE DESPLIEGUE API**.
+
+## Hito 1 — Galería global
+
+Código completado el 2026-08-26. La extensión aditiva de `GET /admin/dashboard/photos` agrega filtros server-side `technicianId`, `crewId` y `uploadStatus`, conserva búsqueda, slot, categoría, fechas y paginación, y no altera rutas móviles. `GET /admin/dashboard/photos/filters` devuelve opciones reales con conteos. Las fotografías no verificadas exponen metadata pero nunca se descargan mediante las rutas privadas, que permanecen limitadas a `verified`.
+
+El dashboard conserva carga concurrente limitada de miniaturas, solicita el original sólo al abrir el lightbox, muestra técnico/cuadrilla/estado/dimensiones y enlaza tanto al hidrante como a la revisión. No usa el total como completitud: obligatoria/adicional continúa derivándose por los siete slots y ordinal.
+
+Pruebas del hito: dashboard typecheck/lint, 10/10 Vitest y build correctos; API type-check/lint, 235/235 unit tests y build correctos. Las integraciones SQL quedaron definidas pero no ejecutadas porque no se habilitó `RUN_SQL_INTEGRATION`. `npm install` fue necesario en el checkout API; el árbol actual reportó 7 vulnerabilidades (3 moderadas, 4 altas), sin aplicar corrección automática. Falta deployment manual de API y E2E autenticado 1440/768/390, por lo que el módulo aún no está certificado en producción.

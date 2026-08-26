@@ -3,7 +3,9 @@ import type {
   DashboardSummary,
   FilterOption,
   GalleryFilters,
+  GalleryFilterOption,
   GalleryPhoto,
+  GalleryStatusOption,
   HydrantFilters,
   HydrantInspectionHistoryItem,
   HydrantMasterRecord,
@@ -73,7 +75,12 @@ export const dashboardService = {
   },
   async galleryFilters() {
     return (
-      await api.get<{ slots: PhotoSlotOption[] }>(
+      await api.get<{
+        slots: PhotoSlotOption[];
+        technicians: GalleryFilterOption[];
+        crews: GalleryFilterOption[];
+        statuses: GalleryStatusOption[];
+      }>(
         "/admin/dashboard/photos/filters",
       )
     ).data;

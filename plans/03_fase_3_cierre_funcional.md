@@ -1,6 +1,6 @@
 # Fase 3 — Cierre funcional de la plataforma
 
-Estado: **AUDITORÍA COMPLETA — PENDIENTE IMPLEMENTACIÓN**. Inicio: 2026-08-26.
+Estado: **IMPLEMENTACIÓN EN CURSO — PENDIENTE DESPLIEGUE API Y CERTIFICACIÓN**. Inicio: 2026-08-26.
 
 ## Objetivo y límites
 
@@ -73,7 +73,7 @@ Toda escritura crítica usará transacción, autorización por rol, validación 
 ## Orden de implementación y puertas de calidad
 
 1. Auditoría general y esta línea base.
-2. Galería global.
+2. Galería global. **Implementada en código; pendiente deployment manual de API y E2E.**
 3. Exportaciones.
 4. Usuarios.
 5. Cuadrillas.

@@ -13,13 +13,18 @@ import { dashboardService } from "@/services/dashboard";
 import { problemMessage } from "@/api/client";
 import type {
   GalleryFilters,
+  GalleryFilterOption,
   GalleryPhoto,
+  GalleryStatusOption,
   Page,
   PhotoSlotOption,
 } from "@/api/types";
 
 const page = ref<Page<GalleryPhoto>>();
 const slots = ref<PhotoSlotOption[]>([]);
+const technicians = ref<GalleryFilterOption[]>([]),
+  crews = ref<GalleryFilterOption[]>([]),
+  statuses = ref<GalleryStatusOption[]>([]);
 const loading = ref(true),
   error = ref("");
 const urls = ref(new Map<string, string>()),
@@ -33,6 +38,9 @@ const filters = reactive({
   search: "",
   slotCode: "",
   category: "",
+  technicianId: "",
+  crewId: "",
+  uploadStatus: "",
   from: "",
   to: "",
 });
@@ -52,6 +60,10 @@ function apiFilters() {
   if (filters.slotCode) values.slotCode = filters.slotCode;
   if (filters.category)
     values.category = filters.category as GalleryFilters["category"];
+  if (filters.technicianId) values.technicianId = filters.technicianId;
+  if (filters.crewId) values.crewId = filters.crewId;
+  if (filters.uploadStatus)
+    values.uploadStatus = filters.uploadStatus as GalleryFilters["uploadStatus"];
   if (filters.from)
     values.from = new Date(`${filters.from}T00:00:00-07:00`).toISOString();
   if (filters.to) {
@@ -82,7 +94,9 @@ async function load() {
   clearImages();
   try {
     page.value = await dashboardService.gallery(apiFilters());
-    const queue = [...page.value.items];
+    const queue = page.value.items.filter(
+      (photo) => photo.uploadStatus === "verified",
+    );
     await Promise.all(
       Array.from({ length: Math.min(6, queue.length) }, async () => {
         let photo;
@@ -116,6 +130,9 @@ function reset() {
     search: "",
     slotCode: "",
     category: "",
+    technicianId: "",
+    crewId: "",
+    uploadStatus: "",
     from: "",
     to: "",
   });
@@ -125,6 +142,10 @@ async function open(photo: GalleryPhoto) {
   selected.value = photo;
   fullUrl.value = "";
   zoom.value = 1;
+  if (photo.uploadStatus !== "verified") {
+    fullUrl.value = "unavailable";
+    return;
+  }
   try {
     fullUrl.value = await dashboardService.photo(photo.contentUrl);
   } catch {
@@ -156,10 +177,21 @@ function date(value: string) {
     timeZone: "America/Hermosillo",
   }).format(new Date(value));
 }
+const statusLabels: Record<string, string> = {
+  received: "Recibida",
+  processing: "Procesando",
+  verified: "Verificada",
+  rejected: "Rechazada",
+  missing: "Faltante",
+};
 onMounted(async () => {
   window.addEventListener("keydown", key);
   try {
-    slots.value = (await dashboardService.galleryFilters()).slots;
+    const options = await dashboardService.galleryFilters();
+    slots.value = options.slots;
+    technicians.value = options.technicians;
+    crews.value = options.crews;
+    statuses.value = options.statuses;
   } catch {
     /* gallery still remains usable */
   }
@@ -218,6 +250,33 @@ onBeforeUnmount(() => {
         </select>
       </div>
       <div class="field">
+        <label for="technician">Técnico</label
+        ><select id="technician" v-model="filters.technicianId" @change="apply">
+          <option value="">Todos</option>
+          <option v-for="option in technicians" :key="option.id" :value="option.id">
+            {{ option.label }} ({{ option.count }})
+          </option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="crew">Cuadrilla</label
+        ><select id="crew" v-model="filters.crewId" @change="apply">
+          <option value="">Todas</option>
+          <option v-for="option in crews" :key="option.id" :value="option.id">
+            {{ option.label }} ({{ option.count }})
+          </option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="verification">Verificación</label
+        ><select id="verification" v-model="filters.uploadStatus" @change="apply">
+          <option value="">Todos los estados</option>
+          <option v-for="option in statuses" :key="option.status" :value="option.status">
+            {{ statusLabels[option.status] || option.status }} ({{ option.count }})
+          </option>
+        </select>
+      </div>
+      <div class="field">
         <label for="from">Desde</label
         ><input id="from" v-model="filters.from" type="date" />
       </div>
@@ -248,25 +307,34 @@ onBeforeUnmount(() => {
           @click="open(photo)"
         >
           <img
-            v-if="urls.get(photo.photoId)"
+            v-if="photo.uploadStatus === 'verified' && urls.get(photo.photoId)"
             :src="urls.get(photo.photoId)"
             :alt="photo.slotLabel || photo.slotCode"
             loading="lazy"
           />
           <span v-else
             ><Camera :size="30" />{{
-              failed.has(photo.photoId) ? "Imagen no disponible" : "Cargando…"
+              photo.uploadStatus !== "verified"
+                ? statusLabels[photo.uploadStatus] || photo.uploadStatus
+                : failed.has(photo.photoId)
+                  ? "Imagen no disponible"
+                  : "Cargando…"
             }}</span
           >
         </button>
         <footer>
           <b>{{ photo.slotLabel || photo.slotCode }}</b
-          ><RouterLink :to="`/revisiones/${photo.inspectionId}`"
-            >Hidrante {{ photo.accountNumber }} · Rev. #{{
-              photo.revisionNumber
-            }}</RouterLink
-          ><small
-            >{{ photo.technicianName }} · {{ date(photo.capturedAt) }}</small
+          ><div class="record-links">
+            <RouterLink :to="`/hidrantes/${photo.hydrantId}`"
+              >Hidrante {{ photo.accountNumber }}</RouterLink
+            ><RouterLink :to="`/revisiones/${photo.inspectionId}`"
+              >Rev. #{{ photo.revisionNumber }}</RouterLink
+            >
+          </div>
+          <small
+            >{{ photo.technicianName
+            }}<template v-if="photo.crewName"> · {{ photo.crewName }}</template>
+            · {{ date(photo.capturedAt) }}</small
           >
         </footer>
       </article>
@@ -323,6 +391,9 @@ onBeforeUnmount(() => {
       <p v-else-if="fullUrl === 'error'">
         La imagen original no está disponible.
       </p>
+      <p v-else-if="fullUrl === 'unavailable'">
+        El original privado sólo está disponible para fotografías verificadas.
+      </p>
       <img
         v-else
         :src="fullUrl"
@@ -334,7 +405,21 @@ onBeforeUnmount(() => {
           <b>{{ selected.slotLabel || selected.slotCode }}</b
           ><small
             >Hidrante {{ selected.accountNumber }} ·
+            Rev. #{{ selected.revisionNumber }} ·
             {{ date(selected.capturedAt) }}</small
+          >
+          <small
+            >{{ selected.technicianName
+            }}<template v-if="selected.crewName"> · {{ selected.crewName }}</template>
+            · {{ statusLabels[selected.uploadStatus] || selected.uploadStatus }} ·
+            {{ selected.widthPx || "?" }}×{{ selected.heightPx || "?" }} px</small
+          >
+          <span class="lightbox-links"
+            ><RouterLink :to="`/hidrantes/${selected.hydrantId}`" @click="close"
+              >Ver hidrante</RouterLink
+            ><RouterLink :to="`/revisiones/${selected.inspectionId}`" @click="close"
+              >Ver revisión</RouterLink
+            ></span
           >
         </div>
         <button
@@ -365,7 +450,7 @@ onBeforeUnmount(() => {
 .filters {
   padding: 14px;
   display: grid;
-  grid-template-columns: minmax(240px, 2fr) repeat(4, minmax(130px, 1fr)) auto;
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
   gap: 10px;
   align-items: end;
   margin-bottom: 18px;
@@ -442,6 +527,17 @@ onBeforeUnmount(() => {
 }
 .photo-card footer a {
   color: #175ed5;
+  text-decoration: none;
+  font-size: 0.8rem;
+}
+.record-links,
+.lightbox-links {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.lightbox-links a {
+  color: #9fc3ff;
   text-decoration: none;
   font-size: 0.8rem;
 }
@@ -538,7 +634,7 @@ onBeforeUnmount(() => {
 }
 @media (max-width: 1150px) {
   .filters {
-    grid-template-columns: 2fr repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
   .actions {
     align-self: end;

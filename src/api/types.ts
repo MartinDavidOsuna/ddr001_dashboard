@@ -123,6 +123,7 @@ export interface Photo {
 }
 export interface GalleryPhoto extends Photo {
   inspectionId: string;
+  hydrantId: string;
   accountNumber: string;
   revisionNumber: number;
   technicianName: string;
@@ -133,12 +134,22 @@ export interface PhotoSlotOption {
   label: string;
   count: number;
 }
+export interface GalleryFilterOption extends FilterOption {
+  count: number;
+}
+export interface GalleryStatusOption {
+  status: "received" | "processing" | "verified" | "rejected" | "missing";
+  count: number;
+}
 export interface GalleryFilters {
   page: number;
   pageSize: number;
   search?: string;
   slotCode?: string;
   category?: "mandatory" | "additional";
+  technicianId?: string;
+  crewId?: string;
+  uploadStatus?: GalleryStatusOption["status"];
   from?: string;
   to?: string;
 }
