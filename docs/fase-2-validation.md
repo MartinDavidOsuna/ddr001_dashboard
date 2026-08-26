@@ -95,3 +95,14 @@ No existe checkout local de la API. No se inventan resultados actuales de typech
 ## Estado final
 
 La implementación y los checks locales están correctos; el despliegue de rutas está confirmado de forma anónima. Faltan la certificación productiva autenticada, los cuatro casos reales, el recorrido visual 1440/768/390 y la inspección de consola/network. Estado formal: **IMPLEMENTADA — PENDIENTE CERTIFICACIÓN**.
+
+## Reintento de certificación autenticada — 2026-08-26
+
+- Rama confirmada: `feature/fase-2-hydrant-master-record`, limpia, sincronizada 0/0 con origin antes del intento; no se creó otra rama.
+- Se creó `.env.local` ignorado con `VITE_API_BASE_URL=http://cifra.aquafim.com:3002/api/v1`; no contiene credenciales.
+- Vite respondió 200 para `/`, `/login`, `/dashboard`, `/hidrantes` y una ruta profunda de expediente.
+- La API productiva continuó live 200 y `/admin/dashboard/hydrants` continuó protegido con 401 Problem Details sin token.
+- Checks finales: typecheck y lint correctos; Vitest 2 archivos/10 passed/0 failed/0 skipped; build correcto con 2,488 módulos y el warning no bloqueante conocido de ECharts.
+- Bloqueo: las credenciales READ_ONLY usadas en una ejecución anterior no están disponibles en este workspace, variables de entorno ni contexto operativo, y esta sesión no expone Codex In-app Browser. No se intentó recuperar secretos desde perfiles externos ni se sustituyó el recorrido visual por HTTP.
+
+Por ese bloqueo no existe evidencia nueva para login, contenido autenticado, casos `10`/`1`/`1279`/`002`, filtros/orden reales, navegación, refresh, consola/network o viewports 1440/768/390. El estado permanece **IMPLEMENTADA — PENDIENTE CERTIFICACIÓN**.

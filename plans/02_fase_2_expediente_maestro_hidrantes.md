@@ -62,6 +62,8 @@ La implementación API documentada usa CTE, funciones de ventana, agregados set-
 
 No hay credenciales administrativas de certificación disponibles en el checkout ni una sesión reutilizable. Por ello no se pueden afirmar respuestas autenticadas 200, contenido real de los cuatro casos, recorrido visual, responsive, consola o network. Los resultados locales históricos de la API se conservan como antecedente, pero no sustituyen la certificación productiva solicitada.
 
+El reintento del 2026-08-26 confirmó además Vite y rutas SPA locales en HTTP 200, configuración productiva en `.env.local` ignorado y la suite completa del dashboard. La ejecución actual no expone Codex In-app Browser. La certificación debe reanudarse cuando estén disponibles tanto una sesión READ_ONLY como el navegador solicitado; no se aceptará HTTP como sustituto visual.
+
 ## Funciones detectadas fuera de alcance
 
 El commit posterior `d5aa482` agregó una galería administrativa global y una exportación XLSX de revisiones, además de cambios visuales en login/layout y ajustes menores de integración. Son independientes del expediente y no son requisito ni parte certificada de Fase 2.
