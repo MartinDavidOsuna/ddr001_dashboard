@@ -18,6 +18,8 @@ La automatización usa `playwright-core` y el Microsoft Edge ya instalado; no de
 
 El script restaura la sesión mediante el flujo normal de refresh, confirma el rol “Solo lectura”, abre Dashboard e Hidrantes y captura 1440×900, 768×900 y 390×844. No imprime tokens, headers Authorization ni cuerpos de autenticación.
 
+Antes de continuar confirma que la primera petición administrativa apunta a `http://cifra.aquafim.com:3002/api/v1/admin/…`; aborta si detecta otro protocol, host, puerto o prefijo. Los fallos HTTP muestran únicamente `status + protocol + host + pathname`, nunca query strings ni headers.
+
 El refresh token sólo se siembra cuando `sessionStorage` está vacío. La aplicación rota el token durante la restauración y el script conserva esa nueva versión en las navegaciones posteriores; nunca vuelve a sobrescribirla con el valor inicial ya consumido.
 
 Si falla un paso, se generan `.artifacts/edge/error.png` y `error-page.txt`. El diagnóstico limita el texto visible a 2,000 caracteres y registra únicamente URL sin query, pathname, título, status/pathname HTTP y errores de consola sanitizados.

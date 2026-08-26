@@ -6,6 +6,7 @@ import { chromium } from "playwright-core";
 const appUrl = process.env.E2E_APP_URL || "http://localhost:5173";
 const refreshToken = process.env.E2E_REFRESH_TOKEN;
 const timeoutMs = Number(process.env.E2E_TIMEOUT_MS || 30_000);
+const expectedApiOrigin = "http://cifra.aquafim.com:3002";
 const artifacts = new URL("../.artifacts/edge/", import.meta.url);
 const edgeCandidates = [
   process.env.EDGE_EXECUTABLE,
@@ -24,6 +25,14 @@ const safeLocation = (value) => {
     return `${url.origin}${url.pathname}`;
   } catch {
     return "URL no disponible";
+  }
+};
+const safeHttpTarget = (value) => {
+  try {
+    const url = new URL(value);
+    return `${url.protocol}//${url.host}${url.pathname}`;
+  } catch {
+    return "Destino HTTP no disponible";
   }
 };
 
@@ -74,7 +83,12 @@ page.on("pageerror", (error) => consoleErrors.push(redact(error.message)));
 page.on("response", (response) => {
   const status = response.status();
   if (status >= 400) {
-    failedResponses.push({ status, pathname: new URL(response.url()).pathname });
+    const url = new URL(response.url());
+    failedResponses.push({
+      status,
+      pathname: url.pathname,
+      target: safeHttpTarget(response.url()),
+    });
   }
 });
 
@@ -96,7 +110,7 @@ async function pageDiagnostic(label) {
     `URL: ${location}`,
     `Pathname: ${pathname}`,
     `Título: ${title || "Sin título"}`,
-    `Responses >= 400: ${failedResponses.map((item) => `${item.status} ${item.pathname}`).join(" | ") || "ninguna"}`,
+    `Responses >= 400: ${failedResponses.map((item) => `${item.status} ${item.target}`).join(" | ") || "ninguna"}`,
     `Errores de consola: ${consoleErrors.join(" | ") || "ninguno"}`,
     `Texto visible (máx. 2000):\n${visibleText || "Sin texto visible"}`,
   ];
@@ -111,7 +125,31 @@ async function assertPath(pathname, lostSessionMessage) {
 }
 
 try {
+  const firstAdminRequestPromise = page.waitForRequest((request) => {
+    try {
+      return new URL(request.url()).pathname.includes("/admin/");
+    } catch {
+      return false;
+    }
+  });
   await page.goto(`${appUrl}/dashboard`, { waitUntil: "domcontentloaded" });
+  const firstAdminRequest = await firstAdminRequestPromise.catch(() => {
+    throw new Error(
+      "No se observó ninguna petición administrativa para confirmar el backend productivo.",
+    );
+  });
+  const adminUrl = new URL(firstAdminRequest.url());
+  if (
+    adminUrl.origin !== expectedApiOrigin ||
+    !adminUrl.pathname.startsWith("/api/v1/admin/")
+  ) {
+    throw new Error(
+      `Backend administrativo incorrecto: ${safeHttpTarget(firstAdminRequest.url())}. Se esperaba ${expectedApiOrigin}/api/v1/admin/…`,
+    );
+  }
+  process.stdout.write(
+    `Backend administrativo confirmado: ${safeHttpTarget(firstAdminRequest.url())}\n`,
+  );
   await Promise.race([
     page.getByText("Solo lectura", { exact: true }).waitFor(),
     page
@@ -167,7 +205,7 @@ try {
     throw new Error(`Errores de consola: ${consoleErrors.join(" | ")}`);
   if (failedResponses.length)
     throw new Error(
-      `Respuestas HTTP fallidas: ${failedResponses.map((item) => `${item.status} ${item.pathname}`).join(" | ")}`,
+      `Respuestas HTTP fallidas: ${failedResponses.map((item) => `${item.status} ${item.target}`).join(" | ")}`,
     );
 
   process.stdout.write(
