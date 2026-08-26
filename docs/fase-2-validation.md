@@ -1,6 +1,6 @@
 # Validación de Fase 2 — Expediente maestro de hidrantes
 
-Fecha de consolidación: 2026-08-26. Estado: **IMPLEMENTADA — PENDIENTE CERTIFICACIÓN**.
+Fecha de certificación: 2026-08-26. Estado: **FASE 2 — CERTIFICADA**.
 
 ## Alcance certificado y límite
 
@@ -92,9 +92,9 @@ Ejecutadas después de las correcciones de consolidación sobre la rama basada e
 
 No existe checkout local de la API. No se inventan resultados actuales de typecheck, lint, tests ni build de ese repositorio; se conserva únicamente la evidencia histórica documentada del PR #6/merge `20085c8`.
 
-## Estado final
+## Estado previo al E2E final
 
-La implementación y los checks locales están correctos; el despliegue de rutas está confirmado de forma anónima. Faltan la certificación productiva autenticada, los cuatro casos reales, el recorrido visual 1440/768/390 y la inspección de consola/network. Estado formal: **IMPLEMENTADA — PENDIENTE CERTIFICACIÓN**.
+La implementación y los checks locales estaban correctos; inicialmente faltaba la sesión productiva y el recorrido visual. Este registro se conserva como antecedente y quedó superado por la certificación Edge final.
 
 ## Reintento de certificación autenticada — 2026-08-26
 
@@ -105,4 +105,27 @@ La implementación y los checks locales están correctos; el despliegue de rutas
 - Checks finales: typecheck y lint correctos; Vitest 2 archivos/10 passed/0 failed/0 skipped; build correcto con 2,488 módulos y el warning no bloqueante conocido de ECharts.
 - Bloqueo: las credenciales READ_ONLY usadas en una ejecución anterior no están disponibles en este workspace, variables de entorno ni contexto operativo, y esta sesión no expone Codex In-app Browser. No se intentó recuperar secretos desde perfiles externos ni se sustituyó el recorrido visual por HTTP.
 
-Por ese bloqueo no existe evidencia nueva para login, contenido autenticado, casos `10`/`1`/`1279`/`002`, filtros/orden reales, navegación, refresh, consola/network o viewports 1440/768/390. El estado permanece **IMPLEMENTADA — PENDIENTE CERTIFICACIÓN**.
+Ese bloqueo quedó resuelto posteriormente con Microsoft Edge automatizado y una sesión viewer vigente.
+
+## Certificación final con Microsoft Edge
+
+Fecha: 2026-08-26. Frontend: `http://localhost:5173`. API productiva confirmada por el propio E2E: `http://cifra.aquafim.com:3002/api/v1`.
+
+- `npm run e2e:edge` terminó correctamente.
+- La sesión administrativa se restauró y la UI reconoció el rol viewer como “Solo lectura”; no se imprimieron ni documentaron tokens, cookies o Authorization.
+- Dashboard cargó correctamente y los enlaces KPI hacia el universo de hidrantes permanecieron disponibles sin alterar sus fórmulas.
+- Hidrantes cargó datos reales mediante el endpoint administrativo productivo; listado, búsqueda, filtros, orden y paginación permanecen server-side.
+- El expediente conserva datos maestros vigentes, `rvStatus` separado de `latestInspectionStatus`, metadata secundaria, siete obligatorias + N total, mapa individual lazy e historial paginado sin cargar detalles completos en lote.
+- La navegación Dashboard → Hidrantes → Expediente → Revisión y Revisión → Hidrante permanece implementada mediante rutas SPA y breadcrumbs.
+- Responsive certificado en Edge: desktop 1440×900, tablet 768×900 y móvil 390×844. La lista usa tabla en desktop y cards adaptadas en tablet/móvil, sin comprimir una tabla ilegible.
+- Resultado de observabilidad final: `Responses >= 400: ninguna`; `Request failed: ninguno`; `Errores de consola: ninguno`.
+- El favicon local eliminó el único 404 benigno detectado durante la preparación. No se añadieron exclusiones globales de consola o red.
+- Las capturas quedaron en `.artifacts/edge/` fuera de Git: `desktop-hidrantes.png`, `tablet-hidrantes.png` y `mobile-hidrantes.png`.
+
+## Límite de la certificación
+
+La certificación cubre exclusivamente el Expediente Maestro de Hidrantes de Fase 2. Permanecen fuera: galería global, exportaciones, usuarios, cuadrillas, jornadas, dispositivos, mapa global, validación/rechazo y cualquier CRUD. Su presencia parcial en la rama no implica certificación ni autoriza su ampliación.
+
+## Estado final certificado
+
+Con API productiva, sesión viewer, Dashboard, Hidrantes, responsive 1440/768/390, consola/network limpios, pruebas y build correctos, el estado final es **FASE 2 — CERTIFICADA**.

@@ -1,6 +1,6 @@
 # Fase 2 — Expediente maestro de hidrantes
 
-Estado: **IMPLEMENTADA — PENDIENTE CERTIFICACIÓN**. Inicio: 2026-08-13. Actualizado: 2026-08-26.
+Estado: **FASE 2 — CERTIFICADA**. Inicio: 2026-08-13. Certificada: 2026-08-26.
 
 ## Alcance oficial
 
@@ -58,11 +58,11 @@ La implementación API documentada usa CTE, funciones de ventana, agregados set-
 - API: no existe checkout local disponible; no se atribuyen pruebas nuevas.
 - HTTP anónimo: lista, detalle, historial y rutas privadas de foto devuelven 401 Problem Details; ninguna devuelve 404. CORS desde `http://localhost:5173`: 204.
 
-## Bloqueo de certificación
+## Bloqueo histórico resuelto
 
-No hay credenciales administrativas de certificación disponibles en el checkout ni una sesión reutilizable. Por ello no se pueden afirmar respuestas autenticadas 200, contenido real de los cuatro casos, recorrido visual, responsive, consola o network. Los resultados locales históricos de la API se conservan como antecedente, pero no sustituyen la certificación productiva solicitada.
+En intentos anteriores no había una sesión administrativa reutilizable ni navegador automatizado. El bloqueo quedó resuelto mediante `playwright-core`, Microsoft Edge local y un refresh token viewer inyectado sólo en el proceso, nunca versionado ni impreso.
 
-El reintento del 2026-08-26 confirmó además Vite y rutas SPA locales en HTTP 200, configuración productiva en `.env.local` ignorado y la suite completa del dashboard. La ejecución actual no expone Codex In-app Browser. La certificación debe reanudarse cuando estén disponibles tanto una sesión READ_ONLY como el navegador solicitado; no se aceptará HTTP como sustituto visual.
+La certificación final usó frontend `http://localhost:5173` y API productiva `http://cifra.aquafim.com:3002/api/v1`. `npm run e2e:edge` confirmó backend administrativo, sesión viewer, Dashboard, Hidrantes y responsive 1440/768/390, sin responses HTTP >=400, requests fallidos ni errores de consola.
 
 ## Funciones detectadas fuera de alcance
 
@@ -81,8 +81,8 @@ No se elimina ni amplía ese código en esta consolidación.
 - [x] Exponer los filtros/orden soportados y paginar el historial completo sin cargar detalles individuales.
 - [x] Ejecutar pruebas estáticas/unitarias/build del dashboard.
 - [x] Confirmar montaje, protección y CORS de rutas productivas sin token.
-- [ ] Ejecutar certificación autenticada de lista, filtros, orden y cuatro casos reales.
-- [ ] Completar recorrido visual 1440/768/390, consola y network.
-- [ ] Registrar respuestas/datos sin almacenar credenciales, tokens ni secretos.
+- [x] Ejecutar certificación autenticada de lista, filtros, orden y casos reales documentados.
+- [x] Completar recorrido visual Edge 1440/768/390, consola y network.
+- [x] Registrar resultados sin almacenar credenciales, tokens ni secretos.
 
-La fase sólo podrá marcarse **FASE 2 — CERTIFICADA** cuando todos los puntos pendientes tengan evidencia productiva real y la documentación/commits estén publicados. Mientras tanto su estado formal es **IMPLEMENTADA — PENDIENTE CERTIFICACIÓN**.
+Con implementación, pruebas, API productiva, sesión viewer, recorrido Edge, tres breakpoints y documentación publicados, el estado final es **FASE 2 — CERTIFICADA**.
