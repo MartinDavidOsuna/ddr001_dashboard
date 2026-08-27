@@ -8,7 +8,7 @@ La automatización usa `playwright-core` y el Microsoft Edge ya instalado; no de
 
    `npm run dev`
 
-2. En otra terminal PowerShell, asignar una sesión viewer únicamente al proceso actual. El modo recomendado usa credenciales runtime:
+2. En otra terminal PowerShell, asignar una sesión administrativa `viewer` o `admin` únicamente al proceso actual. Por compatibilidad, las variables conservan el nombre `E2E_VIEWER_*`; el modo recomendado usa credenciales runtime:
 
    `$env:E2E_VIEWER_EMAIL = Read-Host "Email viewer"`
 
@@ -24,7 +24,7 @@ La automatización usa `playwright-core` y el Microsoft Edge ya instalado; no de
 
    `npm run e2e:edge`
 
-El script selecciona el modo exclusivamente desde `process.env`; no carga secretos desde `.env`, `.env.local`, scripts npm ni archivos del repositorio. Al comenzar imprime solamente definido/no definido para las tres variables y el modo seleccionado. Inicia o restaura la sesión mediante el flujo normal, recarga y exige por separado un refresh HTTP 200, confirma el rol “Solo lectura”, certifica la galería y cierra sesión al final. Captura `desktop-gallery.png`, `tablet-gallery.png`, `mobile-gallery.png` y `gallery-lightbox.png` en `.artifacts/edge/`. No imprime email, contraseña, tokens, headers Authorization ni cuerpos de autenticación.
+El script selecciona el modo exclusivamente desde `process.env`; no carga secretos desde `.env`, `.env.local`, scripts npm ni archivos del repositorio. Al comenzar imprime solamente definido/no definido para las tres variables y el modo seleccionado. Inicia o restaura la sesión mediante el flujo normal, recarga y exige por separado un refresh HTTP 200, confirma mediante `/admin/auth/me` un rol `viewer` o `admin` y comprueba su indicador visual, certifica la galería y cierra sesión al final. Cualquier otro rol se rechaza y el rol debe permanecer idéntico tras refresh. Captura `desktop-gallery.png`, `tablet-gallery.png`, `mobile-gallery.png` y `gallery-lightbox.png` en `.artifacts/edge/`. No imprime email, contraseña, tokens, headers Authorization ni cuerpos de autenticación.
 
 Antes de continuar confirma que la primera petición administrativa apunta a `http://cifra.aquafim.com:3002/api/v1/admin/…`; aborta si detecta otro protocol, host, puerto o prefijo. Los fallos HTTP muestran únicamente `status + protocol + host + pathname`, nunca query strings ni headers.
 

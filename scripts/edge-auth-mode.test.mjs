@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { selectEdgeAuthMode } from "./edge-auth-mode.mjs";
+import {
+  assertSupportedAdministrativeRole,
+  selectEdgeAuthMode,
+} from "./edge-auth-mode.mjs";
 
 describe("Edge E2E authentication mode", () => {
   it("uses credentials when email and password exist", () => {
@@ -16,5 +19,21 @@ describe("Edge E2E authentication mode", () => {
 
   it("rejects an empty configuration clearly", () => {
     expect(() => selectEdgeAuthMode({})).toThrow(/Define E2E_VIEWER_EMAIL/);
+  });
+});
+
+describe("Edge E2E administrative role", () => {
+  it("allows viewer", () => {
+    expect(assertSupportedAdministrativeRole("viewer")).toBe("viewer");
+  });
+
+  it("allows admin", () => {
+    expect(assertSupportedAdministrativeRole("admin")).toBe("admin");
+  });
+
+  it("rejects any other role", () => {
+    expect(() => assertSupportedAdministrativeRole("supervisor")).toThrow(
+      "La sesión E2E tiene un rol administrativo no soportado.",
+    );
   });
 });

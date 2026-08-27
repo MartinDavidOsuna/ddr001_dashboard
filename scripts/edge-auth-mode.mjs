@@ -11,3 +11,8 @@ export function selectEdgeAuthMode({ email, password, refreshToken }) {
     "Define E2E_VIEWER_EMAIL + E2E_VIEWER_PASSWORD o E2E_REFRESH_TOKEN sólo en el proceso actual.",
   );
 }
+
+export function assertSupportedAdministrativeRole(role) {
+  if (role === "viewer" || role === "admin") return role;
+  throw new Error("La sesión E2E tiene un rol administrativo no soportado.");
+}

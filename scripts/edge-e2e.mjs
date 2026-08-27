@@ -2,7 +2,10 @@ import { access, mkdir, writeFile } from "node:fs/promises";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright-core";
-import { selectEdgeAuthMode } from "./edge-auth-mode.mjs";
+import {
+  assertSupportedAdministrativeRole,
+  selectEdgeAuthMode,
+} from "./edge-auth-mode.mjs";
 
 const appUrl = process.env.E2E_APP_URL || "http://localhost:5173";
 const refreshToken = process.env.E2E_REFRESH_TOKEN;
@@ -51,7 +54,7 @@ process.stdout.write(
     `E2E_VIEWER_EMAIL: ${viewerEmail ? "definido" : "no definido"}`,
     `E2E_VIEWER_PASSWORD: ${viewerPassword ? "definido" : "no definido"}`,
     `E2E_REFRESH_TOKEN: ${refreshToken ? "definido" : "no definido"}`,
-    `Modo de autenticación E2E: ${useCredentials ? "credenciales viewer" : "refresh token"}`,
+    `Modo de autenticación E2E: ${useCredentials ? "credenciales administrativas" : "refresh token"}`,
   ].join("\n") + "\n",
 );
 
@@ -192,6 +195,27 @@ async function assertPath(pathname, lostSessionMessage) {
     throw new Error(`Ruta inesperada: se esperaba ${pathname} y terminó en ${current}.`);
 }
 
+const adminMePath = "/api/v1/admin/auth/me";
+const isAdminMeResponse = (response) => {
+  try {
+    return (
+      response.request().method() === "GET" &&
+      new URL(response.url()).pathname === adminMePath
+    );
+  } catch {
+    return false;
+  }
+};
+async function detectSupportedAdministrativeRole(response) {
+  if (response.status() !== 200)
+    throw new Error("No fue posible confirmar el rol administrativo E2E.");
+  const claims = await response.json().catch(() => undefined);
+  const role = assertSupportedAdministrativeRole(claims?.role);
+  const expectedLabel = role === "viewer" ? "Solo lectura" : "Administrador";
+  await page.getByText(expectedLabel, { exact: true }).waitFor();
+  return role;
+}
+
 const galleryListPath = "/api/v1/admin/dashboard/photos";
 const isGalleryListResponse = (response) => {
   const url = new URL(response.url());
@@ -238,6 +262,7 @@ try {
       return false;
     }
   });
+  const initialMeResponsePromise = page.waitForResponse(isAdminMeResponse);
   await page.goto(`${appUrl}${useCredentials ? "/login" : "/dashboard"}`, {
     waitUntil: "domcontentloaded",
   });
@@ -254,7 +279,7 @@ try {
   const initialAuthResponse = await initialAuthResponsePromise.catch(() => {
     throw new Error(
       useCredentials
-        ? "El login viewer E2E falló."
+        ? "El login administrativo E2E falló."
         : "El E2E_REFRESH_TOKEN no pudo restaurar la sesión.",
     );
   });
@@ -273,25 +298,33 @@ try {
   if (initialAuthResponse.status() !== 200)
     throw new Error(
       useCredentials
-        ? "El login viewer E2E falló."
+        ? "El login administrativo E2E falló."
         : "El E2E_REFRESH_TOKEN no pudo restaurar la sesión.",
     );
+  const initialMeResponse = await initialMeResponsePromise.catch(() => {
+    throw new Error("No fue posible confirmar el rol administrativo E2E.");
+  });
+  const authenticatedRole = await detectSupportedAdministrativeRole(
+    initialMeResponse,
+  );
+  process.stdout.write(
+    `Rol administrativo E2E detectado: ${authenticatedRole}\n`,
+  );
   await Promise.all([
     page
       .waitForURL((url) => url.pathname === "/dashboard")
       .catch(() => {
         throw new Error(
           useCredentials
-            ? "El login viewer E2E falló."
+            ? "El login administrativo E2E falló."
             : "El E2E_REFRESH_TOKEN no pudo restaurar la sesión.",
         );
       }),
-    page.getByText("Solo lectura", { exact: true }).waitFor(),
   ]);
   await assertPath(
     "/dashboard",
     useCredentials
-      ? "El login viewer E2E falló."
+      ? "El login administrativo E2E falló."
       : "El E2E_REFRESH_TOKEN no pudo restaurar la sesión.",
   );
   const hasRefreshSession = await page.evaluate(() =>
@@ -310,16 +343,30 @@ try {
       return false;
     }
   });
+  const refreshedMeResponsePromise = page.waitForResponse(isAdminMeResponse);
   await page.reload({ waitUntil: "domcontentloaded" });
   const refreshAfterReload = await refreshAfterReloadPromise.catch(() => {
-    throw new Error("El refresh de la sesión viewer falló después del login.");
+    throw new Error(
+      "El refresh de la sesión administrativa falló después del login.",
+    );
   });
   if (refreshAfterReload.status() !== 200)
-    throw new Error("El refresh de la sesión viewer falló después del login.");
-  await page.getByText("Solo lectura", { exact: true }).waitFor();
+    throw new Error(
+      "El refresh de la sesión administrativa falló después del login.",
+    );
+  const refreshedMeResponse = await refreshedMeResponsePromise.catch(() => {
+    throw new Error(
+      "El refresh de la sesión administrativa falló después del login.",
+    );
+  });
+  const refreshedRole = await detectSupportedAdministrativeRole(
+    refreshedMeResponse,
+  );
+  if (refreshedRole !== authenticatedRole)
+    throw new Error("El rol cambió después del refresh de sesión.");
   await assertPath(
     "/dashboard",
-    "El refresh de la sesión viewer falló después del login.",
+    "El refresh de la sesión administrativa falló después del login.",
   );
 
   const initialResponsePromise = page.waitForResponse(isGalleryListResponse);
@@ -328,7 +375,10 @@ try {
   if (initialResponse.status() !== 200)
     throw new Error(`Galería inicial devolvió ${initialResponse.status()}.`);
   const initial = await initialResponse.json();
-  await assertPath("/fotografias", "La sesión viewer se perdió al abrir Fotografías.");
+  await assertPath(
+    "/fotografias",
+    "La sesión administrativa se perdió al abrir Fotografías.",
+  );
   await page.getByRole("heading", { name: "Fotografías", exact: true }).waitFor();
   await page.locator(".gallery .skeleton").first().waitFor({ state: "hidden" }).catch(() => undefined);
   if (!Array.isArray(initial.items) || !initial.items.length)
@@ -477,6 +527,7 @@ try {
 
   const nonVerified = initial.items.find((item) => item.uploadStatus !== "verified");
   const certification = {
+    authenticatedRole,
     initialTotal: initial.total,
     initialPageSize: initial.pageSize,
     initialItems: initial.items.length,
@@ -515,7 +566,7 @@ try {
 
   process.stdout.write(`${await pageDiagnostic("Galería certificada y logout correcto")}\n`);
   process.stdout.write(
-    "Edge E2E correcto: viewer, galería y lightbox en 1440/768/390.\n",
+    `Edge E2E correcto: rol ${authenticatedRole}, galería y lightbox en 1440/768/390.\n`,
   );
 } catch (error) {
   const diagnostic = await pageDiagnostic("Error E2E");
