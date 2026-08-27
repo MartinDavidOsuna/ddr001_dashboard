@@ -12,8 +12,8 @@ El dashboard continuará exclusivamente en `feature/fase-2-hydrant-master-record
 
 | Componente | Rama/commit | Estado inicial |
 |---|---|---|
-| Dashboard | `feature/fase-2-hydrant-master-record` / `2f0d603` | Fases 1 y 2 certificadas; árbol limpio y sincronizado al iniciar |
-| API | `main` / `85265fd` | Galería y XLSX ya integrados; endpoints administrativos F1/F2 desplegados |
+| Dashboard | `feature/fase-2-hydrant-master-record` / `2f0d603` | Fases 1 y 2 certificadas; rama única conservada para Fase 3 |
+| API | `feature/fase-3-dashboard-api` desde `main` `85265fd` | Rama exclusiva de Fase 3; `main` permanece protegida y productiva |
 | Flutter | `main` / `c01961d` | Inspeccionado sin modificar; sesiones de campo y sincronización congeladas |
 | Producción | `http://cifra.aquafim.com:3002/api/v1` | Rutas existentes verificadas de forma anónima sólo para montaje/protección; sin escrituras |
 
@@ -64,7 +64,7 @@ Los nombres definitivos y cuerpos se fijarán con tests de contrato antes de imp
 
 ## Estrategia API y base de datos
 
-No se creó una rama API durante la auditoría. Para evitar proliferación, la implementación deberá reutilizar una rama administrativa existente coherente y actualizarla desde `main`; si eso no puede hacerse de forma segura, se reportará antes de crear una nueva. Nunca se desplegará automáticamente.
+Toda implementación API de Fase 3 se realizará exclusivamente en `feature/fase-3-dashboard-api`, creada desde `main`. No se desarrollará en `main`, no se crearán ramas por módulo y no se mezclarán ramas de otras aplicaciones. El parche de galería `b9dfaef` se auditó mediante patch-id y quedó consolidado de forma aislada como `296acde`; no se hizo merge de `feature/dashboard-fase-2-api`. Nunca se desplegará automáticamente.
 
 La primera opción es resolver sin migración usando las tablas, estados, `row_version`, historial y auditoría existentes. Si aparece una necesidad real de esquema, el entregable será únicamente: documento de necesidad, precheck, SQL idempotente, rollback y pruebas; no se ejecutará. El bloqueo de dispositivo requiere además comprobar que el campo móvil ya rechace `is_blocked`; no se habilitará una UI decorativa sin enforcement API.
 

@@ -57,4 +57,4 @@ Fecha de corte: 2026-08-13. Figma gobierna lenguaje visual; código/contrato/BD 
 
 ## Corte de consolidación 2026-08-26
 
-La Fase 2 oficial se limita al listado y expediente maestro de hidrantes. La galería global y la exportación XLSX agregadas por `d5aa482` son extensiones independientes, no dependencias del expediente, y permanecen sin certificación dentro de una fase futura. El mapa aceptado en Fase 2 es exclusivamente el mapa individual de la coordenada maestra; no se contempla un mapa global.
+La Fase 2 oficial se limita al listado y expediente maestro de hidrantes. La galería global es ahora la Subetapa 3.1: conserva evidencia real privada, filtros server-side, lightbox/zoom y enlaces al hidrante y revisión, pero permanece pendiente de deployment API y certificación externa. Exportaciones continúa pendiente como Subetapa 3.2. El mapa aceptado en Fase 2 sigue siendo exclusivamente el mapa individual de la coordenada maestra; el mapa global no forma parte de 3.1.

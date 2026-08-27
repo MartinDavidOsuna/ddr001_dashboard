@@ -33,3 +33,7 @@ Opcionales:
 - `E2E_TIMEOUT_MS`: timeout diagnóstico; por defecto 30000 ms.
 
 No guardar tokens en `.env`, `.env.local`, scripts, historial compartido ni archivos versionados. El token compartido por chat debe rotarse al finalizar la certificación.
+
+## Puerta pendiente de Subetapa 3.1
+
+Tras el deployment manual de la API, el mismo `scripts/edge-e2e.mjs` deberá cubrir la galería autenticada en 1440, 768 y 390 px: filtros, paginación, miniaturas privadas, original bajo demanda, lightbox/zoom, enlaces a hidrante/revisión y estados vacío/error. La ejecución debe conservar las comprobaciones de consola/red y seguir siendo estrictamente de sólo lectura en producción. No se crea un harness paralelo.

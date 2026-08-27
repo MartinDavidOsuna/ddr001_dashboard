@@ -258,7 +258,7 @@ La lista y el expediente no exponen `locality` ni `municipality`, aunque Flutter
 
 El contrato del expediente se mantiene sin cambios: lista, detalle e historial de hidrante. `rvStatus` global y `latestInspectionStatus` son conceptos distintos. La evidencia se expresa como siete obligatorias más N totales. La verificación productiva anónima confirmó que las tres rutas están montadas y protegidas (401 Problem Details, no 404), pero falta repetir la lectura autenticada de casos reales.
 
-La galería global y la exportación XLSX introducidas por `d5aa482` no son fuentes ni dependencias del expediente maestro. Se conservan como extensiones no certificadas de fase futura; no deben ampliar este diccionario de aceptación de Fase 2.
+La galería global no es fuente ni dependencia del expediente maestro de Fase 2. En la Subetapa 3.1 consume `GET /admin/dashboard/photos` y `/photos/filters`, con paginación y filtros server-side por búsqueda/cuenta, slot, categoría obligatoria/adicional, técnico, cuadrilla, estado y fechas. Miniatura y original permanecen privados; el original sólo se solicita al abrir el visor. La implementación está pendiente de certificación externa.
 
 ## Campos descartados / legacy
 

@@ -11,8 +11,9 @@ import {
 } from "@lucide/vue";
 import { dashboardService } from "@/services/dashboard";
 import { problemMessage } from "@/api/client";
+import { toGalleryApiFilters } from "./gallery-filters";
+import PrivateThumbnail from "./PrivateThumbnail.vue";
 import type {
-  GalleryFilters,
   GalleryFilterOption,
   GalleryPhoto,
   GalleryStatusOption,
@@ -27,8 +28,6 @@ const technicians = ref<GalleryFilterOption[]>([]),
   statuses = ref<GalleryStatusOption[]>([]);
 const loading = ref(true),
   error = ref("");
-const urls = ref(new Map<string, string>()),
-  failed = ref(new Set<string>());
 const selected = ref<GalleryPhoto>(),
   fullUrl = ref(""),
   zoom = ref(1);
@@ -45,69 +44,26 @@ const filters = reactive({
   to: "",
 });
 let timer = 0,
-  generation = 0;
+  generation = 0,
+  originalGeneration = 0;
 const range = computed(() =>
   page.value
     ? `${(page.value.page - 1) * page.value.pageSize + 1}–${Math.min(page.value.page * page.value.pageSize, page.value.total)} de ${page.value.total}`
     : "",
 );
-function apiFilters() {
-  const values: GalleryFilters = {
-    page: filters.page,
-    pageSize: filters.pageSize,
-  };
-  if (filters.search) values.search = filters.search;
-  if (filters.slotCode) values.slotCode = filters.slotCode;
-  if (filters.category)
-    values.category = filters.category as GalleryFilters["category"];
-  if (filters.technicianId) values.technicianId = filters.technicianId;
-  if (filters.crewId) values.crewId = filters.crewId;
-  if (filters.uploadStatus)
-    values.uploadStatus = filters.uploadStatus as GalleryFilters["uploadStatus"];
-  if (filters.from)
-    values.from = new Date(`${filters.from}T00:00:00-07:00`).toISOString();
-  if (filters.to) {
-    const end = new Date(`${filters.to}T00:00:00-07:00`);
-    end.setDate(end.getDate() + 1);
-    values.to = end.toISOString();
-  }
-  return values;
-}
-function clearImages() {
-  for (const url of urls.value.values()) URL.revokeObjectURL(url);
-  urls.value = new Map();
-  failed.value = new Set();
-}
-async function loadThumb(photo: GalleryPhoto, current: number) {
-  try {
-    const url = await dashboardService.photo(photo.thumbnailUrl);
-    if (current === generation) urls.value.set(photo.photoId, url);
-    else URL.revokeObjectURL(url);
-  } catch {
-    if (current === generation) failed.value.add(photo.photoId);
-  }
-}
 async function load() {
   const current = ++generation;
   loading.value = true;
   error.value = "";
-  clearImages();
   try {
-    page.value = await dashboardService.gallery(apiFilters());
-    const queue = page.value.items.filter(
-      (photo) => photo.uploadStatus === "verified",
-    );
-    await Promise.all(
-      Array.from({ length: Math.min(6, queue.length) }, async () => {
-        let photo;
-        while ((photo = queue.shift())) await loadThumb(photo, current);
-      }),
-    );
+    const response = await dashboardService.gallery(toGalleryApiFilters(filters));
+    if (current === generation) page.value = response;
   } catch (cause) {
-    error.value = problemMessage(
-      cause,
-      "No fue posible cargar las fotografías.",
-    );
+    if (current === generation)
+      error.value = problemMessage(
+        cause,
+        "No fue posible cargar las fotografías.",
+      );
   } finally {
     if (current === generation) loading.value = false;
   }
@@ -138,24 +94,30 @@ function reset() {
   });
   load();
 }
-async function open(photo: GalleryPhoto) {
-  selected.value = photo;
+function releaseOriginal() {
+  if (fullUrl.value.startsWith("blob:")) URL.revokeObjectURL(fullUrl.value);
   fullUrl.value = "";
+}
+async function open(photo: GalleryPhoto) {
+  const current = ++originalGeneration;
+  releaseOriginal();
+  selected.value = photo;
   zoom.value = 1;
   if (photo.uploadStatus !== "verified") {
     fullUrl.value = "unavailable";
     return;
   }
   try {
-    fullUrl.value = await dashboardService.photo(photo.contentUrl);
+    const url = await dashboardService.photo(photo.contentUrl);
+    if (current === originalGeneration) fullUrl.value = url;
+    else URL.revokeObjectURL(url);
   } catch {
-    fullUrl.value = "error";
+    if (current === originalGeneration) fullUrl.value = "error";
   }
 }
 function close() {
-  if (fullUrl.value && fullUrl.value !== "error")
-    URL.revokeObjectURL(fullUrl.value);
-  fullUrl.value = "";
+  originalGeneration++;
+  releaseOriginal();
   selected.value = undefined;
   zoom.value = 1;
 }
@@ -201,7 +163,6 @@ onBeforeUnmount(() => {
   generation++;
   clearTimeout(timer);
   window.removeEventListener("keydown", key);
-  clearImages();
   close();
 });
 </script>
@@ -306,21 +267,10 @@ onBeforeUnmount(() => {
           :aria-label="`Abrir ${photo.slotLabel || photo.slotCode} del hidrante ${photo.accountNumber}`"
           @click="open(photo)"
         >
-          <img
-            v-if="photo.uploadStatus === 'verified' && urls.get(photo.photoId)"
-            :src="urls.get(photo.photoId)"
-            :alt="photo.slotLabel || photo.slotCode"
-            loading="lazy"
+          <PrivateThumbnail
+            :photo="photo"
+            :status-label="statusLabels[photo.uploadStatus] || photo.uploadStatus"
           />
-          <span v-else
-            ><Camera :size="30" />{{
-              photo.uploadStatus !== "verified"
-                ? statusLabels[photo.uploadStatus] || photo.uploadStatus
-                : failed.has(photo.photoId)
-                  ? "Imagen no disponible"
-                  : "Cargando…"
-            }}</span
-          >
         </button>
         <footer>
           <b>{{ photo.slotLabel || photo.slotCode }}</b
@@ -496,23 +446,14 @@ onBeforeUnmount(() => {
   cursor: zoom-in;
   overflow: hidden;
 }
-.preview img {
+.preview :deep(img) {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.2s;
 }
-.preview:hover img {
+.preview:hover :deep(img) {
   transform: scale(1.03);
-}
-.preview span {
-  height: 100%;
-  display: grid;
-  place-content: center;
-  justify-items: center;
-  gap: 8px;
-  color: #71829a;
-  font-size: 0.78rem;
 }
 .photo-card footer {
   padding: 12px;

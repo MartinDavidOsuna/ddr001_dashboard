@@ -48,4 +48,4 @@ Métricas de expediente:
 
 ## Límite de Fase 2
 
-Estas son las únicas métricas derivadas aceptadas para el expediente maestro. La galería global y la exportación XLSX detectadas en `d5aa482` no alteran las fórmulas ni forman parte de la certificación de Fase 2. Tampoco se agregan métricas de administración, mapa global, dispositivos, validación/rechazo o comparación de revisiones.
+Estas son las únicas métricas derivadas aceptadas para el expediente maestro. La galería global de la Subetapa 3.1 no altera las fórmulas: `total` es el número de fotografías que coincide con los filtros y nunca significa completitud; `mandatory` identifica sólo la primera foto activa de cada uno de los siete slots, mientras las demás son `additional`. Tampoco se agregan todavía métricas de administración, mapa global, dispositivos, validación/rechazo o comparación de revisiones.
