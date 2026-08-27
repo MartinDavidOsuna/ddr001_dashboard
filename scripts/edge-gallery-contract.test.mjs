@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { matchesGallerySearch } from "./edge-gallery-contract.mjs";
+import {
+  galleryCategoryLabel,
+  matchesGallerySearch,
+} from "./edge-gallery-contract.mjs";
 
 describe("gallery global search contract", () => {
   const item = {
@@ -22,5 +25,21 @@ describe("gallery global search contract", () => {
 
   it("rejects a term absent from every searchable field", () => {
     expect(matchesGallerySearch(item, "inexistente")).toBe(false);
+  });
+});
+
+describe("gallery lightbox category contract", () => {
+  it("maps mandatory to Obligatoria", () => {
+    expect(galleryCategoryLabel("mandatory")).toBe("Obligatoria");
+  });
+
+  it("maps additional to Adicional", () => {
+    expect(galleryCategoryLabel("additional")).toBe("Adicional");
+  });
+
+  it("rejects an unknown API category", () => {
+    expect(() => galleryCategoryLabel("unknown")).toThrow(
+      "La fotografía E2E tiene una categoría no soportada.",
+    );
   });
 });

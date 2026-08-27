@@ -6,7 +6,12 @@ import {
   assertSupportedAdministrativeRole,
   selectEdgeAuthMode,
 } from "./edge-auth-mode.mjs";
-import { matchesGallerySearch } from "./edge-gallery-contract.mjs";
+import {
+  formatGalleryDate,
+  galleryCategoryLabel,
+  galleryStatusLabel,
+  matchesGallerySearch,
+} from "./edge-gallery-contract.mjs";
 
 const appUrl = process.env.E2E_APP_URL || "http://localhost:5173";
 const refreshToken = process.env.E2E_REFRESH_TOKEN;
@@ -502,6 +507,7 @@ try {
   );
   if (!verifiedPage.items.length)
     throw new Error("El filtro verified no devolvió fotografías para el lightbox.");
+  const openedPhoto = verifiedPage.items[0];
 
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.screenshot({
@@ -516,10 +522,26 @@ try {
   if (contentResponse.status() !== 200 || !contentResponse.headers()["content-type"]?.startsWith("image/"))
     throw new Error("El original privado no devolvió HTTP 200 con MIME de imagen.");
   await lightbox.locator("img").waitFor();
-  await lightbox
-    .getByText("Obligatoria", { exact: true })
-    .or(lightbox.getByText("Adicional", { exact: true }))
+  const lightboxMetadata = lightbox.locator(".lightbox-toolbar");
+  await lightboxMetadata
+    .getByText(openedPhoto.slotLabel || openedPhoto.slotCode, { exact: true })
     .waitFor();
+  const metadataText = await lightboxMetadata.innerText();
+  const expectedMetadata = [
+    galleryCategoryLabel(openedPhoto.category),
+    `Hidrante ${openedPhoto.accountNumber}`,
+    `Rev. #${openedPhoto.revisionNumber}`,
+    formatGalleryDate(openedPhoto.capturedAt),
+    openedPhoto.technicianName,
+    openedPhoto.crewName,
+    galleryStatusLabel(openedPhoto.uploadStatus),
+    `${openedPhoto.widthPx || "?"}×${openedPhoto.heightPx || "?"} px`,
+  ].filter(Boolean);
+  for (const expected of expectedMetadata)
+    if (!metadataText.includes(String(expected)))
+      throw new Error(
+        `La metadata del lightbox no muestra el valor esperado: ${expected}.`,
+      );
   await lightbox.getByRole("button", { name: "Acercar", exact: true }).click();
   await lightbox.getByRole("button", { name: "Alejar", exact: true }).click();
   await lightbox.getByRole("button", { name: "Siguiente", exact: true }).click();
