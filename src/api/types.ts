@@ -342,3 +342,53 @@ export interface HydrantInspectionHistoryItem {
   hasGps: boolean;
   hasSignal: boolean;
 }
+
+export type UserStatusFilter = "active" | "inactive";
+export interface UserFilters {
+  page: number;
+  pageSize: 25 | 50 | 100;
+  search?: string;
+  crewId?: string;
+  status?: UserStatusFilter;
+  activity?: "with_inspections" | "without_inspections";
+}
+export interface DashboardUser {
+  userId: string;
+  fullName: string;
+  email?: string;
+  phone?: string;
+  employeeNumber?: string;
+  isActive: boolean;
+  crewId?: string;
+  crewName?: string;
+  inspectionCount: number;
+  submittedCount: number;
+  validatedCount: number;
+  rejectedCount: number;
+  sessionCount: number;
+  activeSessionCount: number;
+  deviceCount: number;
+  firstActivityAt?: string;
+  lastActivityAt?: string;
+  createdAt: string;
+  updatedAt: string;
+  rowVersion?: string;
+}
+export interface DashboardUserDetail extends DashboardUser {
+  recentInspections: Array<{
+    inspectionId: string;
+    hydrantId: string;
+    accountNumber: string;
+    revisionNumber: number;
+    status: string;
+    startedAt: string;
+  }>;
+  recentSessions: Array<{
+    workSessionId: string;
+    status: string;
+    crewId?: string;
+    crewName?: string;
+    startedAt: string;
+    endedAt?: string;
+  }>;
+}

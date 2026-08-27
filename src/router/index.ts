@@ -53,7 +53,17 @@ const router = createRouter({
           component: () => import("@/features/exports/ExportView.vue"),
         },
         {
-          path: ":module(mapa|usuarios|cuadrillas|jornadas|dispositivos)",
+          path: "usuarios",
+          name: "users",
+          component: () => import("@/features/users/UserListView.vue"),
+        },
+        {
+          path: "usuarios/:id",
+          name: "user-detail",
+          component: () => import("@/features/users/UserDetailView.vue"),
+        },
+        {
+          path: ":module(mapa|cuadrillas|jornadas|dispositivos)",
           name: "future",
           component: () => import("@/features/shared/FutureModuleView.vue"),
         },

@@ -75,7 +75,7 @@ Toda escritura crítica usará transacción, autorización por rol, validación 
 1. Auditoría general y esta línea base.
 2. Galería global. **CERTIFICADA.**
 3. Exportaciones. **Implementada y probada; pendiente deployment manual de API y E2E productivo.**
-4. Usuarios.
+4. Usuarios. **Lectura implementada; pendiente comandos, deployment y certificación.**
 5. Cuadrillas.
 6. Jornadas.
 7. Dispositivos.
@@ -109,6 +109,14 @@ Los XLSX incluyen hoja y encabezados legibles, encabezado congelado, autofiltro,
 
 El dashboard ofrece las tres combinaciones, filtros equivalentes, estados de carga/error/éxito y descarga Blob autenticada. Valida el filename del servidor, usa fallback predecible y revoca el object URL. El harness Edge queda preparado mediante `E2E_CERTIFY_EXPORTS=true`; guardará temporalmente descargas y evidencia en `.artifacts/edge/`, pero no se ejecutará contra producción hasta el deployment manual de API.
 - ECharts genera un warning conocido cercano a 535 kB; sólo se cambiarán imports/lazy loading si pruebas visuales y funcionales permanecen estables.
+
+## Subetapa 3.3 — Usuarios
+
+La superficie de lectura se implementó el 2026-08-27 mediante `GET /admin/dashboard/users` y `GET /admin/dashboard/users/:id`, sin migraciones ni cambios al flujo móvil. El listado admite búsqueda parametrizada por nombre/correo/teléfono, cuadrilla, estado activo y presencia de revisiones; limita `pageSize` a 25/50/100 y agrega revisiones, jornadas, sesiones activas, dispositivos y primera/última actividad con consultas set-based. El detalle agrega las diez revisiones y jornadas más recientes y devuelve 404 para UUID inexistente.
+
+El dashboard reemplaza el placeholder con tarjetas responsive, filtros, búsqueda con debounce, paginación, estados de carga/error/vacío y detalle enlazado a revisiones. La identidad conserva los campos reales del esquema; no presenta roles de administración ni datos ficticios. Viewer, admin y supervisor reutilizan la política vigente de lectura administrativa.
+
+Los comandos de alta/edición/estado/asignación permanecen pendientes hasta completar su diseño transaccional, concurrencia por `row_version`, auditoría before/after y pruebas de coexistencia con `/field-sessions/start`. Por ello 3.3 aún no se considera certificada ni habilita escrituras.
 
 ## Criterio de certificación
 

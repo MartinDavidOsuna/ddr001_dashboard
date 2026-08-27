@@ -16,7 +16,7 @@ Fecha de apertura: 2026-08-26. Estado: **SUBETAPA 3.2 — IMPLEMENTADA — PENDI
 |---|---|---|
 | Galería | certificada: paginación, búsqueda, filtros, miniatura/original lazy, lightbox, metadata, navegación y responsive | certificada |
 | Exportaciones | revisiones XLSX/CSV e hidrantes XLSX server-side con filtros y UI completa | pendiente deployment API y E2E |
-| Usuarios | endpoint genérico de lectura; sin módulo dashboard ni comandos controlados | pendiente |
+| Usuarios | listado/detalle dashboard implementados; comandos controlados pendientes | implementación parcial; pendiente deployment/E2E/escrituras |
 | Cuadrillas | endpoint genérico de lectura; sin módulo dashboard ni comandos controlados | pendiente |
 | Jornadas | endpoint genérico de lectura; sin detalle administrativo | pendiente |
 | Dispositivos | tabla existente, sin endpoint administrativo ni UI | pendiente |
@@ -44,7 +44,7 @@ El flujo Flutter usa `/field-sessions/start`, `/current`, `/refresh`, `/:id/end`
 |---|---|---|---|---|---|---|
 | 3.1 Galería global | completa | completos | desplegada | completo `viewer|admin` | 1440/768/390 | **CERTIFICADA** |
 | 3.2 Exportaciones | completa | API/frontend completos; SQL definido no ejecutado | pendiente | preparado, no ejecutado | preparado 1440/768/390 | **IMPLEMENTADA — PENDIENTE DEPLOYMENT Y CERTIFICACIÓN** |
-| 3.3 Usuarios | pendiente | pendiente | pendiente | pendiente | pendiente | pendiente |
+| 3.3 Usuarios | lectura completa; comandos pendientes | unitarios y build completos; SQL definido no ejecutado | pendiente | pendiente | UI responsive implementada | **LECTURA IMPLEMENTADA — PENDIENTE COMANDOS, DEPLOYMENT Y CERTIFICACIÓN** |
 | 3.4 Cuadrillas | pendiente | pendiente | pendiente | pendiente | pendiente | pendiente |
 | 3.5 Jornadas | pendiente | pendiente | pendiente | pendiente | pendiente | pendiente |
 | 3.6 Dispositivos | pendiente | pendiente | pendiente | pendiente | pendiente | pendiente |
@@ -94,3 +94,11 @@ Las consultas construyen conjuntos filtrados y agregados en servidor, sin pagina
 El dashboard permite Revisiones XLSX, Revisiones CSV e Hidrantes XLSX con filtros, carga, error y éxito. Descarga por Blob autenticado, valida Content-Disposition, usa fallback seguro y revoca el object URL. El Edge E2E existente se amplió bajo el opt-in `E2E_CERTIFY_EXPORTS=true` para validar las tres descargas, filtro server-side, MIME, filename, tamaño, consola/red y 1440/768/390; no se ejecutó contra producción porque las rutas nuevas aún requieren deployment manual.
 
 Validación API: type-check y lint sin fallos; 238/238 unitarios; integración no SQL 7 passed y 14 skipped; build correcto. Las cinco integraciones SQL de exportación/galería permanecen definidas y omitidas porque `RevisionVisualStarter_Test` no fue confirmada mediante `RUN_SQL_INTEGRATION=true`. Validación frontend: typecheck, lint, Vitest y build correctos; se cubren filtros, selección, filename seguro, Blob/revocación y error sin stacktrace. El warning conocido de ECharts ~535 kB permanece sin cambio.
+
+## Subetapa 3.3 — Usuarios
+
+Se implementaron en la rama API de Fase 3 `GET /admin/dashboard/users` y `GET /admin/dashboard/users/:id`. Ambos requieren autenticación administrativa y son de sólo lectura para `viewer|admin|supervisor`. El listado valida búsqueda, cuadrilla, estado, actividad y tamaños 25/50/100; sus parámetros SQL son tipados y los agregados de revisiones, jornadas y dispositivos evitan N+1. El detalle incluye actividad agregada, diez revisiones recientes y diez jornadas recientes. No hubo migraciones, escrituras ni cambios en Flutter.
+
+El dashboard incorporó listado y detalle responsive, búsqueda con debounce, filtros, paginación, estados de carga/error/vacío, enlaces a revisiones y representación explícita de datos ausentes. No inventa número de empleado ni rol operativo. Validación frontend: typecheck y lint correctos, 40/40 Vitest y build correcto; Vite conserva el warning conocido de ECharts y además avisa que el Node 20.14 del entorno es inferior a su recomendación 20.19+, aunque el build terminó correctamente. Validación API: type-check/lint, 241/241 unitarios y build correctos; integración no SQL 9 passed y 16 skipped. Las dos rutas nuevas respondieron 401 Problem Details sin token. Las dos pruebas SQL autenticadas quedan opt-in con `RUN_SQL_INTEGRATION=true` y exigen `RevisionVisualStarter_Test`.
+
+Los comandos de usuario siguen pendientes: antes de habilitarlos deben fijarse concurrencia por `row_version`, auditoría before/after, roles de escritura, conflictos 409 y coexistencia con la actualización de identidad realizada por `/field-sessions/start`. El estado de la subetapa es **LECTURA IMPLEMENTADA — PENDIENTE COMANDOS, DEPLOYMENT Y CERTIFICACIÓN**.

@@ -1,6 +1,8 @@
 import { api } from "@/api/client";
 import type {
   DashboardSummary,
+  DashboardUser,
+  DashboardUserDetail,
   FilterOption,
   GalleryFilters,
   GalleryFilterOption,
@@ -14,6 +16,7 @@ import type {
   InspectionListItem,
   Page,
   PhotoSlotOption,
+  UserFilters,
 } from "@/api/types";
 import {
   exportFilename,
@@ -110,5 +113,17 @@ export const dashboardService = {
     );
     saveExportBlob(response.data, filename);
     return filename;
+  },
+  async users(filters: UserFilters) {
+    return (
+      await api.get<Page<DashboardUser>>("/admin/dashboard/users", {
+        params: filters,
+      })
+    ).data;
+  },
+  async user(id: string) {
+    return (
+      await api.get<DashboardUserDetail>(`/admin/dashboard/users/${id}`)
+    ).data;
   },
 };
