@@ -1,6 +1,6 @@
 # Validación de Fase 3 — Cierre funcional
 
-Fecha de apertura: 2026-08-26. Estado: **SUBETAPA 3.1 IMPLEMENTADA — PENDIENTE CERTIFICACIÓN**.
+Fecha de apertura: 2026-08-26. Estado: **SUBETAPA 3.1 IMPLEMENTADA — API DESPLEGADA — PENDIENTE CERTIFICACIÓN AUTENTICADA**.
 
 ## Línea base
 
@@ -42,7 +42,7 @@ El flujo Flutter usa `/field-sessions/start`, `/current`, `/refresh`, `/:id/end`
 
 | Subetapa | Implementación | Tests | Deployment API | E2E | Responsive | Estado final |
 |---|---|---|---|---|---|---|
-| 3.1 Galería global | completa | unitarios/estáticos/build completos; SQL definido no ejecutado | pendiente manual (`296acde`) | pendiente autenticado | pendiente 1440/768/390 | **IMPLEMENTADA — PENDIENTE CERTIFICACIÓN** |
+| 3.1 Galería global | completa | unitarios/estáticos/build completos; SQL definido no ejecutado | desplegada manualmente; precheck correcto | harness completo; ejecución bloqueada sin sesión viewer | pendiente 1440/768/390 | **IMPLEMENTADA — API DESPLEGADA — PENDIENTE CERTIFICACIÓN** |
 | 3.2 Exportaciones | pendiente | pendiente | pendiente | pendiente | pendiente | pendiente |
 | 3.3 Usuarios | pendiente | pendiente | pendiente | pendiente | pendiente | pendiente |
 | 3.4 Cuadrillas | pendiente | pendiente | pendiente | pendiente | pendiente | pendiente |
@@ -65,4 +65,12 @@ Código completado el 2026-08-26. La extensión aditiva de `GET /admin/dashboard
 
 El dashboard carga miniaturas privadas al aproximarse al viewport mediante `IntersectionObserver`, solicita el original sólo al abrir el lightbox, cancela resultados obsoletos y libera cada object URL. Muestra técnico/cuadrilla/estado/dimensiones y enlaza tanto al hidrante como a la revisión. No usa el total como completitud: obligatoria/adicional continúa derivándose por los siete slots y ordinal.
 
-Pruebas del hito: dashboard typecheck, lint de TypeScript/Vue, 12/12 Vitest y build correctos; API type-check/lint, 235/235 unit tests y build correctos. La integración específica verificó 5/5 casos anónimos de auth/Problem Details; sus 3 casos SQL quedaron definidos pero no ejecutados porque no se habilitó `RUN_SQL_INTEGRATION`. `npm install` fue necesario en el checkout API; el árbol actual reportó 7 vulnerabilidades (3 moderadas, 4 altas), sin aplicar corrección automática. Falta deployment manual de API y E2E autenticado 1440/768/390, por lo que el módulo aún no está certificado en producción.
+Pruebas del hito: dashboard typecheck de TypeScript/Vue, lint de TypeScript y del harness E2E, 12/12 Vitest y build correctos; API type-check/lint, 235/235 unit tests y build correctos. La integración específica verificó 5/5 casos anónimos de auth/Problem Details; sus 3 casos SQL quedaron definidos pero no ejecutados porque no se habilitó `RUN_SQL_INTEGRATION`. `npm install` fue necesario en el checkout API; el árbol actual reportó 7 vulnerabilidades (3 moderadas, 4 altas), sin aplicar corrección automática.
+
+### Certificación productiva posterior al deployment
+
+El responsable confirmó integración a `main`, deployment manual y smoke tests. El precheck read-only del 2026-08-26 confirmó `GET /health/live` 200, `GET /health/ready` 200, galería y filtros 401 `application/problem+json` sin token, y la ruta móvil congelada `GET /hydrants` 401. No se realizaron escrituras ni un nuevo deployment.
+
+Se amplió el único harness `scripts/edge-e2e.mjs` para login runtime seguro o refresh temporal, verificación del rol viewer y refresh, filtros individuales/combinados/limpieza, paginación/page size, clasificación obligatoria/adicional, lazy loading por patrón de red, original privado, caso no verificado cuando exista, lightbox, zoom, metadata, navegación, overflow responsive, consola/red, cuatro capturas obligatorias y logout. El script genera métricas sanitizadas en `.artifacts/edge/gallery-certification.json` y nunca persiste ni imprime secretos.
+
+Defecto corregido durante la auditoría: las tarjetas no distinguían visualmente la categoría. Ahora muestran `Obligatoria` o `Adicional`, y el lightbox incorpora la categoría en metadata. La ejecución autenticada no se realizó porque el proceso no tenía `E2E_REFRESH_TOKEN` ni el par `E2E_VIEWER_EMAIL`/`E2E_VIEWER_PASSWORD`; por tanto siguen pendientes datos reales, filtros, paginación, original, lightbox, navegación, network/consola y responsive 1440/768/390. La subetapa no se declara certificada.

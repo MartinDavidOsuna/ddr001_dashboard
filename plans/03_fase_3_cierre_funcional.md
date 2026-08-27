@@ -73,7 +73,7 @@ Toda escritura crítica usará transacción, autorización por rol, validación 
 ## Orden de implementación y puertas de calidad
 
 1. Auditoría general y esta línea base.
-2. Galería global. **Implementada en código; pendiente deployment manual de API y E2E.**
+2. Galería global. **Implementada y API desplegada; pendiente E2E autenticado y certificación responsive.**
 3. Exportaciones.
 4. Usuarios.
 5. Cuadrillas.

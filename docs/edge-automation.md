@@ -8,15 +8,21 @@ La automatización usa `playwright-core` y el Microsoft Edge ya instalado; no de
 
    `npm run dev`
 
-2. En otra terminal PowerShell, asignar el refresh token únicamente al proceso actual:
+2. En otra terminal PowerShell, asignar una sesión viewer únicamente al proceso actual. Se admite refresh token:
 
    `$env:E2E_REFRESH_TOKEN = Read-Host -MaskInput "Refresh token READ_ONLY"`
+
+   O login runtime, sin guardar las variables en archivos:
+
+   `$env:E2E_VIEWER_EMAIL = Read-Host "Email viewer"`
+
+   `$env:E2E_VIEWER_PASSWORD = Read-Host -MaskInput "Password viewer"`
 
 3. Ejecutar:
 
    `npm run e2e:edge`
 
-El script restaura la sesión mediante el flujo normal de refresh, confirma el rol “Solo lectura”, abre Dashboard e Hidrantes y captura 1440×900, 768×900 y 390×844. No imprime tokens, headers Authorization ni cuerpos de autenticación.
+El script inicia o restaura la sesión mediante el flujo normal, recarga para verificar refresh, confirma el rol “Solo lectura”, certifica la galería y cierra sesión al final. Captura `desktop-gallery.png`, `tablet-gallery.png`, `mobile-gallery.png` y `gallery-lightbox.png` en `.artifacts/edge/`. No imprime email, contraseña, tokens, headers Authorization ni cuerpos de autenticación.
 
 Antes de continuar confirma que la primera petición administrativa apunta a `http://cifra.aquafim.com:3002/api/v1/admin/…`; aborta si detecta otro protocol, host, puerto o prefijo. Los fallos HTTP muestran únicamente `status + protocol + host + pathname`, nunca query strings ni headers.
 

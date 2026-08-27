@@ -273,7 +273,12 @@ onBeforeUnmount(() => {
           />
         </button>
         <footer>
-          <b>{{ photo.slotLabel || photo.slotCode }}</b
+          <div class="photo-title">
+            <b>{{ photo.slotLabel || photo.slotCode }}</b>
+            <span :class="['category-badge', `category-badge--${photo.category}`]">
+              {{ photo.category === "mandatory" ? "Obligatoria" : "Adicional" }}
+            </span>
+          </div
           ><div class="record-links">
             <RouterLink :to="`/hidrantes/${photo.hydrantId}`"
               >Hidrante {{ photo.accountNumber }}</RouterLink
@@ -354,7 +359,8 @@ onBeforeUnmount(() => {
         <div>
           <b>{{ selected.slotLabel || selected.slotCode }}</b
           ><small
-            >Hidrante {{ selected.accountNumber }} ·
+            >{{ selected.category === "mandatory" ? "Obligatoria" : "Adicional" }} ·
+            Hidrante {{ selected.accountNumber }} ·
             Rev. #{{ selected.revisionNumber }} ·
             {{ date(selected.capturedAt) }}</small
           >
@@ -470,6 +476,30 @@ onBeforeUnmount(() => {
   color: #175ed5;
   text-decoration: none;
   font-size: 0.8rem;
+}
+.photo-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+.photo-title b {
+  flex: 1;
+}
+.category-badge {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 2px 7px;
+  font-size: 0.67rem;
+  font-weight: 650;
+}
+.category-badge--mandatory {
+  color: #1557b0;
+  background: #e6f0ff;
+}
+.category-badge--additional {
+  color: #566477;
+  background: #edf1f5;
 }
 .record-links,
 .lightbox-links {
