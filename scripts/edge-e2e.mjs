@@ -6,6 +6,7 @@ import {
   assertSupportedAdministrativeRole,
   selectEdgeAuthMode,
 } from "./edge-auth-mode.mjs";
+import { matchesGallerySearch } from "./edge-gallery-contract.mjs";
 
 const appUrl = process.env.E2E_APP_URL || "http://localhost:5173";
 const refreshToken = process.env.E2E_REFRESH_TOKEN;
@@ -221,12 +222,13 @@ const isGalleryListResponse = (response) => {
   const url = new URL(response.url());
   return response.request().method() === "GET" && url.pathname === galleryListPath;
 };
-async function galleryAction(action) {
+async function galleryAction(action, validateRequest) {
   const responsePromise = page.waitForResponse(isGalleryListResponse);
   await action();
   const response = await responsePromise;
   if (response.status() !== 200)
     throw new Error(`La consulta de galería devolvió ${response.status()}.`);
+  if (validateRequest) validateRequest(response.request());
   return response.json();
 }
 async function resetGallery() {
@@ -415,11 +417,23 @@ try {
   }
 
   const first = initial.items[0];
-  const searched = await galleryAction(async () => {
-    await page.getByLabel("Buscar fotografías").fill(String(first.accountNumber));
-  });
-  if (!searched.items.every((item) => String(item.accountNumber).includes(String(first.accountNumber))))
-    throw new Error("La búsqueda server-side por cuenta devolvió un resultado ajeno.");
+  const searchTerm = String(first.accountNumber);
+  const searched = await galleryAction(
+    async () => {
+      await page.getByLabel("Buscar fotografías").fill(searchTerm);
+    },
+    (request) => {
+      const requestedSearch = new URL(request.url()).searchParams.get("search");
+      if (requestedSearch !== searchTerm)
+        throw new Error(
+          "La búsqueda global no envió el término al endpoint server-side.",
+        );
+    },
+  );
+  if (!searched.items.every((item) => matchesGallerySearch(item, searchTerm)))
+    throw new Error(
+      "La búsqueda global server-side devolvió un resultado que no coincide con ningún campo searchable.",
+    );
   await resetGallery();
 
   for (const selectId of ["#slot", "#technician", "#crew", "#verification"]) {
