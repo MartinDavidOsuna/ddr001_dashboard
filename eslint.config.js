@@ -9,4 +9,5 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   ...pluginVue.configs['flat/recommended'],
   { languageOptions: { globals: globals.browser }, rules: { 'vue/multi-word-component-names': 'off', '@typescript-eslint/no-explicit-any': 'off' } },
+  { files: ['scripts/**/*.mjs'], languageOptions: { globals: globals.node } },
 )

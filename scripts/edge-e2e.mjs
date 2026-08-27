@@ -2,11 +2,19 @@ import { access, mkdir, writeFile } from "node:fs/promises";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright-core";
+import { selectEdgeAuthMode } from "./edge-auth-mode.mjs";
 
 const appUrl = process.env.E2E_APP_URL || "http://localhost:5173";
 const refreshToken = process.env.E2E_REFRESH_TOKEN;
 const viewerEmail = process.env.E2E_VIEWER_EMAIL;
 const viewerPassword = process.env.E2E_VIEWER_PASSWORD;
+const authMode = selectEdgeAuthMode({
+  email: viewerEmail,
+  password: viewerPassword,
+  refreshToken,
+});
+const useCredentials = authMode === "credentials";
+const useRefreshToken = authMode === "refresh";
 const timeoutMs = Number(process.env.E2E_TIMEOUT_MS || 30_000);
 const expectedApiOrigin = "http://cifra.aquafim.com:3002";
 const artifacts = new URL("../.artifacts/edge/", import.meta.url);
@@ -38,13 +46,14 @@ const safeHttpTarget = (value) => {
   }
 };
 
-if (!refreshToken && !(viewerEmail && viewerPassword)) {
-  throw new Error(
-    "Define E2E_REFRESH_TOKEN o E2E_VIEWER_EMAIL + E2E_VIEWER_PASSWORD sólo en el proceso actual.",
-  );
-}
-if ((viewerEmail && !viewerPassword) || (!viewerEmail && viewerPassword))
-  throw new Error("E2E_VIEWER_EMAIL y E2E_VIEWER_PASSWORD deben definirse juntos.");
+process.stdout.write(
+  [
+    `E2E_VIEWER_EMAIL: ${viewerEmail ? "definido" : "no definido"}`,
+    `E2E_VIEWER_PASSWORD: ${viewerPassword ? "definido" : "no definido"}`,
+    `E2E_REFRESH_TOKEN: ${refreshToken ? "definido" : "no definido"}`,
+    `Modo de autenticación E2E: ${useCredentials ? "credenciales viewer" : "refresh token"}`,
+  ].join("\n") + "\n",
+);
 
 let executablePath;
 for (const candidate of edgeCandidates) {
@@ -70,11 +79,16 @@ const context = await browser.newContext({
 
 // The app rotates refresh tokens. Seed only an empty session so a later full
 // navigation never overwrites the fresh token stored by the application.
-if (refreshToken)
+if (useRefreshToken)
   await context.addInitScript((token) => {
     const key = "ddr001.admin.refresh";
     if (!sessionStorage.getItem(key)) sessionStorage.setItem(key, token);
   }, refreshToken);
+if (useCredentials)
+  await context.addInitScript(() => {
+    if (location.pathname === "/login")
+      sessionStorage.removeItem("ddr001.admin.refresh");
+  });
 
 const page = await context.newPage();
 page.setDefaultNavigationTimeout(timeoutMs);
@@ -210,51 +224,75 @@ async function assertNoHorizontalOverflow(label) {
 }
 
 try {
-  const firstAdminRequestPromise = page.waitForRequest((request) => {
+  const authPath = useCredentials
+    ? "/api/v1/admin/auth/login"
+    : "/api/v1/admin/auth/refresh";
+  const initialAuthResponsePromise = page.waitForResponse((response) => {
+    const request = response.request();
     try {
-      return new URL(request.url()).pathname.includes("/admin/");
+      return (
+        request.method() === "POST" &&
+        new URL(response.url()).pathname === authPath
+      );
     } catch {
       return false;
     }
   });
-  await page.goto(`${appUrl}${refreshToken ? "/dashboard" : "/login"}`, {
+  await page.goto(`${appUrl}${useCredentials ? "/login" : "/dashboard"}`, {
     waitUntil: "domcontentloaded",
   });
-  if (!refreshToken) {
+  if (useCredentials) {
+    const cleanSession = await page.evaluate(
+      () => !sessionStorage.getItem("ddr001.admin.refresh"),
+    );
+    if (!cleanSession)
+      throw new Error("El contexto E2E de credenciales no inició con una sesión limpia.");
     await page.getByLabel("Correo electrónico").fill(viewerEmail);
     await page.getByLabel("Contraseña", { exact: true }).fill(viewerPassword);
     await page.getByRole("button", { name: "Ingresar" }).click();
   }
-  const firstAdminRequest = await firstAdminRequestPromise.catch(() => {
+  const initialAuthResponse = await initialAuthResponsePromise.catch(() => {
     throw new Error(
-      "No se observó ninguna petición administrativa para confirmar el backend productivo.",
+      useCredentials
+        ? "El login viewer E2E falló."
+        : "El E2E_REFRESH_TOKEN no pudo restaurar la sesión.",
     );
   });
-  const adminUrl = new URL(firstAdminRequest.url());
+  const adminUrl = new URL(initialAuthResponse.url());
   if (
     adminUrl.origin !== expectedApiOrigin ||
-    !adminUrl.pathname.startsWith("/api/v1/admin/")
+    adminUrl.pathname !== authPath
   ) {
     throw new Error(
-      `Backend administrativo incorrecto: ${safeHttpTarget(firstAdminRequest.url())}. Se esperaba ${expectedApiOrigin}/api/v1/admin/…`,
+      `Backend administrativo incorrecto: ${safeHttpTarget(initialAuthResponse.url())}. Se esperaba ${expectedApiOrigin}${authPath}.`,
     );
   }
   process.stdout.write(
-    `Backend administrativo confirmado: ${safeHttpTarget(firstAdminRequest.url())}\n`,
+    `Backend administrativo confirmado: ${safeHttpTarget(initialAuthResponse.url())}\n`,
   );
-  await Promise.race([
-    page.getByText("Solo lectura", { exact: true }).waitFor(),
+  if (initialAuthResponse.status() !== 200)
+    throw new Error(
+      useCredentials
+        ? "El login viewer E2E falló."
+        : "El E2E_REFRESH_TOKEN no pudo restaurar la sesión.",
+    );
+  await Promise.all([
     page
-      .waitForURL((url) => url.pathname === "/login")
-      .then(() => {
+      .waitForURL((url) => url.pathname === "/dashboard")
+      .catch(() => {
         throw new Error(
-          "La sesión READ_ONLY no pudo restaurarse; usa un refresh token nuevo/vigente.",
+          useCredentials
+            ? "El login viewer E2E falló."
+            : "El E2E_REFRESH_TOKEN no pudo restaurar la sesión.",
         );
       }),
+    page.getByText("Solo lectura", { exact: true }).waitFor(),
   ]);
   await assertPath(
     "/dashboard",
-    "La sesión READ_ONLY no pudo restaurarse; usa un refresh token nuevo/vigente.",
+    useCredentials
+      ? "El login viewer E2E falló."
+      : "El E2E_REFRESH_TOKEN no pudo restaurar la sesión.",
   );
   const hasRefreshSession = await page.evaluate(() =>
     Boolean(sessionStorage.getItem("ddr001.admin.refresh")),
@@ -262,9 +300,27 @@ try {
   if (!hasRefreshSession)
     throw new Error("Dashboard abrió sin una sesión refresh persistida.");
 
+  const refreshAfterReloadPromise = page.waitForResponse((response) => {
+    try {
+      return (
+        response.request().method() === "POST" &&
+        new URL(response.url()).pathname === "/api/v1/admin/auth/refresh"
+      );
+    } catch {
+      return false;
+    }
+  });
   await page.reload({ waitUntil: "domcontentloaded" });
+  const refreshAfterReload = await refreshAfterReloadPromise.catch(() => {
+    throw new Error("El refresh de la sesión viewer falló después del login.");
+  });
+  if (refreshAfterReload.status() !== 200)
+    throw new Error("El refresh de la sesión viewer falló después del login.");
   await page.getByText("Solo lectura", { exact: true }).waitFor();
-  await assertPath("/dashboard", "El refresh viewer falló al recargar.");
+  await assertPath(
+    "/dashboard",
+    "El refresh de la sesión viewer falló después del login.",
+  );
 
   const initialResponsePromise = page.waitForResponse(isGalleryListResponse);
   await page.goto(`${appUrl}/fotografias`, { waitUntil: "domcontentloaded" });

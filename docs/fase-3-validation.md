@@ -1,6 +1,6 @@
 # Validación de Fase 3 — Cierre funcional
 
-Fecha de apertura: 2026-08-26. Estado: **SUBETAPA 3.1 IMPLEMENTADA — API DESPLEGADA — PENDIENTE CERTIFICACIÓN AUTENTICADA**.
+Fecha de apertura: 2026-08-26. Estado: **SUBETAPA 3.1 — PENDIENTE CERTIFICACIÓN E2E**.
 
 ## Línea base
 
@@ -66,6 +66,12 @@ Código completado el 2026-08-26. La extensión aditiva de `GET /admin/dashboard
 El dashboard carga miniaturas privadas al aproximarse al viewport mediante `IntersectionObserver`, solicita el original sólo al abrir el lightbox, cancela resultados obsoletos y libera cada object URL. Muestra técnico/cuadrilla/estado/dimensiones y enlaza tanto al hidrante como a la revisión. No usa el total como completitud: obligatoria/adicional continúa derivándose por los siete slots y ordinal.
 
 Pruebas del hito: dashboard typecheck de TypeScript/Vue, lint de TypeScript y del harness E2E, 12/12 Vitest y build correctos; API type-check/lint, 235/235 unit tests y build correctos. La integración específica verificó 5/5 casos anónimos de auth/Problem Details; sus 3 casos SQL quedaron definidos pero no ejecutados porque no se habilitó `RUN_SQL_INTEGRATION`. `npm install` fue necesario en el checkout API; el árbol actual reportó 7 vulnerabilidades (3 moderadas, 4 altas), sin aplicar corrección automática.
+
+### Corrección determinista de autenticación E2E
+
+El bloqueo observado provenía del harness: la existencia de `E2E_REFRESH_TOKEN` decidía la ruta inicial y la siembra de `sessionStorage` aun cuando también había email/password. Esto abría `/dashboard`, disparaba `auth.restore()` y convertía `/admin/auth/refresh` en la primera petición antes de usar el formulario.
+
+La selección ahora es explícita y está probada: email+password gana incluso si existe un refresh residual; sólo refresh usa restauración; ninguna configuración falla claramente. En modo credenciales se abre `/login` con sesión limpia, se exige específicamente `POST /api/v1/admin/auth/login` 200, navegación a `/dashboard`, rol viewer y refresh nuevo persistido. La recarga exige después y por separado `POST /api/v1/admin/auth/refresh` 200. El diagnóstico sólo imprime booleanos de presencia y el nombre del modo, nunca valores. La corrección no cambia store, cliente API, router, LoginView, API, producción o Flutter.
 
 ### Certificación productiva posterior al deployment
 

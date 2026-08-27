@@ -8,25 +8,27 @@ La automatización usa `playwright-core` y el Microsoft Edge ya instalado; no de
 
    `npm run dev`
 
-2. En otra terminal PowerShell, asignar una sesión viewer únicamente al proceso actual. Se admite refresh token:
-
-   `$env:E2E_REFRESH_TOKEN = Read-Host -MaskInput "Refresh token READ_ONLY"`
-
-   O login runtime, sin guardar las variables en archivos:
+2. En otra terminal PowerShell, asignar una sesión viewer únicamente al proceso actual. El modo recomendado usa credenciales runtime:
 
    `$env:E2E_VIEWER_EMAIL = Read-Host "Email viewer"`
 
    `$env:E2E_VIEWER_PASSWORD = Read-Host -MaskInput "Password viewer"`
 
+   Si ambas están definidas, siempre tienen prioridad y el harness abre `/login`, exige `POST /api/v1/admin/auth/login` con HTTP 200 y no siembra ningún refresh token residual.
+
+   Como alternativa, cuando no existen email/password se admite refresh token:
+
+   `$env:E2E_REFRESH_TOKEN = Read-Host -MaskInput "Refresh token READ_ONLY"`
+
 3. Ejecutar:
 
    `npm run e2e:edge`
 
-El script inicia o restaura la sesión mediante el flujo normal, recarga para verificar refresh, confirma el rol “Solo lectura”, certifica la galería y cierra sesión al final. Captura `desktop-gallery.png`, `tablet-gallery.png`, `mobile-gallery.png` y `gallery-lightbox.png` en `.artifacts/edge/`. No imprime email, contraseña, tokens, headers Authorization ni cuerpos de autenticación.
+El script selecciona el modo exclusivamente desde `process.env`; no carga secretos desde `.env`, `.env.local`, scripts npm ni archivos del repositorio. Al comenzar imprime solamente definido/no definido para las tres variables y el modo seleccionado. Inicia o restaura la sesión mediante el flujo normal, recarga y exige por separado un refresh HTTP 200, confirma el rol “Solo lectura”, certifica la galería y cierra sesión al final. Captura `desktop-gallery.png`, `tablet-gallery.png`, `mobile-gallery.png` y `gallery-lightbox.png` en `.artifacts/edge/`. No imprime email, contraseña, tokens, headers Authorization ni cuerpos de autenticación.
 
 Antes de continuar confirma que la primera petición administrativa apunta a `http://cifra.aquafim.com:3002/api/v1/admin/…`; aborta si detecta otro protocol, host, puerto o prefijo. Los fallos HTTP muestran únicamente `status + protocol + host + pathname`, nunca query strings ni headers.
 
-El refresh token sólo se siembra cuando `sessionStorage` está vacío. La aplicación rota el token durante la restauración y el script conserva esa nueva versión en las navegaciones posteriores; nunca vuelve a sobrescribirla con el valor inicial ya consumido.
+En modo credenciales, el contexto comienza limpio y elimina `ddr001.admin.refresh` al abrir `/login`; después comprueba que el login guardó un refresh nuevo. En modo token, éste sólo se siembra cuando `sessionStorage` está vacío. La aplicación rota el token durante la restauración y el script conserva esa nueva versión en las navegaciones posteriores; nunca vuelve a sobrescribirla con el valor inicial ya consumido.
 
 Si falla un paso, se generan `.artifacts/edge/error.png` y `error-page.txt`. El diagnóstico limita el texto visible a 2,000 caracteres y registra únicamente URL sin query, pathname, título, status/pathname HTTP y errores de consola sanitizados.
 
