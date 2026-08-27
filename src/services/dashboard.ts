@@ -15,6 +15,14 @@ import type {
   Page,
   PhotoSlotOption,
 } from "@/api/types";
+import {
+  exportFilename,
+  exportRequest,
+  saveExportBlob,
+  type ExportSelection,
+  type HydrantExportFilters,
+  type InspectionExportFilters,
+} from "@/features/exports/export-utils";
 export const dashboardService = {
   async summary() {
     return (await api.get<DashboardSummary>("/admin/dashboard/summary")).data;
@@ -85,24 +93,22 @@ export const dashboardService = {
       )
     ).data;
   },
-  async exportInspections() {
-    const response = await api.get<Blob>(
-      "/admin/dashboard/exports/inspections.xlsx",
-      {
-        params: { appBaseUrl: window.location.origin },
-        responseType: "blob",
-        timeout: 120_000,
-      },
+  async exportFile(
+    selection: ExportSelection,
+    inspectionFilters: InspectionExportFilters,
+    hydrantFilters: HydrantExportFilters,
+  ) {
+    const request = exportRequest(selection, inspectionFilters, hydrantFilters);
+    const response = await api.get<Blob>(request.path, {
+      params: request.params,
+      responseType: "blob",
+      timeout: 120_000,
+    });
+    const filename = exportFilename(
+      response.headers["content-disposition"],
+      request.fallback,
     );
-    const disposition = String(response.headers["content-disposition"] || "");
-    const filename =
-      disposition.match(/filename="?([^";]+)"?/i)?.[1] ||
-      "revisiones-ddr001.xlsx";
-    const url = URL.createObjectURL(response.data);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = filename;
-    link.click();
-    window.setTimeout(() => URL.revokeObjectURL(url), 1_000);
+    saveExportBlob(response.data, filename);
+    return filename;
   },
 };

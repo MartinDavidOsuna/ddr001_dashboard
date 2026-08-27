@@ -36,7 +36,7 @@ Rutas administrativas ausentes en producción al auditar: `/admin/devices`, `/ad
 | Módulo | Estado actual | Reutilización | Extensión aditiva necesaria | Dependencias / riesgo |
 |---|---|---|---|---|
 | Galería global | UI y API parciales; lightbox reutilizable | fotos, thumbnails y originales privados | ampliar filtros y catálogo; enlaces hidrante/revisión; tests | no confundir 7 obligatorias con total; originales sólo bajo demanda |
-| Exportaciones | UI de una descarga y XLSX server-side | XLSX existente y CSV legado como referencia | filtros comunes, CSV de revisiones y XLSX de hidrantes | streaming/volumen, fórmulas y ausencia de municipio/localidad |
+| Exportaciones | Implementada en código; pendiente deployment y E2E | XLSX existente ampliado y filtros reales de revisiones/hidrantes | CSV de revisiones y XLSX de hidrantes agregados bajo dashboard | buffers en memoria para el volumen actual; vigilar crecimiento |
 | Usuarios | lista API genérica; placeholder UI | `rv.users` y agregados existentes | lista/detalle dashboard y comandos admin explícitos | el móvil autoactualiza identidad; baja lógica, nunca borrado histórico |
 | Cuadrillas | lista API genérica; placeholder UI | `rv.crews` | lista/detalle y crear/editar/activar/desactivar | nombres normalizados usados al iniciar sesión móvil |
 | Jornadas | lista API genérica; placeholder UI | `rv.work_sessions` | lista/detalle agregado y, sólo si procede, revocación controlada | no editar historia; revocar también tokens de esa jornada |
@@ -73,8 +73,8 @@ Toda escritura crítica usará transacción, autorización por rol, validación 
 ## Orden de implementación y puertas de calidad
 
 1. Auditoría general y esta línea base.
-2. Galería global. **Implementada y API desplegada; pendiente E2E autenticado y certificación responsive.**
-3. Exportaciones.
+2. Galería global. **CERTIFICADA.**
+3. Exportaciones. **Implementada y probada; pendiente deployment manual de API y E2E productivo.**
 4. Usuarios.
 5. Cuadrillas.
 6. Jornadas.
@@ -97,7 +97,17 @@ Cada módulo estable exige typecheck, lint, Vitest y build del dashboard; endpoi
 - El endpoint de validación existente no persiste aún `rejection_code`, no audita claramente before/after y debe mapear conflictos a 409.
 - Dispositivos carecen de `row_version` en el DDL base; se preferirá actualización condicional por estado/fecha antes de proponer esquema.
 - La galería sólo incluye `verified`; un filtro de verificación no puede prometer estados que no sean recuperables con seguridad.
-- El XLSX completo no respeta filtros; se debe compartir una especificación de filtros entre listas y exportaciones.
+- Las exportaciones usan consultas set-based y buffers en memoria. El volumen actual no justificó jobs asíncronos; debe reevaluarse si crece de forma material.
+
+## Subetapa 3.2 — Exportaciones
+
+Implementada el 2026-08-27 sin modificar endpoints de campo, esquema ni datos. Se conserva y amplía `GET /api/v1/admin/dashboard/exports/inspections.xlsx`, y se agregan `GET /admin/dashboard/exports/inspections.csv` y `GET /admin/dashboard/exports/hydrants.xlsx`. Los tres requieren autenticación administrativa y admiten `viewer`, `admin` y `supervisor` conforme a la política de lectura vigente.
+
+Las revisiones reutilizan `search`, `userId`, `crewId`, `status`, `from`, `to` y `gps`; los hidrantes reutilizan búsqueda, estado RV, revisado/con revisiones, datos físicos, coordenadas, rango de última revisión y orden permitidos por el listado maestro. La exportación es completa sobre el conjunto filtrado y no acepta paginación. No contiene municipio ni localidad.
+
+Los XLSX incluyen hoja y encabezados legibles, encabezado congelado, autofiltro, anchos, fechas y números tipados. Estado RV y estado exacto de la última revisión permanecen separados; la evidencia se expresa como obligatorias sobre siete y fotos totales. El CSV usa UTF-8 con BOM, CRLF y escape de comillas/saltos. Todo texto con prefijo `=`, `+`, `-` o `@` se antepone con apóstrofo tanto en CSV como XLSX para impedir formula injection.
+
+El dashboard ofrece las tres combinaciones, filtros equivalentes, estados de carga/error/éxito y descarga Blob autenticada. Valida el filename del servidor, usa fallback predecible y revoca el object URL. El harness Edge queda preparado mediante `E2E_CERTIFY_EXPORTS=true`; guardará temporalmente descargas y evidencia en `.artifacts/edge/`, pero no se ejecutará contra producción hasta el deployment manual de API.
 - ECharts genera un warning conocido cercano a 535 kB; sólo se cambiarán imports/lazy loading si pruebas visuales y funcionales permanecen estables.
 
 ## Criterio de certificación

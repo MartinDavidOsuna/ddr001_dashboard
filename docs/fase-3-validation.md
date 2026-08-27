@@ -1,6 +1,6 @@
 # Validación de Fase 3 — Cierre funcional
 
-Fecha de apertura: 2026-08-26. Estado: **SUBETAPA 3.1 — PENDIENTE EJECUCIÓN E2E FINAL**.
+Fecha de apertura: 2026-08-26. Estado: **SUBETAPA 3.2 — IMPLEMENTADA — PENDIENTE DEPLOYMENT Y CERTIFICACIÓN**.
 
 ## Línea base
 
@@ -14,8 +14,8 @@ Fecha de apertura: 2026-08-26. Estado: **SUBETAPA 3.1 — PENDIENTE EJECUCIÓN E
 
 | Área | Resultado | Certificación Fase 3 |
 |---|---|---|
-| Galería | implementación completada en código: paginación, búsqueda, filtros explícitos, miniatura/original lazy, lightbox, metadata y navegación | pendiente de despliegue API y E2E |
-| Exportaciones | XLSX de revisiones server-side sin filtros; CSV legado limitado; sin XLSX de hidrantes | pendiente |
+| Galería | certificada: paginación, búsqueda, filtros, miniatura/original lazy, lightbox, metadata, navegación y responsive | certificada |
+| Exportaciones | revisiones XLSX/CSV e hidrantes XLSX server-side con filtros y UI completa | pendiente deployment API y E2E |
 | Usuarios | endpoint genérico de lectura; sin módulo dashboard ni comandos controlados | pendiente |
 | Cuadrillas | endpoint genérico de lectura; sin módulo dashboard ni comandos controlados | pendiente |
 | Jornadas | endpoint genérico de lectura; sin detalle administrativo | pendiente |
@@ -42,8 +42,8 @@ El flujo Flutter usa `/field-sessions/start`, `/current`, `/refresh`, `/:id/end`
 
 | Subetapa | Implementación | Tests | Deployment API | E2E | Responsive | Estado final |
 |---|---|---|---|---|---|---|
-| 3.1 Galería global | completa | unitarios/estáticos/build completos; SQL definido no ejecutado | desplegada manualmente; precheck correcto | harness completo; pendiente ejecución con sesión `viewer|admin` | pendiente 1440/768/390 | **IMPLEMENTADA — API DESPLEGADA — PENDIENTE CERTIFICACIÓN** |
-| 3.2 Exportaciones | pendiente | pendiente | pendiente | pendiente | pendiente | pendiente |
+| 3.1 Galería global | completa | completos | desplegada | completo `viewer|admin` | 1440/768/390 | **CERTIFICADA** |
+| 3.2 Exportaciones | completa | API/frontend completos; SQL definido no ejecutado | pendiente | preparado, no ejecutado | preparado 1440/768/390 | **IMPLEMENTADA — PENDIENTE DEPLOYMENT Y CERTIFICACIÓN** |
 | 3.3 Usuarios | pendiente | pendiente | pendiente | pendiente | pendiente | pendiente |
 | 3.4 Cuadrillas | pendiente | pendiente | pendiente | pendiente | pendiente | pendiente |
 | 3.5 Jornadas | pendiente | pendiente | pendiente | pendiente | pendiente | pendiente |
@@ -83,4 +83,14 @@ El responsable confirmó integración a `main`, deployment manual y smoke tests.
 
 Se amplió el único harness `scripts/edge-e2e.mjs` para login runtime seguro o refresh temporal, verificación estricta del rol `viewer|admin` antes y después del refresh, filtros individuales/combinados/limpieza, paginación/page size, clasificación obligatoria/adicional, lazy loading por patrón de red, original privado, caso no verificado cuando exista, lightbox, zoom, metadata, navegación, overflow responsive, consola/red, cuatro capturas obligatorias y logout. El script genera métricas sanitizadas en `.artifacts/edge/gallery-certification.json` y nunca persiste ni imprime secretos.
 
-Las tarjetas distinguen visualmente `Obligatoria` o `Adicional`, y el lightbox incorpora la categoría en una línea compuesta de metadata. El E2E ya alcanza autenticado la galería productiva, filtros, paginación, original, zoom y navegación con consola/red limpias. La categoría y el resto de metadata ahora se validan contra la fotografía realmente abierta: rubro, cuenta, revisión, fecha, técnico, cuadrilla opcional, estado y dimensiones. Permanece pendiente una ejecución final completa y responsive 1440/768/390; la subetapa todavía no se declara certificada.
+Las tarjetas distinguen visualmente `Obligatoria` o `Adicional`, y el lightbox incorpora la categoría en una línea compuesta de metadata. El E2E autenticado certificó la galería productiva, filtros, paginación, original, zoom, navegación, consola/red y responsive 1440/768/390. La categoría y el resto de metadata se validan contra la fotografía realmente abierta: rubro, cuenta, revisión, fecha, técnico, cuadrilla opcional, estado y dimensiones.
+
+## Subetapa 3.2 — Exportaciones
+
+Implementación completada el 2026-08-27. La API conserva y filtra `GET /admin/dashboard/exports/inspections.xlsx`, agrega `GET /admin/dashboard/exports/inspections.csv` y `GET /admin/dashboard/exports/hydrants.xlsx`, todos protegidos y de lectura para `viewer|admin|supervisor`. No se alteró Flutter, ninguna ruta móvil, base de datos o migración.
+
+Las consultas construyen conjuntos filtrados y agregados en servidor, sin paginación ni N+1. Revisiones acepta los filtros reales de su listado; hidrantes los del expediente maestro. El XLSX separa Estado RV de Estado última revisión y expresa `x/7 obligatorias` junto al total; no contiene municipio/localidad. XLSX incluye freeze/autofilter/tipos/anchos y CSV incluye BOM UTF-8, CRLF y escape correcto. Ambos formatos neutralizan prefijos de fórmula mediante apóstrofo.
+
+El dashboard permite Revisiones XLSX, Revisiones CSV e Hidrantes XLSX con filtros, carga, error y éxito. Descarga por Blob autenticado, valida Content-Disposition, usa fallback seguro y revoca el object URL. El Edge E2E existente se amplió bajo el opt-in `E2E_CERTIFY_EXPORTS=true` para validar las tres descargas, filtro server-side, MIME, filename, tamaño, consola/red y 1440/768/390; no se ejecutó contra producción porque las rutas nuevas aún requieren deployment manual.
+
+Validación API: type-check y lint sin fallos; 238/238 unitarios; integración no SQL 7 passed y 14 skipped; build correcto. Las cinco integraciones SQL de exportación/galería permanecen definidas y omitidas porque `RevisionVisualStarter_Test` no fue confirmada mediante `RUN_SQL_INTEGRATION=true`. Validación frontend: typecheck, lint, Vitest y build correctos; se cubren filtros, selección, filename seguro, Blob/revocación y error sin stacktrace. El warning conocido de ECharts ~535 kB permanece sin cambio.

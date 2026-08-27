@@ -1,4 +1,4 @@
-import { access, mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, stat, writeFile } from "node:fs/promises";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright-core";
@@ -25,6 +25,7 @@ const authMode = selectEdgeAuthMode({
 const useCredentials = authMode === "credentials";
 const useRefreshToken = authMode === "refresh";
 const timeoutMs = Number(process.env.E2E_TIMEOUT_MS || 30_000);
+const certifyExports = process.env.E2E_CERTIFY_EXPORTS === "true";
 const expectedApiOrigin = "http://cifra.aquafim.com:3002";
 const artifacts = new URL("../.artifacts/edge/", import.meta.url);
 const edgeCandidates = [
@@ -255,6 +256,44 @@ async function assertNoHorizontalOverflow(label) {
     () => document.documentElement.scrollWidth > window.innerWidth + 1,
   );
   if (overflow) throw new Error(`Overflow horizontal en ${label}.`);
+}
+
+async function downloadAdministrativeExport({ cardText, extension, endpoint, searchLabel }) {
+  const formatCard = page
+    .locator(".format-grid .format")
+    .filter({ hasText: cardText });
+  await formatCard.click();
+  const search = page.getByLabel(searchLabel, { exact: true });
+  await search.fill("002");
+
+  const responsePromise = page.waitForResponse((response) => {
+    try {
+      return new URL(response.url()).pathname === endpoint;
+    } catch {
+      return false;
+    }
+  });
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Generar y descargar", exact: true }).click();
+  const [response, download] = await Promise.all([responsePromise, downloadPromise]);
+  if (response.status() !== 200)
+    throw new Error(`La exportación ${endpoint} devolvió ${response.status()}.`);
+  const url = new URL(response.url());
+  if (url.searchParams.get("search") !== "002")
+    throw new Error(`La exportación ${endpoint} no envió los filtros server-side.`);
+  const expectedMime = extension === "csv"
+    ? "text/csv"
+    : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+  if (!String(response.headers()["content-type"] || "").startsWith(expectedMime))
+    throw new Error(`La exportación ${endpoint} devolvió un MIME inesperado.`);
+  const filename = download.suggestedFilename();
+  if (!new RegExp(`^DDR001_(revisiones|hidrantes)_\\d{4}-\\d{2}-\\d{2}\\.${extension}$`).test(filename))
+    throw new Error(`Nombre de archivo de exportación inesperado: ${filename}.`);
+  const destination = fileURLToPath(new URL(filename, artifacts));
+  await download.saveAs(destination);
+  if ((await stat(destination)).size <= 0)
+    throw new Error(`La exportación ${endpoint} quedó vacía.`);
+  return { endpoint, filename, expectedMime };
 }
 
 try {
@@ -581,6 +620,53 @@ try {
     await lightbox.getByRole("button", { name: "Cerrar", exact: true }).click();
   }
 
+  let exportCertification;
+  if (certifyExports) {
+    await page.goto(`${appUrl}/exportaciones`, { waitUntil: "domcontentloaded" });
+    await assertPath(
+      "/exportaciones",
+      "La sesión administrativa se perdió al abrir Exportaciones.",
+    );
+    await page.getByRole("heading", { name: "Exportaciones", exact: true }).waitFor();
+    const files = [];
+    files.push(await downloadAdministrativeExport({
+      cardText: "RevisionesXLSX completo",
+      extension: "xlsx",
+      endpoint: "/api/v1/admin/dashboard/exports/inspections.xlsx",
+      searchLabel: "Cuenta o técnico",
+    }));
+    files.push(await downloadAdministrativeExport({
+      cardText: "RevisionesCSV UTF-8",
+      extension: "csv",
+      endpoint: "/api/v1/admin/dashboard/exports/inspections.csv",
+      searchLabel: "Cuenta o técnico",
+    }));
+    files.push(await downloadAdministrativeExport({
+      cardText: "HidrantesXLSX maestro",
+      extension: "xlsx",
+      endpoint: "/api/v1/admin/dashboard/exports/hydrants.xlsx",
+      searchLabel: "Cuenta",
+    }));
+    for (const viewport of [
+      { name: "desktop", width: 1440, height: 900 },
+      { name: "tablet", width: 768, height: 900 },
+      { name: "mobile", width: 390, height: 844 },
+    ]) {
+      await page.setViewportSize({ width: viewport.width, height: viewport.height });
+      await assertNoHorizontalOverflow(`${viewport.name} exportaciones`);
+      await page.screenshot({
+        path: fileURLToPath(new URL(`${viewport.name}-exports.png`, artifacts)),
+        fullPage: true,
+      });
+    }
+    exportCertification = { authenticatedRole, files };
+    await writeFile(
+      fileURLToPath(new URL("exports-certification.json", artifacts)),
+      `${JSON.stringify(exportCertification, null, 2)}\n`,
+      "utf8",
+    );
+  }
+
   const nonVerified = initial.items.find((item) => item.uploadStatus !== "verified");
   const certification = {
     authenticatedRole,
@@ -593,6 +679,7 @@ try {
     nonVerifiedObserved: Boolean(nonVerified),
     galleryListRequests: galleryRequests.filter((item) => item.pathname === galleryListPath).length,
     originalRequests: galleryRequests.filter((item) => item.pathname.endsWith("/content")).length,
+    exportsPrepared: certifyExports,
   };
   await writeFile(
     fileURLToPath(new URL("gallery-certification.json", artifacts)),
@@ -622,7 +709,7 @@ try {
 
   process.stdout.write(`${await pageDiagnostic("Galería certificada y logout correcto")}\n`);
   process.stdout.write(
-    `Edge E2E correcto: rol ${authenticatedRole}, galería y lightbox en 1440/768/390.\n`,
+    `Edge E2E correcto: rol ${authenticatedRole}, galería${certifyExports ? ", exportaciones" : ""} y lightbox en 1440/768/390.\n`,
   );
 } catch (error) {
   const diagnostic = await pageDiagnostic("Error E2E");
