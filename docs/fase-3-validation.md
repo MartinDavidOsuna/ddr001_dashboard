@@ -65,7 +65,7 @@ Código completado el 2026-08-26. La extensión aditiva de `GET /admin/dashboard
 
 El dashboard carga miniaturas privadas al aproximarse al viewport mediante `IntersectionObserver`, solicita el original sólo al abrir el lightbox, cancela resultados obsoletos y libera cada object URL. Muestra técnico/cuadrilla/estado/dimensiones y enlaza tanto al hidrante como a la revisión. No usa el total como completitud: obligatoria/adicional continúa derivándose por los siete slots y ordinal.
 
-Pruebas del hito: dashboard typecheck de TypeScript/Vue, lint de TypeScript y del harness E2E, 25/25 Vitest y build correctos; API type-check/lint, 235/235 unit tests y build correctos. La integración específica verificó 5/5 casos anónimos de auth/Problem Details; sus 3 casos SQL quedaron definidos pero no ejecutados porque no se habilitó `RUN_SQL_INTEGRATION`. `npm install` fue necesario en el checkout API; el árbol actual reportó 7 vulnerabilidades (3 moderadas, 4 altas), sin aplicar corrección automática.
+Pruebas del hito: dashboard typecheck de TypeScript/Vue, lint de TypeScript y del harness E2E, 28/28 Vitest y build correctos; API type-check/lint, 235/235 unit tests y build correctos. La integración específica verificó 5/5 casos anónimos de auth/Problem Details; sus 3 casos SQL quedaron definidos pero no ejecutados porque no se habilitó `RUN_SQL_INTEGRATION`. `npm install` fue necesario en el checkout API; el árbol actual reportó 7 vulnerabilidades (3 moderadas, 4 altas), sin aplicar corrección automática.
 
 ### Corrección determinista de autenticación E2E
 
@@ -74,6 +74,8 @@ El bloqueo observado provenía del harness: la existencia de `E2E_REFRESH_TOKEN`
 La selección ahora es explícita y está probada: email+password gana incluso si existe un refresh residual; sólo refresh usa restauración; ninguna configuración falla claramente. En modo credenciales se abre `/login` con sesión limpia, se exige específicamente `POST /api/v1/admin/auth/login` 200, navegación a `/dashboard`, rol administrativo soportado y refresh nuevo persistido. `/admin/auth/me` es la fuente del rol: admite exclusivamente `viewer|admin`, contrasta el indicador visual y exige que no cambie tras la recarga. La recarga exige después y por separado `POST /api/v1/admin/auth/refresh` 200. El diagnóstico sólo imprime booleanos de presencia, modo y rol, nunca valores secretos. La corrección no cambia store, cliente API, router, LoginView, API, producción o Flutter.
 
 La búsqueda E2E se alineó con su contrato global real. El término debe viajar como parámetro `search` del `GET /admin/dashboard/photos`, y cada resultado debe coincidir al menos en cuenta, técnico, cuadrilla, etiqueta o código de slot, con normalización de mayúsculas. Ya no se supone que todas las coincidencias provienen exclusivamente de `accountNumber` ni que la primera cuenta sea única.
+
+El recorrido Edge detectó que la imagen ampliada interceptaba los controles del lightbox. La imagen transformada ahora está confinada en un viewport recortado y separado; toolbar, navegación y cierre tienen capas superiores explícitas. El zoom mantiene límites 100%–300% y regresión unitaria para aumento, reducción y ambos límites. El E2E conserva clics reales, sin `force: true` ni ejecución directa de JavaScript.
 
 ### Certificación productiva posterior al deployment
 

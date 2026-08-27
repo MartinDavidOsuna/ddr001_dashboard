@@ -12,6 +12,11 @@ import {
 import { dashboardService } from "@/services/dashboard";
 import { problemMessage } from "@/api/client";
 import { toGalleryApiFilters } from "./gallery-filters";
+import {
+  decreaseGalleryZoom,
+  galleryZoom,
+  increaseGalleryZoom,
+} from "./gallery-lightbox";
 import PrivateThumbnail from "./PrivateThumbnail.vue";
 import type {
   GalleryFilterOption,
@@ -342,20 +347,22 @@ onBeforeUnmount(() => {
       <ChevronLeft />
     </button>
     <div class="full">
-      <div v-if="!fullUrl" class="skeleton loader" />
-      <p v-else-if="fullUrl === 'error'">
-        La imagen original no está disponible.
-      </p>
-      <p v-else-if="fullUrl === 'unavailable'">
-        El original privado sólo está disponible para fotografías verificadas.
-      </p>
-      <img
-        v-else
-        :src="fullUrl"
-        :alt="selected.slotLabel || selected.slotCode"
-        :style="{ transform: `scale(${zoom})` }"
-      />
-      <footer>
+      <div class="image-viewport">
+        <div v-if="!fullUrl" class="skeleton loader" />
+        <p v-else-if="fullUrl === 'error'">
+          La imagen original no está disponible.
+        </p>
+        <p v-else-if="fullUrl === 'unavailable'">
+          El original privado sólo está disponible para fotografías verificadas.
+        </p>
+        <img
+          v-else
+          :src="fullUrl"
+          :alt="selected.slotLabel || selected.slotCode"
+          :style="{ transform: `scale(${zoom})` }"
+        />
+      </div>
+      <footer class="lightbox-toolbar">
         <div>
           <b>{{ selected.slotLabel || selected.slotCode }}</b
           ><small
@@ -380,14 +387,14 @@ onBeforeUnmount(() => {
         </div>
         <button
           aria-label="Alejar"
-          :disabled="zoom <= 1"
-          @click="zoom = Math.max(1, zoom - 0.25)"
+          :disabled="zoom <= galleryZoom.min"
+          @click="zoom = decreaseGalleryZoom(zoom)"
         >
           <ZoomOut /></button
         ><button
           aria-label="Acercar"
-          :disabled="zoom >= 3"
-          @click="zoom = Math.min(3, zoom + 0.25)"
+          :disabled="zoom >= galleryZoom.max"
+          @click="zoom = increaseGalleryZoom(zoom)"
         >
           <ZoomIn />
         </button>
@@ -545,12 +552,14 @@ onBeforeUnmount(() => {
   grid-template-columns: 64px minmax(0, 1fr) 64px;
   align-items: center;
   color: white;
+  overflow: hidden;
+  isolation: isolate;
 }
 .close {
   position: absolute;
   right: 18px;
   top: 16px;
-  z-index: 2;
+  z-index: 5;
 }
 .close,
 .nav,
@@ -567,38 +576,59 @@ onBeforeUnmount(() => {
 }
 .nav {
   justify-self: center;
+  position: relative;
+  z-index: 4;
 }
 .full {
   height: 92vh;
+  min-width: 0;
   display: grid;
   grid-template-rows: minmax(0, 1fr) auto;
   overflow: hidden;
+  position: relative;
 }
-.full > img {
+.image-viewport {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+}
+.image-viewport img {
   width: 100%;
   height: 100%;
   object-fit: contain;
   transition: transform 0.15s;
+  transform-origin: center;
 }
-.full > p,
+.image-viewport > p,
 .loader {
   margin: auto;
 }
-.full footer {
+.lightbox-toolbar {
   padding: 12px;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 8px;
+  position: relative;
+  z-index: 3;
+  background: #07111df2;
 }
 .full footer div {
   display: grid;
-  margin-right: auto;
+  min-width: 0;
 }
 .full footer small {
   color: #b7c4d2;
 }
 .full footer button:disabled {
   opacity: 0.35;
+}
+.full footer button {
+  flex: 0 0 auto;
 }
 .empty-box svg {
   color: #8092aa;
@@ -640,6 +670,10 @@ onBeforeUnmount(() => {
   }
   .full {
     height: 85vh;
+  }
+  .lightbox-toolbar {
+    padding: 9px 6px;
+    gap: 6px;
   }
   .nav {
     width: 38px;
