@@ -97,6 +97,9 @@ if (useCredentials)
 const page = await context.newPage();
 page.setDefaultNavigationTimeout(timeoutMs);
 page.setDefaultTimeout(timeoutMs);
+const gallery = page.locator(".gallery");
+const pagination = page.locator(".pagination");
+const lightbox = page.locator(".lightbox");
 const consoleErrors = [];
 const failedResponses = [];
 const requestFailures = [];
@@ -408,12 +411,16 @@ try {
   );
   if (nonVerifiedIndex >= 0) {
     const originalCount = galleryRequests.filter((item) => item.pathname.endsWith("/content")).length;
-    await page.locator(".photo-card .preview").nth(nonVerifiedIndex).click();
-    await page.getByText("El original privado sólo está disponible para fotografías verificadas.").waitFor();
+    await gallery.locator(".photo-card .preview").nth(nonVerifiedIndex).click();
+    await lightbox
+      .getByText(
+        "El original privado sólo está disponible para fotografías verificadas.",
+      )
+      .waitFor();
     const afterOpen = galleryRequests.filter((item) => item.pathname.endsWith("/content")).length;
     if (afterOpen !== originalCount)
       throw new Error("Una fotografía no verificada intentó descargar el original.");
-    await page.getByRole("button", { name: "Cerrar" }).click();
+    await lightbox.getByRole("button", { name: "Cerrar", exact: true }).click();
   }
 
   const first = initial.items[0];
@@ -470,13 +477,23 @@ try {
     throw new Error("Limpiar filtros no restauró el estado inicial.");
 
   if (initial.total > initial.pageSize) {
-    const second = await galleryAction(() => page.getByRole("button", { name: "Siguiente" }).click());
+    const second = await galleryAction(() =>
+      pagination
+        .getByRole("button", { name: "Siguiente", exact: true })
+        .click(),
+    );
     if (second.page !== 2 || second.items.length > second.pageSize)
       throw new Error("Paginación server-side inválida en página 2.");
-    const returned = await galleryAction(() => page.getByRole("button", { name: "Anterior" }).click());
+    const returned = await galleryAction(() =>
+      pagination
+        .getByRole("button", { name: "Anterior", exact: true })
+        .click(),
+    );
     if (returned.page !== 1) throw new Error("No se pudo volver a página 1.");
   }
-  const resized = await galleryAction(() => page.getByLabel("Por página").selectOption("20"));
+  const resized = await galleryAction(() =>
+    pagination.getByLabel("Por página").selectOption("20"),
+  );
   if (resized.pageSize !== 20 || resized.items.length > 20)
     throw new Error("El page size no se aplicó en servidor.");
 
@@ -494,28 +511,31 @@ try {
   const contentResponsePromise = page.waitForResponse((response) =>
     new URL(response.url()).pathname.endsWith("/content"),
   );
-  await page.locator(".photo-card .preview").first().click();
+  await gallery.locator(".photo-card .preview").first().click();
   const contentResponse = await contentResponsePromise;
   if (contentResponse.status() !== 200 || !contentResponse.headers()["content-type"]?.startsWith("image/"))
     throw new Error("El original privado no devolvió HTTP 200 con MIME de imagen.");
-  await page.locator(".lightbox img").waitFor();
-  await page.getByText("Obligatoria", { exact: true }).or(page.getByText("Adicional", { exact: true })).first().waitFor();
-  await page.getByRole("button", { name: "Acercar" }).click();
-  await page.getByRole("button", { name: "Alejar" }).click();
-  await page.getByRole("button", { name: "Siguiente" }).click();
-  await page.getByRole("button", { name: "Anterior" }).click();
+  await lightbox.locator("img").waitFor();
+  await lightbox
+    .getByText("Obligatoria", { exact: true })
+    .or(lightbox.getByText("Adicional", { exact: true }))
+    .waitFor();
+  await lightbox.getByRole("button", { name: "Acercar", exact: true }).click();
+  await lightbox.getByRole("button", { name: "Alejar", exact: true }).click();
+  await lightbox.getByRole("button", { name: "Siguiente", exact: true }).click();
+  await lightbox.getByRole("button", { name: "Anterior", exact: true }).click();
   await page.screenshot({
     path: fileURLToPath(new URL("gallery-lightbox.png", artifacts)),
     fullPage: true,
   });
-  await page.getByRole("button", { name: "Cerrar" }).click();
+  await lightbox.getByRole("button", { name: "Cerrar", exact: true }).click();
   await resetGallery();
 
-  await page.locator(".photo-card a").filter({ hasText: "Hidrante" }).first().click();
+  await gallery.locator(".photo-card a").filter({ hasText: "Hidrante" }).first().click();
   await page.waitForURL((url) => url.pathname.startsWith("/hidrantes/"));
   await page.goBack({ waitUntil: "domcontentloaded" });
   await page.getByRole("heading", { name: "Fotografías", exact: true }).waitFor();
-  await page.locator(".photo-card a").filter({ hasText: "Rev." }).first().click();
+  await gallery.locator(".photo-card a").filter({ hasText: "Rev." }).first().click();
   await page.waitForURL((url) => url.pathname.startsWith("/revisiones/"));
   await page.goBack({ waitUntil: "domcontentloaded" });
   await page.getByRole("heading", { name: "Fotografías", exact: true }).waitFor();
@@ -533,10 +553,10 @@ try {
       path: fileURLToPath(new URL(`${viewport.name}-gallery.png`, artifacts)),
       fullPage: true,
     });
-    await page.locator(".photo-card .preview").first().click();
-    await page.locator(".lightbox img").waitFor();
+    await gallery.locator(".photo-card .preview").first().click();
+    await lightbox.locator("img").waitFor();
     await assertNoHorizontalOverflow(`${viewport.name} lightbox`);
-    await page.getByRole("button", { name: "Cerrar" }).click();
+    await lightbox.getByRole("button", { name: "Cerrar", exact: true }).click();
   }
 
   const nonVerified = initial.items.find((item) => item.uploadStatus !== "verified");
