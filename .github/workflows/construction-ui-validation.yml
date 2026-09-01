@@ -1,0 +1,34 @@
+name: Construction UI validation
+
+on:
+  push:
+    branches:
+      - feature/construction-dashboard-ui
+  pull_request:
+    paths:
+      - 'src/features/construction/**'
+      - 'src/features/dashboard/**'
+      - 'src/features/users/**'
+      - 'src/layouts/**'
+      - 'src/router/**'
+      - 'src/components/EChart.vue'
+      - 'docs/construction-dashboard-ui.md'
+
+permissions:
+  contents: read
+
+jobs:
+  frontend-quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build

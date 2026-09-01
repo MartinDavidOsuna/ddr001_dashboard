@@ -5,7 +5,7 @@ import { useAuthStore } from '@/stores/auth'
 import { mockConstructionAccessFor } from './construction.mock'
 import { constructionRoleLabels, type ConstructionRole } from './construction.types'
 
-const props = withDefaults(defineProps<{ userId: string; index?: number }>(), { index: 0 })
+const props = defineProps<{ userId: string; index?: number }>()
 const auth = useAuthStore()
 const access = mockConstructionAccessFor(props.userId, props.index)
 type PreviewRole = ConstructionRole | 'none'
