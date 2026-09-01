@@ -10,7 +10,7 @@ function date(day: number, hour = 9) {
   return `2026-08-${String(day).padStart(2, '0')}T${String(hour).padStart(2, '0')}:00:00-06:00`
 }
 
-function photos(surveyId: string, currentStep: number, index: number): ConstructionPhoto[] {
+function stagePhotos(surveyId: string, currentStep: number, index: number): ConstructionPhoto[] {
   if (currentStep === 0) return []
   const out: ConstructionPhoto[] = []
   for (let step = 1; step <= currentStep; step += 1) {
@@ -21,6 +21,7 @@ function photos(surveyId: string, currentStep: number, index: number): Construct
         id: `${surveyId}-p-${step}-${i}`,
         surveyId,
         stepNumber: step,
+        correctionRound: null,
         purpose: step === 6 ? purposes[i] ?? 'additional' : null,
         capturedAt: date(11 + index + step, 10 + i),
         location: { latitude: 29.08 + index * 0.008, longitude: -110.95 + index * 0.006, accuracy: 3.8 + i, capturedAt: date(11 + index + step, 10 + i) },
@@ -35,11 +36,26 @@ function photos(surveyId: string, currentStep: number, index: number): Construct
 export const constructionSurveys: ConstructionSurvey[] = statuses.map((status, index) => {
   const id = `mock-survey-${index + 1}`
   const currentStep = stages[index] ?? 0
-  const surveyPhotos = photos(id, currentStep, index)
+  const surveyPhotos = stagePhotos(id, currentStep, index)
   const rejected = status === 'rejected'
-  const corrections = rejected || index === 5 ? [{
+  const hasCorrection = rejected || index === 5
+  const correctionPhotoId = `${id}-correction-photo-1`
+  if (hasCorrection) {
+    surveyPhotos.push({
+      id: correctionPhotoId,
+      surveyId: id,
+      stepNumber: null,
+      correctionRound: 1,
+      purpose: null,
+      capturedAt: date(23 + index, 11),
+      location: { latitude: 29.08 + index * 0.008, longitude: -110.95 + index * 0.006, accuracy: 4.6, capturedAt: date(23 + index, 11) },
+      integrityStatus: 'confirmed',
+      syncState: rejected ? 'pending' : 'synchronized',
+    })
+  }
+  const corrections = hasCorrection ? [{
     id: `${id}-correction-1`, round: 1, rejectionReason: 'Ajustar acabado lateral y documentar corrección.', contractorComment: rejected ? 'Corrección en preparación.' : 'Corrección atendida y documentada.',
-    photoIds: surveyPhotos.slice(-1).map((photo) => photo.id), state: rejected ? 'pending' as const : 'resolved' as const, createdAt: date(22 + index), submittedAt: rejected ? null : date(23 + index),
+    photoIds: [correctionPhotoId], state: rejected ? 'pending' as const : 'resolved' as const, createdAt: date(22 + index), submittedAt: rejected ? null : date(23 + index),
   }] : []
   const steps = constructionStepNames.slice(1).map((name, stepIndex) => {
     const number = stepIndex + 1
@@ -51,6 +67,7 @@ export const constructionSurveys: ConstructionSurvey[] = statuses.map((status, i
     ...(currentStep > 0 ? [{ id: `${id}-h-2`, fromStatus: 'created' as const, toStatus: 'in_progress' as const, actor: contractors[index % contractors.length]!, actorType: 'contractor' as const, timestamp: date(11 + index) }] : []),
     ...(['executed', 'rejected', 'accepted', 'delivered'].includes(status) ? [{ id: `${id}-h-3`, fromStatus: 'in_progress' as const, toStatus: 'executed' as const, actor: contractors[index % contractors.length]!, actorType: 'contractor' as const, timestamp: date(20 + index) }] : []),
     ...(rejected ? [{ id: `${id}-h-4`, fromStatus: 'executed' as const, toStatus: 'rejected' as const, actor: 'Residente de prueba', actorType: 'resident' as const, timestamp: date(21 + index), reason: 'Ajustar acabado lateral y documentar corrección.' }] : []),
+    ...(rejected ? [{ id: `${id}-h-5`, fromStatus: 'rejected' as const, toStatus: 'correction' as const, actor: contractors[index % contractors.length]!, actorType: 'contractor' as const, timestamp: date(23 + index), reason: 'Corrección local preparada; nueva ejecución pendiente.' }] : []),
     ...(status === 'accepted' || status === 'delivered' ? [{ id: `${id}-h-4`, fromStatus: 'executed' as const, toStatus: 'accepted' as const, actor: 'Residente de prueba', actorType: 'resident' as const, timestamp: date(24 + index) }] : []),
     ...(status === 'delivered' ? [{ id: `${id}-h-5`, fromStatus: 'accepted' as const, toStatus: 'delivered' as const, actor: 'Residente de prueba', actorType: 'resident' as const, timestamp: date(25 + index) }] : []),
   ]
@@ -62,7 +79,7 @@ export const constructionSurveys: ConstructionSurvey[] = statuses.map((status, i
   ]
   return {
     id, displayIdentifier: `BASE DEMO ${String(index + 1).padStart(2, '0')}`, accountNumber: index === 0 ? null : `DEMO-${1000 + index}`, contractorName: contractors[index % contractors.length]!, contractorUserId: `mock-user-${(index % contractors.length) + 1}`,
-    companyName: companies[index % companies.length]!, createdAt: date(10 + index), updatedAt: date(20 + index), status, syncState: index === 1 ? 'pending' : 'synchronized', currentStep, steps, photos: surveyPhotos, corrections, history,
+    companyName: companies[index % companies.length]!, createdAt: date(10 + index), updatedAt: date(20 + index), status, syncState: index === 1 || rejected ? 'pending' : 'synchronized', currentStep, steps, photos: surveyPhotos, corrections, history,
     canonicalLocation: currentStep > 0 ? { latitude: 29.08 + index * 0.008, longitude: -110.95 + index * 0.006, accuracy: 4.2, capturedAt: date(11 + index) } : null,
     accountConflict: index === 4, conflictingHydrantId: index === 4 ? 'mock-linked-hydrant' : null, linkedHydrantId: null, rejectionReason: rejected ? 'Ajustar acabado lateral y documentar corrección.' : null, alerts,
   }

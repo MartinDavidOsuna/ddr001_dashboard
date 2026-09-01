@@ -5,6 +5,7 @@ import {
   BarChart3,
   ClipboardList,
   Droplets,
+  HardHat,
   Images,
   Map,
   Users,
@@ -26,6 +27,7 @@ const items = [
   ["Dashboard", "/dashboard", BarChart3],
   ["Revisiones", "/revisiones", ClipboardList],
   ["Hidrantes", "/hidrantes", Droplets],
+  ["Levantamientos", "/levantamientos", HardHat],
   ["Fotografías", "/fotografias", Images],
   ["Mapa", "/mapa", Map],
   ["Usuarios", "/usuarios", Users],
@@ -39,7 +41,9 @@ const title = computed(() =>
     ? "Detalle de revisión"
     : route.name === "hydrant-detail"
       ? "Expediente de hidrante"
-      : items.find((x) => route.path.startsWith(x[1]))?.[0] || "DDR001",
+      : route.name === "construction-survey-detail"
+        ? "Expediente de levantamiento"
+        : items.find((x) => route.path.startsWith(x[1]))?.[0] || "DDR001",
 );
 async function logout() {
   await auth.logout();

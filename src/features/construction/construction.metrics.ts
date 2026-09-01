@@ -79,10 +79,12 @@ export function rejectionRate(surveys: ConstructionSurvey[]): number {
 }
 
 export function averageCycleDays(surveys: ConstructionSurvey[]): number {
-  const values = surveys
-    .filter((survey) => isConstructionFinished(survey.status))
-    .map((survey) => (new Date(survey.updatedAt).getTime() - new Date(survey.createdAt).getTime()) / 86_400_000)
-    .filter((value) => Number.isFinite(value) && value >= 0)
+  const values = surveys.flatMap((survey) => {
+    const executedAt = survey.history.find((entry) => entry.toStatus === 'executed')?.timestamp
+    if (!executedAt) return []
+    const days = (new Date(executedAt).getTime() - new Date(survey.createdAt).getTime()) / 86_400_000
+    return Number.isFinite(days) && days >= 0 ? [days] : []
+  })
   if (!values.length) return 0
   return Number((values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(1))
 }
@@ -94,8 +96,9 @@ export function temporalActivity(surveys: ConstructionSurvey[]) {
     const created = buckets.get(createdKey) || { created: 0, finished: 0 }
     created.created += 1
     buckets.set(createdKey, created)
-    if (isConstructionFinished(survey.status)) {
-      const finishedKey = survey.updatedAt.slice(0, 10)
+    const executedAt = survey.history.find((entry) => entry.toStatus === 'executed')?.timestamp
+    if (executedAt) {
+      const finishedKey = executedAt.slice(0, 10)
       const finished = buckets.get(finishedKey) || { created: 0, finished: 0 }
       finished.finished += 1
       buckets.set(finishedKey, finished)

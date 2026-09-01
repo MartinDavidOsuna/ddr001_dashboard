@@ -43,6 +43,16 @@ const router = createRouter({
           component: () => import("@/features/hydrants/HydrantDetailView.vue"),
         },
         {
+          path: "levantamientos",
+          name: "construction-surveys",
+          component: () => import("@/features/construction/ConstructionListView.vue"),
+        },
+        {
+          path: "levantamientos/:surveyId",
+          name: "construction-survey-detail",
+          component: () => import("@/features/construction/ConstructionDetailView.vue"),
+        },
+        {
           path: "fotografias",
           name: "photos",
           component: () => import("@/features/photos/PhotoGalleryView.vue"),
