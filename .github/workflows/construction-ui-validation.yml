@@ -12,6 +12,8 @@ on:
       - 'src/layouts/**'
       - 'src/router/**'
       - 'src/components/EChart.vue'
+      - 'scripts/construction-ui-e2e.mjs'
+      - 'package.json'
       - 'docs/construction-dashboard-ui.md'
 
 permissions:
@@ -20,7 +22,7 @@ permissions:
 jobs:
   frontend-quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -32,3 +34,36 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: npm run build
+      - name: Install Chromium for mock-only responsive E2E
+        run: npx playwright-core install chromium
+      - name: Start local production preview
+        run: |
+          npx vite preview --host 127.0.0.1 --port 4173 > /tmp/ddr001-vite.log 2>&1 &
+          echo $! > /tmp/ddr001-vite.pid
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:4173/dashboard > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/ddr001-vite.log
+          exit 1
+      - name: Run Construction mock-only responsive E2E
+        env:
+          E2E_APP_URL: http://127.0.0.1:4173
+          E2E_ARTIFACTS_DIR: .artifacts/construction-ui
+        run: npm run e2e:construction-ui
+      - name: Upload responsive captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: construction-ui-responsive
+          path: .artifacts/construction-ui
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Stop local preview
+        if: always()
+        run: |
+          if [ -f /tmp/ddr001-vite.pid ]; then
+            kill "$(cat /tmp/ddr001-vite.pid)" || true
+          fi
