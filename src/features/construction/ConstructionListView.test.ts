@@ -20,16 +20,21 @@ describe('ConstructionListView', () => {
     expect(wrapper.find('#construction-search').exists()).toBe(true)
   })
 
-  it('filters by search and functional status', async () => {
+  it('filters by search and functional status inside the survey list', async () => {
     const wrapper = mount(ConstructionListView, { global })
     await flushPromises()
+    const list = wrapper.get('.list-card')
+
     await wrapper.find('#construction-search').setValue('BASE DEMO 04')
-    expect(wrapper.text()).toContain('BASE DEMO 04')
-    expect(wrapper.text()).not.toContain('BASE DEMO 06')
+    expect(list.text()).toContain('1 de 8 registros')
+    expect(list.text()).toContain('BASE DEMO 04')
+    expect(list.text()).not.toContain('BASE DEMO 06')
+
     await wrapper.find('#construction-search').setValue('')
     await wrapper.find('#construction-status').setValue('delivered')
-    expect(wrapper.text()).toContain('Entregado')
-    expect(wrapper.text()).toContain('BASE DEMO 06')
-    expect(wrapper.text()).not.toContain('BASE DEMO 04')
+    expect(list.text()).toContain('1 de 8 registros')
+    expect(list.text()).toContain('Entregado')
+    expect(list.text()).toContain('BASE DEMO 06')
+    expect(list.text()).not.toContain('BASE DEMO 04')
   })
 })

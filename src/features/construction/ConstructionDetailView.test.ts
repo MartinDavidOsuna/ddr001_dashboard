@@ -19,7 +19,7 @@ describe('ConstructionDetailView', () => {
       },
     })
     await flushPromises()
-    expect(wrapper.text()).toContain('Expediente de levantamiento')
+    expect(wrapper.text()).toContain('EXPEDIENTE DE LEVANTAMIENTO')
     expect(wrapper.text()).toContain('Preparación del terreno')
     expect(wrapper.text()).toContain('Terminado')
     expect(wrapper.text()).toContain('Evidencia fotográfica por etapa')
