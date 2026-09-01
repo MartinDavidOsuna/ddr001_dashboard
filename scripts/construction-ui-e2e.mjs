@@ -4,6 +4,7 @@ import { chromium } from 'playwright-core'
 
 const appUrl = process.env.E2E_APP_URL || 'http://127.0.0.1:4173'
 const artifactsDir = process.env.E2E_ARTIFACTS_DIR || '.artifacts/construction-ui'
+const transparentPng = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64')
 const viewports = [
   { name: 'desktop-1440', width: 1440, height: 1000 },
   { name: 'tablet-768', width: 768, height: 1024 },
@@ -89,7 +90,9 @@ await context.route('**/*', async (route) => {
     forbiddenRequests.push(request.url())
     return route.abort()
   }
-  if (url.hostname.endsWith('tile.openstreetmap.org')) return route.abort()
+  if (url.hostname.endsWith('tile.openstreetmap.org')) {
+    return route.fulfill({ status: 200, contentType: 'image/png', body: transparentPng })
+  }
   if (url.origin !== appUrl) return route.continue()
 
   if (url.pathname === '/admin/auth/refresh') return json(route, { accessToken: 'mock-access-token', refreshToken: 'mock-refresh-token' })
