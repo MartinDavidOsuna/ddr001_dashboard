@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
+import type { EChartsCoreOption } from 'echarts/core'
 import { RouterLink } from 'vue-router'
 import { AlertTriangle, Camera, ChevronRight, HardHat, MapPin, RefreshCw } from '@lucide/vue'
 import EChart from '@/components/EChart.vue'
@@ -27,19 +28,19 @@ const companyProductivity = computed(() => productivityBy(surveys.value, 'compan
 const rejection = computed(() => rejectionRate(surveys.value))
 const cycleDays = computed(() => averageCycleDays(surveys.value))
 
-const statusOption = computed(() => ({
+const statusOption = computed<EChartsCoreOption>(() => ({
   tooltip: { trigger: 'item' },
   legend: { bottom: 0 },
   series: [{ type: 'pie', radius: ['48%', '72%'], center: ['50%', '43%'], data: statusDistribution(surveys.value), label: { formatter: '{b}\n{c}' } }],
 }))
-const stageOption = computed(() => ({
+const stageOption = computed<EChartsCoreOption>(() => ({
   tooltip: { trigger: 'axis' },
   grid: { left: 36, right: 16, top: 24, bottom: 70 },
   xAxis: { type: 'category', data: stages.value.map((item) => item.name), axisLabel: { interval: 0, rotate: 25 } },
   yAxis: { type: 'value', minInterval: 1 },
   series: [{ type: 'bar', data: stages.value.map((item) => item.value), barMaxWidth: 38 }],
 }))
-const activityOption = computed(() => ({
+const activityOption = computed<EChartsCoreOption>(() => ({
   tooltip: { trigger: 'axis' },
   legend: { data: ['Creados', 'Terminados'] },
   grid: { left: 36, right: 16, top: 42, bottom: 34 },
@@ -50,7 +51,7 @@ const activityOption = computed(() => ({
     { name: 'Terminados', type: 'line', smooth: true, data: activity.value.map((item) => item.finished) },
   ],
 }))
-function productivityOption(items: { name: string; total: number; finished: number }[]) {
+function productivityOption(items: { name: string; total: number; finished: number }[]): EChartsCoreOption {
   return {
     tooltip: { trigger: 'axis' },
     legend: { data: ['Total', 'Terminados'] },
@@ -63,8 +64,8 @@ function productivityOption(items: { name: string; total: number; finished: numb
     ],
   }
 }
-const contractorOption = computed(() => productivityOption(contractorProductivity.value))
-const companyOption = computed(() => productivityOption(companyProductivity.value))
+const contractorOption = computed<EChartsCoreOption>(() => productivityOption(contractorProductivity.value))
+const companyOption = computed<EChartsCoreOption>(() => productivityOption(companyProductivity.value))
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value))
@@ -105,16 +106,16 @@ function syncLabel(survey: ConstructionSurvey) {
     </div>
 
     <div class="analytics-grid">
-      <article class="card chart-card"><div class="section-head"><div><strong>Estado de levantamientos</strong><small>Distribución operativa</small></div></div><EChart :option="statusOption" /></article>
-      <article class="card chart-card"><div class="section-head"><div><strong>Bases por etapa actual</strong><small>Detección de cuellos de botella</small></div></div><EChart :option="stageOption" /></article>
-      <article class="card chart-card chart-card--wide"><div class="section-head"><div><strong>Levantamientos creados / terminados</strong><small>Actividad temporal de la muestra</small></div></div><EChart :option="activityOption" /></article>
-      <article class="card chart-card"><div class="section-head"><div><strong>Levantamientos por contratista</strong><small>Métrica operacional, no ranking laboral</small></div></div><EChart :option="contractorOption" /></article>
-      <article class="card chart-card"><div class="section-head"><div><strong>Avance por Empresa</strong><small>La fuente futura podrá mapear el campo interno crew</small></div></div><EChart :option="companyOption" /></article>
+      <article class="card chart-card"><div class="section-head"><div><strong>Estado de levantamientos</strong><small>Distribución operativa</small></div></div><EChart :option="statusOption" aria-label="Estado mock de levantamientos" /></article>
+      <article class="card chart-card"><div class="section-head"><div><strong>Bases por etapa actual</strong><small>Detección de cuellos de botella</small></div></div><EChart :option="stageOption" aria-label="Etapa mock de levantamientos" /></article>
+      <article class="card chart-card chart-card--wide"><div class="section-head"><div><strong>Levantamientos creados / terminados</strong><small>Actividad temporal de la muestra</small></div></div><EChart :option="activityOption" aria-label="Actividad mock de levantamientos" /></article>
+      <article class="card chart-card"><div class="section-head"><div><strong>Levantamientos por contratista</strong><small>Métrica operacional, no ranking laboral</small></div></div><EChart :option="contractorOption" aria-label="Productividad mock por contratista" /></article>
+      <article class="card chart-card"><div class="section-head"><div><strong>Avance por Empresa</strong><small>La fuente futura podrá mapear el campo interno crew</small></div></div><EChart :option="companyOption" aria-label="Avance mock por Empresa" /></article>
     </div>
 
     <div class="secondary-metrics">
       <article class="card metric"><small>Tasa de rechazo</small><strong>{{ rejection }}%</strong><span>Rechazados o con corrección / revisados</span></article>
-      <article class="card metric"><small>Tiempo promedio de construcción</small><strong>{{ cycleDays }} días</strong><span>Vista preparada para createdAt → executedAt</span></article>
+      <article class="card metric"><small>Tiempo promedio de construcción</small><strong>{{ cycleDays }} días</strong><span>createdAt → executedAt</span></article>
       <article class="card metric"><small>Fotografías registradas</small><strong>{{ summary.photos }}</strong><span>{{ summary.confirmedEvidence }} evidencias confirmadas</span></article>
     </div>
 

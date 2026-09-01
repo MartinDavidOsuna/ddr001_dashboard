@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { EChartsCoreOption } from 'echarts/core'
 import { Camera, CheckCircle2, Clock3, HardHat, PackageCheck, TriangleAlert } from '@lucide/vue'
 import EChart from '@/components/EChart.vue'
 import { constructionSurveys } from './construction.mock'
@@ -8,17 +9,17 @@ import { constructionSummary, stageDistribution, statusDistribution, temporalAct
 const summary = computed(() => constructionSummary(constructionSurveys))
 const stages = computed(() => stageDistribution(constructionSurveys))
 const activity = computed(() => temporalActivity(constructionSurveys))
-const statusOption = computed(() => ({
+const statusOption = computed<EChartsCoreOption>(() => ({
   tooltip: { trigger: 'item' },
   legend: { bottom: 0 },
   series: [{ type: 'pie', radius: ['48%', '72%'], center: ['50%', '43%'], data: statusDistribution(constructionSurveys), label: { formatter: '{b}: {c}' } }],
 }))
-const stageOption = computed(() => ({
+const stageOption = computed<EChartsCoreOption>(() => ({
   tooltip: { trigger: 'axis' }, grid: { left: 34, right: 12, top: 22, bottom: 62 },
   xAxis: { type: 'category', data: stages.value.map((item) => item.name), axisLabel: { interval: 0, rotate: 24 } },
   yAxis: { type: 'value', minInterval: 1 }, series: [{ type: 'bar', data: stages.value.map((item) => item.value), barMaxWidth: 36 }],
 }))
-const activityOption = computed(() => ({
+const activityOption = computed<EChartsCoreOption>(() => ({
   tooltip: { trigger: 'axis' }, legend: { data: ['Creados', 'Terminados'] }, grid: { left: 34, right: 12, top: 42, bottom: 32 },
   xAxis: { type: 'category', data: activity.value.map((item) => item.date.slice(5)) }, yAxis: { type: 'value', minInterval: 1 },
   series: [{ name: 'Creados', type: 'line', smooth: true, data: activity.value.map((item) => item.created) }, { name: 'Terminados', type: 'line', smooth: true, data: activity.value.map((item) => item.finished) }],
@@ -41,9 +42,9 @@ const activityOption = computed(() => ({
       <article class="card"><PackageCheck :size="19" /><div><small>Entregadas</small><strong>{{ summary.delivered }}</strong></div></article>
     </div>
     <div class="construction-charts">
-      <article class="card chart"><div><strong>Estado de levantamientos</strong><small>Distribución operativa</small></div><EChart :option="statusOption" /></article>
-      <article class="card chart"><div><strong>Bases por etapa actual</strong><small>Cuellos de botella</small></div><EChart :option="stageOption" /></article>
-      <article class="card chart chart--wide"><div><strong>Levantamientos creados / terminados</strong><small>Actividad temporal</small></div><EChart :option="activityOption" /></article>
+      <article class="card chart"><div><strong>Estado de levantamientos</strong><small>Distribución operativa</small></div><EChart :option="statusOption" aria-label="Estado mock de levantamientos" /></article>
+      <article class="card chart"><div><strong>Bases por etapa actual</strong><small>Cuellos de botella</small></div><EChart :option="stageOption" aria-label="Etapa actual mock de levantamientos" /></article>
+      <article class="card chart chart--wide"><div><strong>Levantamientos creados / terminados</strong><small>Actividad temporal</small></div><EChart :option="activityOption" aria-label="Actividad temporal mock de levantamientos" /></article>
     </div>
   </section>
 </template>
