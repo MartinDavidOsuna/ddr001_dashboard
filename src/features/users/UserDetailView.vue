@@ -6,6 +6,7 @@ import { dashboardService } from "@/services/dashboard";
 import { problemMessage } from "@/api/client";
 import type { DashboardUserDetail } from "@/api/types";
 import AppStatus from "@/components/AppStatus.vue";
+import ConstructionUserAccessCard from "@/features/construction/ConstructionUserAccessCard.vue";
 import { userDate, userInitials } from "./user-format";
 
 const route = useRoute();
@@ -38,6 +39,7 @@ onMounted(load);
           <article class="card"><b>{{ user.inspectionCount }}</b><span>Revisiones</span></article><article class="card"><b>{{ user.validatedCount }}</b><span>Validadas</span></article><article class="card"><b>{{ user.rejectedCount }}</b><span>Rechazadas</span></article><article class="card"><b>{{ user.sessionCount }}</b><span>Jornadas</span></article><article class="card"><b>{{ user.deviceCount }}</b><span>Dispositivos</span></article><article class="card"><b>{{ user.activeSessionCount }}</b><span>Sesiones activas</span></article>
         </section>
       </div>
+      <ConstructionUserAccessCard :user-id="user.userId" />
       <section class="card section-card"><h2><ClipboardCheck :size="19"/>Revisiones recientes</h2><div v-if="user.recentInspections.length" class="rows"><RouterLink v-for="item in user.recentInspections" :key="item.inspectionId" :to="`/revisiones/${item.inspectionId}`"><span><b>Hidrante {{ item.accountNumber }}</b><small>{{ userDate(item.startedAt) }} · Revisión #{{ item.revisionNumber }}</small></span><AppStatus :status="item.status"/></RouterLink></div><p v-else class="muted">Este usuario no tiene revisiones registradas.</p></section>
       <section class="card section-card"><h2><Clock3 :size="19"/>Jornadas recientes</h2><div v-if="user.recentSessions.length" class="session-table"><div v-for="item in user.recentSessions" :key="item.workSessionId"><span><b>{{ item.crewName || "Sin cuadrilla" }}</b><small>{{ userDate(item.startedAt) }}</small></span><AppStatus :status="item.status"/><span>{{ item.endedAt ? userDate(item.endedAt) : "En curso" }}</span></div></div><p v-else class="muted">Este usuario no tiene jornadas registradas.</p></section>
     </template>
