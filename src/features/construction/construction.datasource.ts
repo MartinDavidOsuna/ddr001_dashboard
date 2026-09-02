@@ -1,4 +1,5 @@
 import { constructionSurveys } from './construction.mock'
+import { apiConstructionDataSource } from './construction.api.datasource'
 import type { ConstructionSurvey } from './construction.types'
 
 export interface ConstructionDataSource {
@@ -20,5 +21,6 @@ export const mockConstructionDataSource: ConstructionDataSource = {
   },
 }
 
-export const constructionDataSource: ConstructionDataSource = mockConstructionDataSource
-export const CONSTRUCTION_DATA_MODE = 'UI_PREVIEW_MOCK' as const
+const apiMode=import.meta.env.VITE_CONSTRUCTION_DATA_MODE==='api'
+export const constructionDataSource: ConstructionDataSource = apiMode ? apiConstructionDataSource : mockConstructionDataSource
+export const CONSTRUCTION_DATA_MODE = apiMode ? 'API_REAL' : 'UI_PREVIEW_MOCK'

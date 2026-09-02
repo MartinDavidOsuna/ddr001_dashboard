@@ -1,18 +1,21 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import type { EChartsCoreOption } from 'echarts/core'
 import { Camera, CheckCircle2, Clock3, HardHat, PackageCheck, TriangleAlert } from '@lucide/vue'
 import EChart from '@/components/EChart.vue'
-import { constructionSurveys } from './construction.mock'
+import { CONSTRUCTION_DATA_MODE, constructionDataSource } from './construction.datasource'
+import type { ConstructionSurvey } from './construction.types'
 import { constructionSummary, stageDistribution, statusDistribution, temporalActivity } from './construction.metrics'
 
-const summary = computed(() => constructionSummary(constructionSurveys))
-const stages = computed(() => stageDistribution(constructionSurveys))
-const activity = computed(() => temporalActivity(constructionSurveys))
+const constructionSurveys = ref<ConstructionSurvey[]>([])
+onMounted(async()=>{constructionSurveys.value=await constructionDataSource.list()})
+const summary = computed(() => constructionSummary(constructionSurveys.value))
+const stages = computed(() => stageDistribution(constructionSurveys.value))
+const activity = computed(() => temporalActivity(constructionSurveys.value))
 const statusOption = computed<EChartsCoreOption>(() => ({
   tooltip: { trigger: 'item' },
   legend: { bottom: 0 },
-  series: [{ type: 'pie', radius: ['48%', '72%'], center: ['50%', '43%'], data: statusDistribution(constructionSurveys), label: { formatter: '{b}: {c}' } }],
+  series: [{ type: 'pie', radius: ['48%', '72%'], center: ['50%', '43%'], data: statusDistribution(constructionSurveys.value), label: { formatter: '{b}: {c}' } }],
 }))
 const stageOption = computed<EChartsCoreOption>(() => ({
   tooltip: { trigger: 'axis' }, grid: { left: 34, right: 12, top: 22, bottom: 62 },
@@ -32,7 +35,7 @@ const activityOption = computed<EChartsCoreOption>(() => ({
       <div><span class="eyebrow"><HardHat :size="15" /> LEVANTAMIENTOS / NUEVAS BASES</span><h2 id="construction-dashboard-title">Construcción de nuevos hidrantes</h2><p>Métricas Construction separadas de Revisión Visual.</p></div>
       <RouterLink to="/levantamientos" class="btn">Abrir módulo</RouterLink>
     </div>
-    <div class="preview-note">Vista preliminar con fixtures locales · integración de datos pendiente</div>
+    <div class="preview-note">{{ CONSTRUCTION_DATA_MODE === 'API_REAL' ? 'Datos administrativos Construction' : 'Vista preliminar con fixtures locales · integración de datos pendiente' }}</div>
     <div class="construction-kpis">
       <article class="card"><HardHat :size="19" /><div><small>Total de bases</small><strong>{{ summary.total }}</strong></div></article>
       <article class="card"><Clock3 :size="19" /><div><small>En construcción</small><strong>{{ summary.inProcess }}</strong></div></article>

@@ -1,16 +1,23 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { LockKeyhole, Save, ShieldCheck } from '@lucide/vue'
 import { useAuthStore } from '@/stores/auth'
 import { mockConstructionAccessFor } from './construction.mock'
+import { getConstructionAccess, updateConstructionAccess } from './construction.access.service'
+import { CONSTRUCTION_DATA_MODE } from './construction.datasource'
 import { constructionRoleLabels, type ConstructionRole } from './construction.types'
 
 const props = defineProps<{ userId: string; index?: number }>()
 const auth = useAuthStore()
-const access = mockConstructionAccessFor(props.userId, props.index)
+const access = ref(mockConstructionAccessFor(props.userId, props.index))
 type PreviewRole = ConstructionRole | 'none'
-const selectedRole = ref<PreviewRole>(access.role || 'none')
-const privilegedPreview = computed(() => auth.user?.role === 'admin' || auth.user?.role === 'supervisor')
+const selectedRole = ref<PreviewRole>(access.value.role || 'none')
+const saving = ref(false)
+const message = ref('')
+const realMode = CONSTRUCTION_DATA_MODE === 'API_REAL'
+const privilegedPreview = computed(() => realMode ? auth.user?.role === 'admin' : auth.user?.role === 'admin' || auth.user?.role === 'supervisor')
+onMounted(async()=>{if(!realMode)return;try{access.value=await getConstructionAccess(props.userId);selectedRole.value=access.value.role||'none'}catch{message.value='No fue posible cargar el acceso Construction.'}})
+async function save(){if(!realMode||!privilegedPreview.value||selectedRole.value==='admin'||selectedRole.value==='superadmin')return;saving.value=true;message.value='';try{const role=selectedRole.value==='none'?null:selectedRole.value;await updateConstructionAccess(props.userId,role);access.value={...access.value,role,accessEnabled:role!==null};message.value='Acceso Construction guardado.'}catch{message.value='El backend rechazó el cambio; no se modificó la vista.'}finally{saving.value=false}}
 const roleLabel = computed(() => selectedRole.value === 'none' ? 'Sin acceso' : constructionRoleLabels[selectedRole.value])
 const description = computed(() => {
   if (selectedRole.value === 'contractor') return 'Puede crear y gestionar sus propios levantamientos, capturar evidencia, completar etapas y atender correcciones.'
@@ -38,9 +45,9 @@ function formatDate(value?: string | null) {
 
 <template>
   <article class="card construction-access">
-    <div class="section-head"><div><span class="eyebrow"><ShieldCheck :size="15" /> ACCESO A LEVANTAMIENTOS</span><strong>Rol Construction</strong><small>Separado del rol administrativo de plataforma/RV.</small></div><span class="api-pending">AUTHORIZATION_API_PENDING</span></div>
+    <div class="section-head"><div><span class="eyebrow"><ShieldCheck :size="15" /> ACCESO A LEVANTAMIENTOS</span><strong>Rol Construction</strong><small>Separado del rol administrativo de plataforma/RV.</small></div><span class="api-pending">{{ realMode ? 'API_AUTHORIZED' : 'AUTHORIZATION_API_PENDING' }}</span></div>
     <div class="access-summary">
-      <div><small>Rol actual (mock)</small><strong>{{ access.role ? constructionRoleLabels[access.role] : 'Sin acceso' }}</strong></div>
+      <div><small>Rol actual</small><strong>{{ access.role ? constructionRoleLabels[access.role] : 'Sin acceso' }}</strong></div>
       <div><small>Estado del acceso</small><strong>{{ access.accessEnabled ? 'Habilitado' : 'Sin acceso' }}</strong></div>
       <div><small>Empresa</small><strong>{{ access.companyName || '—' }}</strong></div>
       <div><small>Levantamientos propios</small><strong>{{ access.ownSurveyCount }}</strong></div>
@@ -50,10 +57,11 @@ function formatDate(value?: string | null) {
     <div class="role-editor">
       <div class="field"><label for="construction-role-preview">Previsualizar rol</label><select id="construction-role-preview" v-model="selectedRole" :disabled="!privilegedPreview"><option value="none">Sin acceso</option><option value="contractor">Contratista</option><option value="resident">Residente</option><option value="admin">Administrador</option><option v-if="access.role === 'superadmin'" value="superadmin" disabled>Superadministrador (derivado)</option></select></div>
       <div class="role-description"><strong>{{ roleLabel }}</strong><p>{{ description }}</p></div>
-      <button class="btn btn--primary save" disabled title="Integración con API pendiente"><Save :size="16" /> Guardar rol</button>
+      <button class="btn btn--primary save" :disabled="!realMode || !privilegedPreview || saving" @click="save"><Save :size="16" /> {{ saving ? 'Guardando…' : 'Guardar rol' }}</button>
     </div>
     <p v-if="!privilegedPreview" class="authorization-note"><LockKeyhole :size="15" /> La sesión actual es de solo lectura. Los controles de cambio permanecen bloqueados.</p>
-    <p v-else class="authorization-note"><LockKeyhole :size="15" /> El selector sólo cambia esta previsualización local. No se ejecuta POST, PATCH ni PUT.</p>
+    <p v-else class="authorization-note"><LockKeyhole :size="15" /> {{ realMode ? 'Los cambios requieren confirmación del backend y quedan auditados.' : 'El selector sólo cambia esta previsualización local. No se ejecuta POST, PATCH ni PUT.' }}</p>
+    <p v-if="message" class="authorization-note">{{ message }}</p>
 
     <div class="permissions"><strong>Permissions preview</strong><div class="permission-grid"><div v-for="[permission,value] in permissions" :key="permission"><span>{{ permission }}</span><strong>{{ value }}</strong></div></div></div>
 

@@ -92,7 +92,7 @@ function syncLabel(survey: ConstructionSurvey) {
         <h1 class="page-title">Levantamientos</h1>
         <p class="page-subtitle">Seguimiento de construcción de bases para nuevos hidrantes</p>
       </div>
-      <span class="preview-badge">Vista preliminar · integración de datos pendiente</span>
+      <span class="preview-badge">{{ CONSTRUCTION_DATA_MODE === 'API_REAL' ? 'Datos administrativos Construction' : 'Vista preliminar · integración de datos pendiente' }}</span>
     </div>
 
     <div class="kpis" aria-label="Indicadores de levantamientos">
