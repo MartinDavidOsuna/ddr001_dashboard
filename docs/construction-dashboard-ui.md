@@ -107,11 +107,11 @@ El frontend no puede decidir la autorización real. La integración backend debe
 
 Hasta que exista ese contrato, `ConstructionUserAccessCard.vue` mantiene el botón Guardar deshabilitado y muestra `AUTHORIZATION_API_PENDING`.
 
-## Sustitución de mocks por API
+## Modos de datos
 
-Los componentes consumen `ConstructionDataSource` desde `construction.datasource.ts`. La futura integración debe reemplazar la implementación `mockConstructionDataSource` por un adapter HTTP administrativo después de acordar contratos backend. Los componentes no deben importar rutas móviles ni `dashboardService.construction` antes de esa fase.
+Los componentes consumen `ConstructionDataSource` desde `construction.datasource.ts`. El modo predeterminado `UI_PREVIEW_MOCK` conserva fixtures, filtrado y métricas locales. `VITE_CONSTRUCTION_DATA_MODE=api` selecciona `ConstructionApiDataSource`, delega paginación y filtros al servidor, consume `summary`/`metrics`, detalle, acceso, historial y contenido fotográfico administrativo. Un error HTTP en modo API se presenta al usuario y nunca activa fixtures como fallback.
 
-La adaptación debe mantener los tipos de UI en `construction.types.ts` y resolver allí las diferencias de naming, por ejemplo `crew → companyName`, sin renombrar contratos existentes ni el concepto histórico de Cuadrilla en RV.
+El mapper mantiene los tipos de UI y traduce `crewId/crewName → companyName`, sin renombrar contratos backend ni el concepto histórico de Cuadrilla en RV. Los thumbnails y originales usan handlers administrativos protegidos; una ausencia real se muestra como contenido no disponible.
 
 ## Criterio de terminado
 
