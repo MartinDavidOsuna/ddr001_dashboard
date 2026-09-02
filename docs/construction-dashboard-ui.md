@@ -111,6 +111,20 @@ Hasta que exista ese contrato, `ConstructionUserAccessCard.vue` mantiene el bot�
 
 Los componentes consumen `ConstructionDataSource` desde `construction.datasource.ts`. El modo predeterminado `UI_PREVIEW_MOCK` conserva fixtures, filtrado y métricas locales. `VITE_CONSTRUCTION_DATA_MODE=api` selecciona `ConstructionApiDataSource`, delega paginación y filtros al servidor, consume `summary`/`metrics`, detalle, acceso, historial y contenido fotográfico administrativo. Un error HTTP en modo API se presenta al usuario y nunca activa fixtures como fallback.
 
+## Certificación integrada SQL TEST
+
+`Dashboard ↔ API E2E: PASS EN SQL TEST` (1 de septiembre de 2026). El smoke
+`npm run e2e:construction-api` usa login, refresh y `me` administrativos reales,
+API local, `DDR001_Hidrantes_TEST` y `VITE_CONSTRUCTION_DATA_MODE=api`. Recorre
+las cinco vistas en 1440×1000, 768×1024 y 390×844, comprueba filtros
+server-side, detalle, fotos, mapa, acceso, historial, persistencia/restauración
+de rol y el manejo no optimista de un error PUT. El test aborta ante tráfico a
+`cifra.aquafim.com`.
+
+La matriz anterior describe los gaps históricos de la fase UI-only; los
+contratos marcados allí como pendientes quedaron cubiertos por el adapter API y
+por esta certificación integrada.
+
 El mapper mantiene los tipos de UI y traduce `crewId/crewName → companyName`, sin renombrar contratos backend ni el concepto histórico de Cuadrilla en RV. Los thumbnails y originales usan handlers administrativos protegidos; una ausencia real se muestra como contenido no disponible.
 
 ## Criterio de terminado
