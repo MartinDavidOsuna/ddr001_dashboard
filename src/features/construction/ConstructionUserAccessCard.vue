@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { LockKeyhole, Save, ShieldCheck } from '@lucide/vue'
 import { useAuthStore } from '@/stores/auth'
 import { mockConstructionAccessFor } from './construction.mock'
-import { getConstructionAccess, updateConstructionAccess } from './construction.access.service'
+import { getConstructionAccess, getConstructionAccessHistory, updateConstructionAccess, type ConstructionAccessHistoryItem } from './construction.access.service'
 import { CONSTRUCTION_DATA_MODE } from './construction.datasource'
 import { constructionRoleLabels, type ConstructionRole } from './construction.types'
 
@@ -14,10 +14,11 @@ type PreviewRole = ConstructionRole | 'none'
 const selectedRole = ref<PreviewRole>(access.value.role || 'none')
 const saving = ref(false)
 const message = ref('')
+const history = ref<ConstructionAccessHistoryItem[]>([])
 const realMode = CONSTRUCTION_DATA_MODE === 'API_REAL'
 const privilegedPreview = computed(() => realMode ? auth.user?.role === 'admin' : auth.user?.role === 'admin' || auth.user?.role === 'supervisor')
-onMounted(async()=>{if(!realMode)return;try{access.value=await getConstructionAccess(props.userId);selectedRole.value=access.value.role||'none'}catch{message.value='No fue posible cargar el acceso Construction.'}})
-async function save(){if(!realMode||!privilegedPreview.value||selectedRole.value==='admin'||selectedRole.value==='superadmin')return;saving.value=true;message.value='';try{const role=selectedRole.value==='none'?null:selectedRole.value;await updateConstructionAccess(props.userId,role);access.value={...access.value,role,accessEnabled:role!==null};message.value='Acceso Construction guardado.'}catch{message.value='El backend rechazó el cambio; no se modificó la vista.'}finally{saving.value=false}}
+onMounted(async()=>{if(!realMode)return;try{[access.value,history.value]=await Promise.all([getConstructionAccess(props.userId),getConstructionAccessHistory(props.userId)]);selectedRole.value=access.value.role||'none'}catch{message.value='No fue posible cargar el acceso Construction.'}})
+async function save(){if(!realMode||!privilegedPreview.value||selectedRole.value==='admin'||selectedRole.value==='superadmin')return;saving.value=true;message.value='';try{const role=selectedRole.value==='none'?null:selectedRole.value;await updateConstructionAccess(props.userId,role);access.value={...access.value,role,accessEnabled:role!==null};history.value=await getConstructionAccessHistory(props.userId);message.value='Acceso Construction guardado.'}catch{selectedRole.value=access.value.role||'none';message.value='El backend rechazó el cambio; no se modificó la vista.'}finally{saving.value=false}}
 const roleLabel = computed(() => selectedRole.value === 'none' ? 'Sin acceso' : constructionRoleLabels[selectedRole.value])
 const description = computed(() => {
   if (selectedRole.value === 'contractor') return 'Puede crear y gestionar sus propios levantamientos, capturar evidencia, completar etapas y atender correcciones.'
@@ -65,7 +66,7 @@ function formatDate(value?: string | null) {
 
     <div class="permissions"><strong>Permissions preview</strong><div class="permission-grid"><div v-for="[permission,value] in permissions" :key="permission"><span>{{ permission }}</span><strong>{{ value }}</strong></div></div></div>
 
-    <div class="audit-placeholder"><strong>Historial de acceso Levantamientos</strong><div><span>01/09/2026</span><p>Contratista → Residente</p><small>Modificado por Administrador · API pendiente</small></div></div>
+    <div class="audit-placeholder"><strong>Historial de acceso Levantamientos</strong><template v-if="realMode"><div v-for="item in history" :key="item.auditId"><span>{{ formatDate(item.timestamp) }}</span><p>{{ item.before?.role ? constructionRoleLabels[item.before.role] : 'Sin acceso' }} → {{ item.after?.role ? constructionRoleLabels[item.after.role] : 'Sin acceso' }}<br><small>{{ item.reason || 'Sin motivo registrado' }}</small></p><small>Modificado por {{ item.actor }}</small></div><p v-if="!history.length" class="authorization-note">Sin cambios de acceso registrados.</p></template><div v-else><span>01/09/2026</span><p>Contratista → Residente</p><small>Vista preliminar local</small></div></div>
   </article>
 </template>
 

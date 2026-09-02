@@ -5,17 +5,20 @@ import { Camera, CheckCircle2, Clock3, HardHat, PackageCheck, TriangleAlert } fr
 import EChart from '@/components/EChart.vue'
 import { CONSTRUCTION_DATA_MODE, constructionDataSource } from './construction.datasource'
 import type { ConstructionSurvey } from './construction.types'
+import { constructionStatusLabels, type SurveyStatus } from './construction.types'
+import { getConstructionMetrics, getConstructionSummary, type ConstructionApiMetrics, type ConstructionApiSummary } from './construction.analytics.service'
 import { constructionSummary, stageDistribution, statusDistribution, temporalActivity } from './construction.metrics'
 
 const constructionSurveys = ref<ConstructionSurvey[]>([])
-onMounted(async()=>{constructionSurveys.value=await constructionDataSource.list()})
-const summary = computed(() => constructionSummary(constructionSurveys.value))
-const stages = computed(() => stageDistribution(constructionSurveys.value))
-const activity = computed(() => temporalActivity(constructionSurveys.value))
+const apiMode=CONSTRUCTION_DATA_MODE==='API_REAL',apiSummary=ref<ConstructionApiSummary|null>(null),apiMetrics=ref<ConstructionApiMetrics|null>(null)
+onMounted(async()=>{if(apiMode){[apiSummary.value,apiMetrics.value]=await Promise.all([getConstructionSummary(),getConstructionMetrics()])}else constructionSurveys.value=await constructionDataSource.list()})
+const summary = computed(() => apiSummary.value?{...apiSummary.value,inProcess:apiSummary.value.created+apiSummary.value.inProgress}:constructionSummary(constructionSurveys.value))
+const stages = computed(() => apiMetrics.value?apiMetrics.value.stages.map(x=>({name:x.name,value:Number(x.count)})):stageDistribution(constructionSurveys.value))
+const activity = computed(() => apiMetrics.value?apiMetrics.value.temporal:temporalActivity(constructionSurveys.value))
 const statusOption = computed<EChartsCoreOption>(() => ({
   tooltip: { trigger: 'item' },
   legend: { bottom: 0 },
-  series: [{ type: 'pie', radius: ['48%', '72%'], center: ['50%', '43%'], data: statusDistribution(constructionSurveys.value), label: { formatter: '{b}: {c}' } }],
+  series: [{ type: 'pie', radius: ['48%', '72%'], center: ['50%', '43%'], data: apiMetrics.value?apiMetrics.value.status.map(x=>({name:constructionStatusLabels[x.status as SurveyStatus],value:Number(x.count)})):statusDistribution(constructionSurveys.value), label: { formatter: '{b}: {c}' } }],
 }))
 const stageOption = computed<EChartsCoreOption>(() => ({
   tooltip: { trigger: 'axis' }, grid: { left: 34, right: 12, top: 22, bottom: 62 },

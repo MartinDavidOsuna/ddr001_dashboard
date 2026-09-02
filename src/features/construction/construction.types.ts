@@ -22,6 +22,8 @@ export interface ConstructionPhoto {
   location?: ConstructionLocation | null
   integrityStatus: ConstructionIntegrityStatus
   syncState: ConstructionSyncState
+  thumbnailUrl?: string | null
+  contentUrl?: string | null
 }
 
 export interface ConstructionStep {
@@ -68,6 +70,7 @@ export interface ConstructionSurvey {
   contractorName: string
   contractorUserId?: string | null
   companyName?: string | null
+  crewId?: string | null
   createdAt: string
   updatedAt: string
   status: SurveyStatus
@@ -102,6 +105,26 @@ export interface ConstructionFilters {
   dateFrom: string
   dateTo: string
   search: string
+}
+
+export interface ConstructionListRequest {
+  page: number
+  pageSize: number
+  search?: string
+  status?: SurveyStatus | 'in_process'
+  stage?: number
+  contractorId?: string
+  crewId?: string
+  from?: string
+  to?: string
+}
+
+export interface ConstructionPage {
+  items: ConstructionSurvey[]
+  page: number
+  pageSize: number
+  total: number
+  totalPages: number
 }
 
 export const constructionStepNames = [

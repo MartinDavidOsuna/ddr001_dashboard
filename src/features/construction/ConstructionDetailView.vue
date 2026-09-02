@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { AlertTriangle, ArrowLeft, Camera, Check, Circle, Clock3, FileWarning, HardHat, Image, Link2Off, MapPin, Navigation, UserRound } from '@lucide/vue'
 import InspectionMap from '@/components/InspectionMap.vue'
+import ConstructionPhotoThumbnail from './ConstructionPhotoThumbnail.vue'
 import { CONSTRUCTION_DATA_MODE, constructionDataSource } from './construction.datasource'
 import { constructionPhotoPurposeLabels, constructionStatusLabels, constructionStepNames, type ConstructionPhoto, type ConstructionSurvey, type SurveyStatus } from './construction.types'
 
@@ -90,7 +91,8 @@ function integrityLabel(photo: ConstructionPhoto) {
         <div v-if="!survey.photos.length" class="empty-box"><Image :size="24" /> Aún no hay evidencia en este levantamiento.</div>
         <div v-else class="photo-grid">
           <article v-for="photo in survey.photos" :key="photo.id" class="photo-card">
-            <div class="photo-thumb"><Camera :size="26" /><span>Thumbnail mock</span></div>
+            <ConstructionPhotoThumbnail v-if="CONSTRUCTION_DATA_MODE === 'API_REAL'" :thumbnail-url="photo.thumbnailUrl" :content-url="photo.contentUrl" />
+            <div v-else class="photo-thumb"><Camera :size="26" /><span>Thumbnail mock</span></div>
             <div class="photo-info"><div><strong>{{ photoStage(photo) }}</strong><span v-if="photo.stepNumber === 6" class="purpose">{{ photoPurpose(photo) }}</span></div><small>{{ formatDate(photo.capturedAt) }}</small>
               <dl><div><dt>Ubicación</dt><dd v-if="photo.location">{{ photo.location.latitude.toFixed(5) }}, {{ photo.location.longitude.toFixed(5) }}</dd><dd v-else>Faltante</dd></div><div><dt>Precisión GPS</dt><dd>{{ photo.location ? `${photo.location.accuracy.toFixed(1)} m` : '—' }}</dd></div><div><dt>Integridad</dt><dd>{{ integrityLabel(photo) }}</dd></div><div><dt>Sincronización</dt><dd>{{ photo.syncState === 'synchronized' ? 'Sincronizada' : 'Pendiente' }}</dd></div></dl>
             </div>

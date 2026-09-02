@@ -1,10 +1,11 @@
 import { constructionSurveys } from './construction.mock'
 import { apiConstructionDataSource } from './construction.api.datasource'
-import type { ConstructionSurvey } from './construction.types'
+import type { ConstructionListRequest, ConstructionPage, ConstructionSurvey } from './construction.types'
 
 export interface ConstructionDataSource {
   list(): Promise<ConstructionSurvey[]>
   getById(surveyId: string): Promise<ConstructionSurvey | null>
+  listPage?(request: ConstructionListRequest): Promise<ConstructionPage>
 }
 
 function cloneSurvey<T>(value: T): T {
