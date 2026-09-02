@@ -78,10 +78,6 @@ const context = await browser.newContext()
 const forbiddenRequests = []
 const unexpectedApiRequests = []
 
-await context.addInitScript(() => {
-  sessionStorage.setItem('ddr001.admin.refresh', 'mock-refresh-token')
-})
-
 await context.route('**/*', async (route) => {
   const request = route.request()
   const url = new URL(request.url())
@@ -113,6 +109,10 @@ try {
   for (const viewport of viewports) {
     const page = await context.newPage()
     await page.setViewportSize({ width: viewport.width, height: viewport.height })
+    // Seed origin-scoped session state before Vue and its router guard boot.
+    // The initial about:blank document has an opaque origin in Chromium.
+    await page.goto(`${appUrl}/favicon.svg`, { waitUntil: 'load' })
+    await page.evaluate(() => sessionStorage.setItem('ddr001.admin.refresh', 'mock-refresh-token'))
     const consoleErrors = []
     page.on('console', (message) => {
       if (message.type() === 'error') consoleErrors.push(message.text())
@@ -120,6 +120,7 @@ try {
 
     for (const view of views) {
       await page.goto(`${appUrl}${view.path}`, { waitUntil: 'domcontentloaded' })
+      assert(!page.url().includes('/login'), `${viewport.name} ${view.path}: redirected to login`)
       for (const text of view.expected) {
         await page.getByText(text, { exact: false }).first().waitFor({ state: 'visible', timeout: 10_000 })
       }
@@ -138,8 +139,16 @@ try {
         if (viewport.width > 900) assert(desktopVisible && !mobileVisible, `${viewport.name}: desktop table/card breakpoint is incorrect`)
         else assert(!desktopVisible && mobileVisible, `${viewport.name}: responsive cards are not active`)
       }
+      if (view.path === '/dashboard') assert(await page.locator('.construction-charts').isVisible(), `${viewport.name}: Construction dashboard charts are not visible`)
+      if (view.path === '/levantamientos/mock-survey-4') {
+        assert(await page.locator('.construction-timeline').isVisible(), `${viewport.name}: Construction timeline is not visible`)
+        assert(await page.locator('.photo-card').first().isVisible(), `${viewport.name}: Construction evidence is not visible`)
+        assert(await page.locator('.corrections').isVisible(), `${viewport.name}: Construction corrections are not visible`)
+        assert(await page.locator('.leaflet-container').isVisible(), `${viewport.name}: Construction map is not visible`)
+      }
       if (view.path === '/usuarios/mock-user-1') {
         assert(await page.locator('button.save').isDisabled(), `${viewport.name}: Construction role save must remain disabled`)
+        assert(await page.getByText('Historial de acceso Levantamientos').isVisible(), `${viewport.name}: Construction access history is not visible`)
       }
 
       await page.screenshot({ path: join(artifactsDir, `${viewport.name}-${view.slug}.png`), fullPage: true })
