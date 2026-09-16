@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import AppLayout from "@/layouts/AppLayout.vue";
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: "/login",
@@ -14,6 +14,8 @@ const router = createRouter({
       path: "/",
       component: AppLayout,
       children: [
+        { path: 'diagnosticos', name: 'functional-diagnostics', component: () => import('@/features/diagnostics/DiagnosticListView.vue') },
+        { path: 'diagnosticos/:caseId', name: 'functional-diagnostic-detail', component: () => import('@/features/diagnostics/DiagnosticDetailView.vue') },
         { path: "", redirect: "/dashboard" },
         {
           path: "dashboard",

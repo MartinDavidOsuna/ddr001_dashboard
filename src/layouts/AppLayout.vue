@@ -19,6 +19,7 @@ import {
   ChevronRight,
   Settings,
   Wrench,
+  Activity,
 } from "@lucide/vue";
 import { useAuthStore } from "@/stores/auth";
 const platformVersion = __PLATFORM_VERSION__;
@@ -32,6 +33,7 @@ const groups = [
   ["Dashboard", "/dashboard", BarChart3],
   ["Revisiones", "/revisiones", ClipboardList],
   ["Levantamientos", "/levantamientos", HardHat],
+  ["Diagnósticos", "/diagnosticos", Activity],
   ["Fotografías", "/fotografias", Images],
   ["Mapa", "/mapa", Map],
   ] },
@@ -56,6 +58,7 @@ function closeSubmenu(event: PointerEvent) {
 onMounted(() => document.addEventListener("pointerdown", closeSubmenu));
 onBeforeUnmount(() => document.removeEventListener("pointerdown", closeSubmenu));
 const title = computed(() =>
+  route.name === 'functional-diagnostic-detail' ? 'Detalle de diagnóstico' :
   route.name === "inspection-detail"
     ? "Detalle de revisión"
     : route.name === "hydrant-detail"
