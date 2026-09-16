@@ -1,5 +1,14 @@
 ﻿# Historial de la plataforma DDR001
 
+## 0.3.0 — 2026-09-15 — local, pendiente de publicación
+
+- Módulo aislado Diagnósticos: resumen, filtros server-side, cursores, métricas, técnicos y reportes.
+- Expediente metrológico con Q1–Q4, muestras, Bluetooth/ESP32, configuración, puntos, GPS, integridad y evidencia autenticada.
+- Revisión administrativa por admin/supervisor y gestión de acceso funcional por admin con concurrencia e historial.
+- Simulaciones excluidas por defecto; fixtures exclusivamente en pruebas. Sin cambios en API, SQL o producción.
+- Router compatible con `BASE_URL`, incluyendo despliegue bajo `/ddr001/`.
+- Requiere el contrato API `e571b8b` de `feature/functional-diagnostics-api`, todavía no integrado en main ni expuesto por la API local 1.1.2.
+
 ## 0.2.7 — 2026-09-15 — local, pendiente de publicación
 
 - Revisiones incorpora arriba del listado los indicadores de hidrantes, estados, actividad, técnicos y fotografías del Dashboard, mediante un componente compartido. Los filtros del listado mantienen su alcance; los indicadores muestran el resumen general.

@@ -1,6 +1,6 @@
 {
   "name": "ddr001-dashboard",
-  "version": "0.2.7",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -15,7 +15,9 @@
     "test:watch": "vitest",
     "e2e:edge": "node scripts/edge-e2e.mjs",
     "e2e:construction-ui": "node scripts/construction-ui-e2e.mjs",
-    "e2e:construction-api": "node scripts/construction-api-e2e.mjs"
+    "e2e:construction-api": "node scripts/construction-api-e2e.mjs",
+    "e2e:functional-diagnostics-ui": "node scripts/functional-diagnostics-ui-e2e.mjs",
+    "test:functional-diagnostics-contract": "node scripts/functional-diagnostics-contract-check.mjs"
   },
   "dependencies": {
     "@lucide/vue": "^1.31.0",

@@ -1,0 +1,610 @@
+{
+  "provenance": {
+    "apiSha": "e571b8bdf84a709a0d4ce40bf2a5f842e44199bd",
+    "source": "functional-diagnostics-admin.integration.test.ts and admin.repository.ts; extended with schema-valid BLE/mixed/Q variants, test-only"
+  },
+  "summary": {
+    "filters": {
+      "simulation": "exclude",
+      "from": null,
+      "to": null
+    },
+    "cases": {
+      "total": 1,
+      "approved": 1,
+      "rejected": 0,
+      "inconclusive": 0
+    },
+    "uniqueMeters": 1,
+    "technicians": 1,
+    "totalSamples": 1,
+    "samplesBySource": {
+      "VISUAL": 0,
+      "MANUAL": 0,
+      "LED": 0,
+      "BLE": 1,
+      "SIMULATION": 0
+    },
+    "evidence": {
+      "total": 2,
+      "verified": 1,
+      "pending": 0,
+      "compromised": 1
+    },
+    "sync": {
+      "storedUnlinked": 0,
+      "partialReceipts": 0,
+      "lastReceivedAt": "2026-09-02T12:00:00.000Z"
+    },
+    "generatedAt": "2026-09-02T12:00:00.000Z"
+  },
+  "caseItem": {
+    "caseId": "10000000-0000-4000-8000-000000000001",
+    "meterId": "METER-CONTRACT-001",
+    "userId": "10000000-0000-4000-8000-000000000002",
+    "technicianName": "Functional Admin E2E",
+    "technicianEmail": "functional@example.invalid",
+    "status": "CLOSED",
+    "overallVerdict": "APROBADO",
+    "testBenchId": "ADMIN-E2E",
+    "deviceModel": "Pixel Test",
+    "createdAt": "2026-09-02T12:00:00.000Z",
+    "closedAt": "2026-09-02T12:00:00.000Z",
+    "syncReceivedAt": "2026-09-02T12:00:00.000Z",
+    "durationSeconds": 120,
+    "flowPointCount": 4,
+    "sampleCount": 1,
+    "evidenceCount": 2,
+    "integrityStatus": "COMPROMISED",
+    "measurementSources": [
+      "BLE"
+    ],
+    "reviewStatus": "REVIEWED",
+    "reviewClassification": "CERTIFIED"
+  },
+  "detail": {
+    "meter": {
+      "meterId": "METER-CONTRACT-001",
+      "externalStatus": "UNKNOWN_OFFLINE",
+      "externalSnapshot": null,
+      "externalCheckedAt": null
+    },
+    "technician": {
+      "userId": "10000000-0000-4000-8000-000000000002",
+      "displayName": "Functional Admin E2E",
+      "email": "functional@example.invalid"
+    },
+    "case": {
+      "caseId": "10000000-0000-4000-8000-000000000001",
+      "meterId": "METER-CONTRACT-001",
+      "userId": "10000000-0000-4000-8000-000000000002",
+      "clientUserId": "10000000-0000-4000-8000-000000000090",
+      "status": "CLOSED",
+      "overallVerdict": "APROBADO",
+      "reportVersion": 0,
+      "testBenchId": "ADMIN-E2E",
+      "sourceInstallationId": null,
+      "sourceDeviceId": null,
+      "sourceAndroidVersion": null,
+      "sourceDeviceBrand": "Test",
+      "sourceDeviceModel": "Pixel Test",
+      "clientCreatedAt": "2026-09-02T12:00:00.000Z",
+      "clientClosedAt": "2026-09-02T12:00:00.000Z",
+      "checksum": "1111111111111111111111111111111111111111111111111111111111111111",
+      "canonicalVersion": 2,
+      "contractVersion": "ddr001.verification.case/v2",
+      "serverCreatedAt": "2026-09-02T12:00:00.000Z",
+      "serverUpdatedAt": "2026-09-02T12:00:00.000Z"
+    },
+    "flowPoints": [
+      {
+        "flowPointId": "10000000-0000-4000-8000-000000000003",
+        "caseId": "10000000-0000-4000-8000-000000000001",
+        "code": "Q1",
+        "lpsApprox": null,
+        "mpePct": 2,
+        "status": "PASS",
+        "statisticsN": 1,
+        "meanErrorPct": 0.25,
+        "minimumErrorPct": 0.25,
+        "maximumErrorPct": 0.25,
+        "dispersionPct": 0,
+        "sampleStddevPct": 0,
+        "repeatabilityStatus": "PASS",
+        "clientCreatedAt": "2026-09-02T12:00:00.000Z",
+        "serverCreatedAt": "2026-09-02T12:00:00.000Z",
+        "serverUpdatedAt": "2026-09-02T12:00:00.000Z",
+        "samples": [
+          {
+            "sampleId": "10000000-0000-4000-8000-000000000004",
+            "flowPointId": "10000000-0000-4000-8000-000000000003",
+            "sampleNumber": 1,
+            "status": "CLOSED_VALID",
+            "measurementSource": "BLE",
+            "isSimulation": false,
+            "simulationScenario": null,
+            "clientCreatedAt": "2026-09-02T12:00:00.000Z",
+            "clientUpdatedAt": "2026-09-02T12:00:00.000Z",
+            "startedAt": "2026-09-02T12:00:00.000Z",
+            "endedAt": "2026-09-02T12:00:00.000Z",
+            "gpsLatitude": 29.1234567,
+            "gpsLongitude": -110.7654321,
+            "gpsAccuracyM": 3.25,
+            "gpsCapturedAt": "2026-09-02T12:00:00.000Z",
+            "pulseCount": 10,
+            "progressReferenceL": null,
+            "initialOdometerUnits": null,
+            "initialNeedleL": null,
+            "initialReadingSource": null,
+            "initialEvidenceId": null,
+            "finalOdometerUnits": null,
+            "finalNeedleL": null,
+            "finalReadingSource": null,
+            "finalEvidenceId": null,
+            "vRefL": 10,
+            "vIndL": 10.025,
+            "errorPct": 0.25,
+            "uncertaintyPct": 0.1,
+            "resultMpePct": 2,
+            "acceptanceMetricPct": 0.35,
+            "rejectionMetricPct": 0.15,
+            "verdict": "APRUEBA",
+            "acquisitionIntegrityStatus": "OK",
+            "acquisitionIntegrityReason": null,
+            "acquisitionIntegrityAt": null,
+            "acquisitionIntegritySource": null,
+            "checksum": "4444444444444444444444444444444444444444444444444444444444444444",
+            "canonicalVersion": 6,
+            "algorithmVersion": "ddr001.metrology.endpoint-guard-band/v1",
+            "contractVersion": "ddr001.verification.sample/v9",
+            "serverCreatedAt": "2026-09-02T12:00:00.000Z",
+            "operationalSettings": {
+              "sampleId": "10000000-0000-4000-8000-000000000004",
+              "litersPerPulse": 1,
+              "evidenceStepL": 5,
+              "readingUncertaintyL": 0.1,
+              "flowPointCode": "Q1",
+              "configuredMpePct": 2,
+              "lpsApprox": null,
+              "litersPerOdometerUnit": 1,
+              "needleLitersPerRevolution": 1,
+              "minimumVolumeL": null,
+              "maximumVolumeL": null,
+              "controlStartMinimumLps": null,
+              "controlStartMaximumLps": null,
+              "hydrantLitersPerPulse": null,
+              "cameraZoomLevel": 1,
+              "totalizerLeft": null,
+              "totalizerTop": null,
+              "totalizerWidth": null,
+              "totalizerHeight": null,
+              "dialCenterX": null,
+              "dialCenterY": null,
+              "dialRadius": null,
+              "dialMultiplier": null,
+              "dialLitersPerRevolution": null,
+              "dialZeroAngleDegrees": null,
+              "dialClockwise": null,
+              "dialConfigurationSource": null,
+              "totalizerDigitCount": 6,
+              "totalizerDecimalPlaces": 2,
+              "totalizerUnit": null,
+              "totalizerLeadingZerosAllowed": false,
+              "totalizerConfigurationSource": null,
+              "bleDeviceId": "AA:BB:CC:DD",
+              "bleDeviceName": "ESP32 Contract",
+              "bleServiceUuid": "10000000-0000-4000-8000-000000000020",
+              "bleCounterCharacteristicUuid": "10000000-0000-4000-8000-000000000021",
+              "bleProtocolVersion": 1,
+              "esp32CounterAtStart": 120,
+              "lastObservedEsp32Counter": 130,
+              "ledRoiLeft": null,
+              "ledRoiTop": null,
+              "ledRoiWidth": null,
+              "ledRoiHeight": null,
+              "ledRisingDelta": null,
+              "ledFallingDelta": null,
+              "ledBaseline": null,
+              "ledMinPulseIntervalMs": null,
+              "ledUsesBleReconciliation": null
+            },
+            "points": [
+              {
+                "pointId": "10000000-0000-4000-8000-000000000005",
+                "sampleId": "10000000-0000-4000-8000-000000000004",
+                "type": "START",
+                "pulseCount": 0,
+                "meterUnderTestPulseCount": null,
+                "vRefL": 0,
+                "readingL": 0.0,
+                "vIndL": 0.0,
+                "diagnosticErrorPct": 0.25,
+                "needleL": 0.025,
+                "flowLps": 0.05,
+                "capturedAt": "2026-09-02T12:00:00.000Z"
+              },
+              {
+                "pointId": "10000000-0000-4000-8000-000000000006",
+                "sampleId": "10000000-0000-4000-8000-000000000004",
+                "type": "INTERMEDIATE",
+                "pulseCount": 5,
+                "meterUnderTestPulseCount": null,
+                "vRefL": 5,
+                "readingL": 5.0125,
+                "vIndL": 5.0125,
+                "diagnosticErrorPct": 0.25,
+                "needleL": 0.025,
+                "flowLps": 0.05,
+                "capturedAt": "2026-09-02T12:00:00.000Z"
+              },
+              {
+                "pointId": "10000000-0000-4000-8000-000000000007",
+                "sampleId": "10000000-0000-4000-8000-000000000004",
+                "type": "FINAL",
+                "pulseCount": 10,
+                "meterUnderTestPulseCount": null,
+                "vRefL": 10,
+                "readingL": 10.025,
+                "vIndL": 10.025,
+                "diagnosticErrorPct": 0.25,
+                "needleL": 0.025,
+                "flowLps": 0.05,
+                "capturedAt": "2026-09-02T12:00:00.000Z"
+              },
+              {
+                "pointId": "10000000-0000-4000-8000-000000000008",
+                "sampleId": "10000000-0000-4000-8000-000000000004",
+                "type": "MANUAL_DIAGNOSTIC",
+                "pulseCount": 15,
+                "meterUnderTestPulseCount": null,
+                "vRefL": 15,
+                "readingL": 15.037500000000001,
+                "vIndL": 15.037500000000001,
+                "diagnosticErrorPct": 0.25,
+                "needleL": 0.025,
+                "flowLps": 0.05,
+                "capturedAt": "2026-09-02T12:00:00.000Z"
+              }
+            ],
+            "evidence": [
+              {
+                "evidenceId": "10000000-0000-4000-8000-000000000006",
+                "sampleId": "10000000-0000-4000-8000-000000000004",
+                "pointId": "10000000-0000-4000-8000-000000000005",
+                "type": "START",
+                "required": true,
+                "volumeRefL": 0,
+                "pulseCount": 0,
+                "capturedAt": "2026-09-02T12:00:00.000Z",
+                "clientSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "serverSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "mimeType": "image/png",
+                "sizeBytes": 68,
+                "uploadStatus": "LINKED",
+                "integrityStatus": "VERIFIED",
+                "uploadedAt": "2026-09-02T12:00:00.000Z",
+                "linkedAt": "2026-09-02T12:00:00.000Z",
+                "verifiedAt": "2026-09-02T12:00:00.000Z",
+                "thumbnailAvailable": true,
+                "contentAvailable": true
+              },
+              {
+                "evidenceId": "10000000-0000-4000-8000-000000000016",
+                "sampleId": "10000000-0000-4000-8000-000000000004",
+                "pointId": "10000000-0000-4000-8000-000000000005",
+                "type": "START",
+                "required": true,
+                "volumeRefL": 0,
+                "pulseCount": 0,
+                "capturedAt": "2026-09-02T12:00:00.000Z",
+                "clientSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "serverSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "mimeType": "image/png",
+                "sizeBytes": 68,
+                "uploadStatus": "LINKED",
+                "integrityStatus": "CORRUPT",
+                "uploadedAt": "2026-09-02T12:00:00.000Z",
+                "linkedAt": "2026-09-02T12:00:00.000Z",
+                "verifiedAt": "2026-09-02T12:00:00.000Z",
+                "thumbnailAvailable": false,
+                "contentAvailable": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "flowPointId": "10000000-0000-4000-8000-000000000013",
+        "caseId": "10000000-0000-4000-8000-000000000001",
+        "code": "Q2",
+        "lpsApprox": null,
+        "mpePct": 2,
+        "status": "PASS",
+        "statisticsN": 1,
+        "meanErrorPct": 0.25,
+        "minimumErrorPct": 0.25,
+        "maximumErrorPct": 0.25,
+        "dispersionPct": 0,
+        "sampleStddevPct": 0,
+        "repeatabilityStatus": "PASS",
+        "clientCreatedAt": "2026-09-02T12:00:00.000Z",
+        "serverCreatedAt": "2026-09-02T12:00:00.000Z",
+        "serverUpdatedAt": "2026-09-02T12:00:00.000Z",
+        "samples": [
+          {
+            "sampleId": "10000000-0000-4000-8000-000000000014",
+            "flowPointId": "10000000-0000-4000-8000-000000000013",
+            "sampleNumber": 1,
+            "status": "CLOSED_VALID",
+            "measurementSource": "SIMULATION",
+            "isSimulation": true,
+            "simulationScenario": "PASS",
+            "clientCreatedAt": "2026-09-02T12:00:00.000Z",
+            "clientUpdatedAt": "2026-09-02T12:00:00.000Z",
+            "startedAt": "2026-09-02T12:00:00.000Z",
+            "endedAt": "2026-09-02T12:00:00.000Z",
+            "gpsLatitude": 29.1234567,
+            "gpsLongitude": -110.7654321,
+            "gpsAccuracyM": 3.25,
+            "gpsCapturedAt": "2026-09-02T12:00:00.000Z",
+            "pulseCount": 10,
+            "progressReferenceL": null,
+            "initialOdometerUnits": null,
+            "initialNeedleL": null,
+            "initialReadingSource": null,
+            "initialEvidenceId": null,
+            "finalOdometerUnits": null,
+            "finalNeedleL": null,
+            "finalReadingSource": null,
+            "finalEvidenceId": null,
+            "vRefL": 10,
+            "vIndL": 10.025,
+            "errorPct": 0.25,
+            "uncertaintyPct": 0.1,
+            "resultMpePct": 2,
+            "acceptanceMetricPct": 0.35,
+            "rejectionMetricPct": 0.15,
+            "verdict": "APRUEBA",
+            "acquisitionIntegrityStatus": "COMPROMISED",
+            "acquisitionIntegrityReason": "Fixture interrupted acquisition",
+            "acquisitionIntegrityAt": null,
+            "acquisitionIntegritySource": null,
+            "checksum": "4444444444444444444444444444444444444444444444444444444444444444",
+            "canonicalVersion": 6,
+            "algorithmVersion": "ddr001.metrology.endpoint-guard-band/v1",
+            "contractVersion": "ddr001.verification.sample/v9",
+            "serverCreatedAt": "2026-09-02T12:00:00.000Z",
+            "operationalSettings": null,
+            "points": [],
+            "evidence": []
+          }
+        ]
+      },
+      {
+        "flowPointId": "10000000-0000-4000-8000-000000000023",
+        "caseId": "10000000-0000-4000-8000-000000000001",
+        "code": "Q3",
+        "lpsApprox": null,
+        "mpePct": 2,
+        "status": "PASS",
+        "statisticsN": 1,
+        "meanErrorPct": 0.25,
+        "minimumErrorPct": 0.25,
+        "maximumErrorPct": 0.25,
+        "dispersionPct": 0,
+        "sampleStddevPct": 0,
+        "repeatabilityStatus": "PASS",
+        "clientCreatedAt": "2026-09-02T12:00:00.000Z",
+        "serverCreatedAt": "2026-09-02T12:00:00.000Z",
+        "serverUpdatedAt": "2026-09-02T12:00:00.000Z",
+        "samples": []
+      },
+      {
+        "flowPointId": "10000000-0000-4000-8000-000000000033",
+        "caseId": "10000000-0000-4000-8000-000000000001",
+        "code": "Q4",
+        "lpsApprox": null,
+        "mpePct": 2,
+        "status": "PASS",
+        "statisticsN": 1,
+        "meanErrorPct": 0.25,
+        "minimumErrorPct": 0.25,
+        "maximumErrorPct": 0.25,
+        "dispersionPct": 0,
+        "sampleStddevPct": 0,
+        "repeatabilityStatus": "PASS",
+        "clientCreatedAt": "2026-09-02T12:00:00.000Z",
+        "serverCreatedAt": "2026-09-02T12:00:00.000Z",
+        "serverUpdatedAt": "2026-09-02T12:00:00.000Z",
+        "samples": []
+      }
+    ],
+    "reports": [
+      {
+        "reportId": "10000000-0000-4000-8000-000000000007",
+        "caseId": "10000000-0000-4000-8000-000000000001",
+        "version": 1,
+        "checksum": "8888888888888888888888888888888888888888888888888888888888888888",
+        "metadata": {
+          "source": "e2e"
+        },
+        "clientCreatedAt": "2026-09-02T12:00:00.000Z",
+        "serverCreatedAt": "2026-09-02T12:00:00.000Z",
+        "htmlAvailable": false,
+        "pdfAvailable": false
+      }
+    ],
+    "statusHistory": [
+      {
+        "historyId": "10000000-0000-4000-8000-000000000010",
+        "fromStatus": "OPEN",
+        "toStatus": "CLOSED",
+        "actorType": "FIELD",
+        "actorUserId": "10000000-0000-4000-8000-000000000002",
+        "actorAdminId": null,
+        "reason": "Completed",
+        "metadata": null,
+        "createdAt": "2026-09-02T12:00:00.000Z"
+      }
+    ],
+    "reviews": [
+      {
+        "reviewId": "10000000-0000-4000-8000-000000000008",
+        "caseId": "10000000-0000-4000-8000-000000000001",
+        "reviewStatus": "REVIEWED",
+        "classification": "CERTIFIED",
+        "flags": [
+          "E2E"
+        ],
+        "reviewComment": "Contract review",
+        "reviewedByAdminId": "10000000-0000-4000-8000-000000000009",
+        "reviewedByNameSnapshot": "Supervisor fixture",
+        "reviewedAt": "2026-09-02T12:00:00.000Z",
+        "createdAt": "2026-09-02T12:00:00.000Z"
+      }
+    ],
+    "currentReview": {
+      "reviewId": "10000000-0000-4000-8000-000000000008",
+      "caseId": "10000000-0000-4000-8000-000000000001",
+      "reviewStatus": "REVIEWED",
+      "classification": "CERTIFIED",
+      "flags": [
+        "E2E"
+      ],
+      "reviewComment": "Contract review",
+      "reviewedByAdminId": "10000000-0000-4000-8000-000000000009",
+      "reviewedByNameSnapshot": "Supervisor fixture",
+      "reviewedAt": "2026-09-02T12:00:00.000Z",
+      "createdAt": "2026-09-02T12:00:00.000Z"
+    }
+  },
+  "metrics": {
+    "filters": {
+      "simulation": "exclude",
+      "groupBy": "day"
+    },
+    "buckets": [
+      {
+        "period": "2026-09-02",
+        "caseCount": 1,
+        "sampleCount": 1,
+        "meanErrorPct": 0.25,
+        "meanAbsoluteErrorPct": 0.25,
+        "dispersionPct": 0,
+        "repeatabilityPassCount": 1,
+        "averageDurationSeconds": 120
+      }
+    ],
+    "verdicts": [
+      {
+        "verdict": "APRUEBA",
+        "count": 1
+      }
+    ],
+    "byFlowPoint": [
+      {
+        "code": "Q1",
+        "sampleCount": 1,
+        "meanErrorPct": 0.25,
+        "dispersionPct": 0
+      }
+    ],
+    "bySource": [
+      {
+        "measurementSource": "BLE",
+        "count": 1
+      }
+    ],
+    "byTechnician": [
+      {
+        "userId": "10000000-0000-4000-8000-000000000002",
+        "technician": "Functional Admin E2E",
+        "caseCount": 1
+      }
+    ],
+    "evidenceIntegrity": [
+      {
+        "integrityStatus": "VERIFIED",
+        "count": 1
+      },
+      {
+        "integrityStatus": "CORRUPT",
+        "count": 1
+      }
+    ],
+    "evidenceCompleteness": {
+      "completeCaseCount": 0,
+      "incompleteCaseCount": 1
+    },
+    "byTestBench": [
+      {
+        "testBenchId": "ADMIN-E2E",
+        "caseCount": 1,
+        "sampleCount": 1
+      }
+    ],
+    "samplesPerCase": [
+      {
+        "sampleCount": 1,
+        "caseCount": 1
+      }
+    ]
+  },
+  "trends": {
+    "metric": "cases",
+    "timezone": "UTC",
+    "groupBy": "day",
+    "points": [
+      {
+        "period": "2026-09-02",
+        "value": 1,
+        "count": 1
+      }
+    ]
+  },
+  "user": {
+    "userId": "10000000-0000-4000-8000-000000000002",
+    "displayName": "Functional Admin E2E",
+    "email": "functional@example.invalid",
+    "isActive": true,
+    "accessEnabled": true,
+    "accessCreatedAt": "2026-09-02T12:00:00.000Z",
+    "accessUpdatedAt": "2026-09-02T12:00:00.000Z",
+    "caseCount": 2,
+    "lastFunctionalActivityAt": "2026-09-02T12:00:00.000Z"
+  },
+  "access": {
+    "userId": "10000000-0000-4000-8000-000000000002",
+    "accessEnabled": true,
+    "policyVersion": 1,
+    "updatedAt": "2026-09-02T12:00:00.000Z",
+    "rowVersion": "0x0000000000000001"
+  },
+  "review": {
+    "reviewId": "10000000-0000-4000-8000-000000000008",
+    "caseId": "10000000-0000-4000-8000-000000000001",
+    "status": "REVIEWED",
+    "classification": "CERTIFIED",
+    "flags": [
+      "E2E"
+    ],
+    "comment": "Contract review",
+    "reviewedBy": "10000000-0000-4000-8000-000000000009",
+    "reviewedByName": "Supervisor fixture",
+    "reviewedAt": "2026-09-02T12:00:00.000Z",
+    "createdAt": "2026-09-02T12:00:00.000Z"
+  },
+  "report": {
+    "reportId": "10000000-0000-4000-8000-000000000007",
+    "caseId": "10000000-0000-4000-8000-000000000001",
+    "version": 1,
+    "checksum": "8888888888888888888888888888888888888888888888888888888888888888",
+    "metadata": {
+      "source": "e2e"
+    },
+    "createdAt": "2026-09-02T12:00:00.000Z",
+    "receivedAt": "2026-09-02T12:00:00.000Z",
+    "htmlAvailable": false,
+    "pdfAvailable": false
+  }
+}

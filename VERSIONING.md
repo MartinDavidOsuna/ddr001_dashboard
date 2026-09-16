@@ -40,6 +40,12 @@ validación y despliegue. Esquema requerido: `20260915_rv_dashboard_withdrawals.
 
 ## Registro obligatorio por entrega
 
+Plataforma **0.3.0** añade Diagnósticos. Su dependencia contractual es el SHA API
+`e571b8bdf84a709a0d4ce40bf2a5f842e44199bd`, no una versión npm inferida.
+Está implementada en rama API no integrada; la API local 1.1.2 aún no expone el
+namespace. No se ejecutaron migraciones ni se desplegó el API durante esta entrega.
+Auditoría: [Diagnósticos](docs/functional-diagnostics-audit.md).
+
 Cada release tendrá una ficha con:
 
 - Versión de plataforma, dashboard, API y compatibilidad con aplicaciones móviles.
