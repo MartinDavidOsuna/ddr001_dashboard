@@ -27,6 +27,11 @@ const router = createRouter({
             import("@/features/inspections/InspectionListView.vue"),
         },
         {
+          path: "revisiones/archivo",
+          name: "inspection-archive",
+          component: () => import("@/features/inspections/InspectionArchiveView.vue"),
+        },
+        {
           path: "revisiones/:id",
           name: "inspection-detail",
           component: () =>

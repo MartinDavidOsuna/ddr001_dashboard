@@ -46,10 +46,20 @@ export const dashboardService = {
       })
     ).data;
   },
-  async inspection(id: string) {
+  async inspection(id: string, archived = false) {
     return (
-      await api.get<InspectionDetail>(`/admin/dashboard/inspections/${id}`)
+      await api.get<InspectionDetail>(`/admin/dashboard/inspections/${id}`, { params: archived ? { archived: 'true' } : undefined })
     ).data;
+  },
+  async withdrawInspection(id: string, command: { reason: string; rowVersion: string; commandId: string }) {
+    return (await api.post<{ inspectionId: string; withdrawnAt: string; alreadyWithdrawn: boolean }>(
+      `/admin/dashboard/inspections/${id}/withdraw`, command,
+    )).data;
+  },
+  async withdrawnInspections(page = 1) {
+    return (await api.get<Page<{ inspectionId: string; accountNumber: string; revisionNumber: number; technicianName: string; reason: string; withdrawnAt: string; withdrawnBy: string }>>(
+      '/admin/dashboard/inspection-withdrawals', { params: { page, pageSize: 25 } },
+    )).data;
   },
   async hydrants(filters: HydrantFilters) {
     return (

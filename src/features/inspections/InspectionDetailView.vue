@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
+import InspectionWithdrawal from "./InspectionWithdrawal.vue";
+const auth = useAuthStore(), router = useRouter();
 import {
   ArrowLeft,
   Camera,
+  Check,
   CheckCircle2,
   ChevronDown,
   ChevronUp,
@@ -140,7 +144,7 @@ watch(tab, (value) => {
 onMounted(async () => {
   window.addEventListener("keydown", key);
   try {
-    data.value = await dashboardService.inspection(String(route.params.id));
+    data.value = await dashboardService.inspection(String(route.params.id), route.query.archived === 'true');
     if (groups.value[0]) openSections.value.add(groups.value[0].id);
     if (typeof route.query.foto === "string") {
       tab.value = "photos";
@@ -198,6 +202,14 @@ onBeforeUnmount(() => {
           </div>
         </div>
         <div class="completion">
+          <InspectionWithdrawal v-if="auth.user?.role === 'admin' && data.inspectionType === 'RV' && data.rowVersion && !data.withdrawnAt"
+            :inspection-id="data.inspectionId" :row-version="data.rowVersion" :account-number="data.accountNumber"
+            :revision-number="data.revisionNumber" @withdrawn="router.replace('/revisiones/archivo')" />
+          <div v-if="data.withdrawnAt" role="status">
+            <strong>Revisión dada de baja · {{ formatDate(data.withdrawnAt) }}</strong>
+            <p>{{ data.withdrawalReason }}</p>
+            <RouterLink to="/revisiones/archivo">Volver al archivo de bajas</RouterLink>
+          </div>
           <span
             ><CheckCircle2 />Checklist:
             <b>{{ counts.captured }}/{{ counts.total }}</b></span
@@ -351,7 +363,25 @@ onBeforeUnmount(() => {
                   }}<small v-if="item.helpText">{{
                     item.helpText
                   }}</small></span
-                ><strong>{{ answerDisplay(item) }}</strong>
+                ><strong v-if="item.fieldType === 'photo'">
+                  <button v-if="item.relatedPhotoId" class="checklist-photo-button"
+                    :aria-label="`Ver fotografía: ${item.label}`" :title="`Ver fotografía: ${item.label}`"
+                    @click="openPhoto(photoCards.findIndex(card => card.photo?.photoId === item.relatedPhotoId))">
+                    <Camera :size="24" :stroke-width="3" aria-hidden="true" />
+                  </button>
+                  <span v-else class="checklist-photo-missing" role="img"
+                    :aria-label="`Sin fotografía: ${item.label}`" title="Sin fotografía">
+                    <X :size="24" :stroke-width="3" aria-hidden="true" />
+                  </span>
+                </strong>
+                <strong v-else-if="answerDisplay(item) === 'Sí' || answerDisplay(item) === 'No'">
+                  <span class="checklist-answer-icon" :class="answerDisplay(item) === 'Sí' ? 'answer-yes' : 'answer-no'"
+                    role="img" :aria-label="answerDisplay(item)" :title="answerDisplay(item)">
+                    <Check v-if="answerDisplay(item) === 'Sí'" :size="24" :stroke-width="3" aria-hidden="true" />
+                    <X v-else :size="24" :stroke-width="3" aria-hidden="true" />
+                  </span>
+                </strong>
+                <strong v-else>{{ answerDisplay(item) }}</strong>
               </div>
             </div>
           </article>
@@ -848,6 +878,40 @@ onBeforeUnmount(() => {
 }
 .answers .missing strong {
   color: #9a6d0d;
+}
+.checklist-photo-button,
+.checklist-photo-missing,
+.checklist-answer-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  font-weight: 800;
+  vertical-align: middle;
+}
+.checklist-photo-button {
+  color: #166534;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.checklist-photo-button:hover {
+  background: #dcfce7;
+}
+.checklist-photo-button:focus-visible {
+  outline: 2px solid #166534;
+  outline-offset: 2px;
+}
+.checklist-photo-missing {
+  color: #dc2626;
+}
+.answer-yes {
+  color: #166534;
+}
+.answer-no {
+  color: #dc2626;
 }
 .photo-sections {
   display: grid;

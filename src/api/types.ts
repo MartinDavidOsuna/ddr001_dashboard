@@ -76,6 +76,9 @@ export interface InspectionListItem {
   signalDbm?: number;
 }
 export interface ChecklistItem {
+  displayValue?: string;
+  isCaptured?: boolean;
+  relatedPhotoId?: string | null;
   sectionId: string;
   sectionCode: string;
   sectionTitle: string;
@@ -202,6 +205,9 @@ export interface AuditEntry {
   requestId?: string;
 }
 export interface InspectionDetail {
+  rowVersion?: string;
+  withdrawnAt?: string | null;
+  withdrawalReason?: string | null;
   inspectionId: string;
   clientInspectionId: string;
   inspectionType: string;
