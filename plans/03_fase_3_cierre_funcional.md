@@ -4,6 +4,18 @@ Estado: **IMPLEMENTACIÓN EN CURSO — PENDIENTE DESPLIEGUE API Y CERTIFICACIÓN
 
 ## Objetivo y límites
 
+### Actualización Mapa Global — 2026-09-17
+
+Esta actualización prevalece para Mapa sobre las restricciones históricas de rama/publicación de esta fase: se trabaja en los clones existentes, sobre su estado local funcional, en `feature/global-multidomain-map` y `feature/global-map-api`, sin push, merge, despliegue ni migraciones. Se preservan Diagnósticos y los cambios previos.
+
+Mapa es una superficie de exploración multidominio en `/mapa`, con vistas Hidrantes RV, Levantamientos, Diagnósticos y Todos (capas independientes). RV usa coordenadas maestras, Construction coordenadas canónicas y Diagnósticos una muestra GPS representativa por caso; no se inventan relaciones entre medidores e hidrantes. Véase el diccionario de datos.
+
+Se reutiliza `/admin/dashboard/construction/map`, ampliándolo aditivamente. Se agregan lecturas compactas `/admin/dashboard/map/hydrants` y `/admin/dashboard/functional-diagnostics/map`. Filtros parametrizados, bbox opcional completo, límite máximo 2000 por capa y `truncated` explícito; sin fotos, historias ni N+1. El primer encuadre usa datos compactos y luego consulta el área visible, con debounce y cancelación. Las respuestas parciales mantienen las capas disponibles.
+
+La UX incluye clustering/spiderfy, símbolos y etiquetas por dominio, leyenda contextual, búsqueda en servidor, filtros por vista, URL restaurable, panel de resultados accesible y tarjeta de selección con enlaces a expedientes. Móvil prioriza el mapa y la tarjeta inferior; se valida a 1440/768/390. Simulaciones excluidas por defecto y siempre etiquetadas al incluirlas. La política de lectura existente de Construction (`admin|supervisor`) se conserva, con error parcial para viewer en Todos.
+
+Puerta de cierre: pruebas de contratos, roles, validación, consultas SQL Server 2014, filtros, concurrencia, clustering, navegación, responsive y suites normales de ambos repositorios. No se marca CERTIFICADO sin completar las pruebas.
+
 La Fase 3 completa la superficie administrativa pendiente: galería global, exportaciones, usuarios, cuadrillas, jornadas, dispositivos, mapa global, validación/rechazo, CRUD administrativo controlado y comparador de revisiones. La certificación exigirá roles reales, autorización en API, auditoría, pruebas API/frontend, Edge E2E y responsive 1440/768/390.
 
 El dashboard continuará exclusivamente en `feature/fase-2-hydrant-master-record`. Flutter es estrictamente de sólo lectura. Sus rutas, cuerpos, respuestas, autenticación, sesiones, sincronización y fotografías son contrato congelado. No se desplegará la API ni se ejecutarán migraciones o escrituras productivas desde este trabajo.
@@ -41,7 +53,7 @@ Rutas administrativas ausentes en producción al auditar: `/admin/devices`, `/ad
 | Cuadrillas | lista API genérica; placeholder UI | `rv.crews` | lista/detalle y crear/editar/activar/desactivar | nombres normalizados usados al iniciar sesión móvil |
 | Jornadas | lista API genérica; placeholder UI | `rv.work_sessions` | lista/detalle agregado y, sólo si procede, revocación controlada | no editar historia; revocar también tokens de esa jornada |
 | Dispositivos | esquema presente; sin ruta admin/UI | `rv.devices` | lista/detalle y bloqueo/desbloqueo auditado | contrato de campo debe respetar `is_blocked`; definir concurrencia sin migrar |
-| Mapa global | ausente | hidrantes/última revisión | endpoint compacto con filtros/bounding box y UI Leaflet clustering | no fotos, samples históricos, N+1 ni mezcla de CRS |
+| Mapa global multidominio | IMPLEMENTADO — PENDIENTE DESPLIEGUE API | coordenadas maestras RV, canónicas Construction y GPS funcional representativo | dos lecturas compactas nuevas y extensión de Construction; Leaflet con clustering, bbox, filtros y expedientes | simulaciones excluidas por defecto; sin fotos, históricos, N+1 ni relaciones inventadas |
 | Validación/rechazo | endpoint parcial existente | transición y transacción actuales | Problem Details/409, `rejection_code`, before/after y UI por rol | no inventar transiciones; concurrencia e IDOR |
 | CRUD controlado | ausente | entidades y auditoría | comandos específicos de usuario/cuadrilla/dispositivo | nunca CRUD genérico, borrado físico o edición de historia |
 | Comparador | ausente | dos detalles de revisión existentes | comparación frontend por `itemCode`; endpoint nuevo sólo si medición lo exige | originales lazy; comparar evidencia humana, no IA |
@@ -56,7 +68,7 @@ Primero se reutilizarán las rutas existentes. Las extensiones nuevas vivirán b
 - Cuadrillas: `GET /admin/dashboard/crews`, `GET /crews/:id` y comandos admin separados de creación, edición y estado.
 - Jornadas: `GET /admin/dashboard/work-sessions`, `GET /work-sessions/:id`; cualquier revocación se habilitará sólo tras pruebas del contrato vigente.
 - Dispositivos: `GET /admin/dashboard/devices`, `GET /devices/:id` y comando admin de bloqueo/desbloqueo.
-- Mapa: `GET /admin/dashboard/map/hydrants`, compacto, filtrable y opcionalmente limitado por bounding box.
+- Mapa: `GET /admin/dashboard/map/hydrants` y `GET /admin/dashboard/functional-diagnostics/map` nuevos; `GET /admin/dashboard/construction/map` reutilizado y ampliado. Vistas Hidrantes, Levantamientos, Diagnósticos y Todos; las tres consultas son compactas, filtrables y acotadas mediante bbox/límite.
 - Revisión: consolidar una operación dashboard para `submitted → validated|rejected`, con comentario/código, conflicto 409, historial y auditoría before/after.
 - Comparador: inicialmente dos lecturas de detalle y comparación local determinista por `itemCode`; crear endpoint agregado sólo si las mediciones muestran payload o latencia inadecuados.
 
@@ -79,7 +91,7 @@ Toda escritura crítica usará transacción, autorización por rol, validación 
 5. Cuadrillas.
 6. Jornadas.
 7. Dispositivos.
-8. Mapa global.
+8. Mapa global multidominio. **IMPLEMENTADO — PENDIENTE DESPLIEGUE API.** Véase `docs/global-map-validation.md` para pruebas y límites de validación local.
 9. Validación/rechazo.
 10. CRUD administrativo controlado.
 11. Comparador.
@@ -121,3 +133,27 @@ Los comandos de alta/edición/estado/asignación permanecen pendientes hasta com
 ## Criterio de certificación
 
 **FASE 3 — CERTIFICADA** sólo será válido cuando todos los módulos estén implementados, viewer/admin funcionen con autorización real, escrituras y auditoría estén probadas, API/frontend/E2E pasen, 1440/768/390 estén certificados, consola/red estén limpias, Flutter conserve sus contratos y todos los commits estén publicados. Si el código API espera despliegue manual, el estado será **IMPLEMENTADA — PENDIENTE DESPLIEGUE API**.
+
+
+### Ajuste operativo del mapa: estados, revisiones y proximidad (2026-09-17)
+
+- `view=hydrants`: universo del catálogo georreferenciado, con o sin revisiones; color por `rvStatus`. Los filtros y el encuadre siguen delimitando los resultados.
+- `view=reviews`: sólo hidrantes con revisiones, usando el mismo endpoint compacto con `hasInspections=true` en servidor. Un punto por ubicación maestra, coloreado por `latestInspectionStatus`; el expediente permite abrir la última revisión. No descarga historiales ni cambia la ubicación por GPS de inspección.
+- Levantamientos: color por `status`. Diagnósticos: color por `overallVerdict`. Las formas e iconos mantienen la distinción de dominios; texto y tarjeta explican el estado.
+- Leyenda desplegable/retráctil «Colores y estados»: únicamente capas activas y estados presentes en el encuadre, con cantidades. Estados desconocidos tienen una alternativa gris explícita.
+- Radio de clustering reducido de 70 a 35 píxeles. Es independiente de la agrupación física de hidrantes.
+- Hidrantes cargados con separación estrictamente menor a 4 metros se agrupan visualmente por componentes conectados; incluye ubicaciones idénticas y cadenas de vecinos. La coordenada representativa es la del primer identificador ordenado, no un promedio. No se fusionan registros de base de datos ni otros dominios.
+- El punto agrupado muestra cantidad y permite seleccionar cada cuenta/expediente. Conserva el color cuando el estado es común; estados distintos usan gris oscuro y leyenda explícita. Los clusters contabilizan registros originales. La agrupación se recalcula con filtros/encuadre sobre la respuesta acotada existente.
+- No se requieren cambios adicionales de API, migraciones ni reinicio del backend para este ajuste.
+
+
+Ajuste incremental posterior solicitado: radio de clustering reducido nuevamente de 35 a **17,5 px** (la cuarta parte de los 70 px originales). Se mantiene la regla independiente de hidrantes a menos de 4 metros.
+
+
+### Carga por vista y actualización manual (2026-09-17)
+
+Por solicitud operativa se elimina la recarga de datos al mover o cambiar el zoom. El frontend consulta una instantánea compacta por vista/filtros, sin bbox, y mantiene esos puntos en memoria mientras se explora. El encuadre actualiza localmente resultados, leyenda y contadores; no vuelve a consultar la API. `Ver conjunto` sólo ajusta la cámara. `Actualizar` consulta nuevamente las capas activas con los filtros vigentes, conserva el encuadre y mantiene la instantánea anterior con aviso si falla la recarga. Cambiar vista/filtros realiza una nueva consulta; no es una caché persistente entre rutas.
+
+Se mantienen límites de 2.000 por capa y advertencia de truncamiento: en ese caso deben aplicarse filtros, acercar el mapa ya no descarga datos adicionales. Los endpoints conservan soporte de bbox para otros consumidores. No se modificó API.
+
+Radio de clustering actual: **8,75 px**, otro 50% menos que 17,5 px. La agrupación geográfica de hidrantes a menos de 4 m permanece igual.

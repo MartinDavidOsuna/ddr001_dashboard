@@ -2,6 +2,21 @@
 
 Fecha: 2026-09-15. Ver [auditoría contractual](functional-diagnostics-audit.md).
 
+## Corrección y validación local — 2026-09-17
+
+Se resolvió la dependencia operacional descrita en la validación original: la API local estaba detenida y su código no incorporaba el dominio funcional. Se integró en `../ddr001_api_rv` el contrato del commit auditado `e571b8b`, conservando la rama y los cambios locales de RV, retiros y construcción. Se incorporaron las rutas de campo y administrativas, el registro de sesiones funcionales, OpenAPI y las pruebas del dominio. La API quedó iniciada en el puerto 3000, con su configuración TEST existente.
+
+La consulta directa confirmó `DDR001_Hidrantes_TEST`, las 13 tablas `functional_diag` y 21 casos existentes. No se ejecutaron migraciones ni se insertaron registros: 8 casos corresponden al filtro `simulation=exclude` y 13 a simulaciones.
+
+Validación real, sin respuestas simuladas:
+
+- HTTP 200 en resumen, listado, métricas, tendencias, técnicos, reportes y detalle; 8 casos con el filtro predeterminado y 21 incluyendo simulaciones.
+- Navegador Edge contra el dashboard en `http://localhost:5173`: listado, cambio de filtro, métricas, técnicos, reportes y expediente correctos, sin errores de ejecución ni alertas visibles.
+- API: `npm run type-check`, 355 pruebas unitarias en 54 archivos y `npm run build` correctos.
+- Proxy `/api` del dashboard y `/api/v1/version` verificados; capacidades `functionalDiagnosticsField` y `functionalDiagnosticsAdmin` activas.
+
+Para reiniciar la API en otra sesión, ejecutar `npm run dev` desde `C:\DEV\AQAGS\ddr001_api_rv`. Esta corrección corresponde a la instalación local; no implica publicación en otro servidor. Las secciones siguientes conservan los resultados históricos del 15 de septiembre.
+
 ## Ejecución local
 
 Usar esta instalación y `npm run dev`. La configuración local existente usa `/api/v1` con proxy hacia el puerto 3000. El módulo utiliza el cliente Axios y la sesión administrativa de la plataforma. No requiere otro login ni datos de demostración.

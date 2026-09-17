@@ -260,6 +260,22 @@ El contrato del expediente se mantiene sin cambios: lista, detalle e historial d
 
 La galería global no es fuente ni dependencia del expediente maestro de Fase 2. En la Subetapa 3.1 consume `GET /admin/dashboard/photos` y `/photos/filters`, con paginación y filtros server-side por búsqueda/cuenta, slot, categoría obligatoria/adicional, técnico, cuadrilla, estado y fechas. Miniatura y original permanecen privados; el original sólo se solicita al abrir el visor. La implementación está pendiente de certificación externa.
 
+## Mapa global multidominio — contrato geográfico
+
+| Vista | Coordenada y fuente | Identidad y significado |
+|---|---|---|
+| Hidrantes RV | `rv.hydrants.latitude/longitude` | Un marker por `hydrantId`; ubicación maestra, nunca GPS de inspección. RV e historial excluyen revisiones retiradas mediante `rv.dashboard_inspections`. |
+| Levantamientos | `construction.base_surveys.canonical_latitude/canonical_longitude/canonical_accuracy` | Un marker por `surveyId`; ubicación canónica del levantamiento. |
+| Diagnósticos | `functional_diag.samples.gps_latitude/gps_longitude/gps_accuracy_m/gps_captured_at` | Un marker por `caseId`, medidor funcional independiente del catálogo de hidrantes. |
+
+GPS representativo funcional: elegir entre muestras con ambas coordenadas válidas y admitidas por `simulation` (`exclude` por defecto). Orden: `gps_captured_at DESC`, `client_created_at DESC`, `sample_id DESC`; fechas GPS nulas quedan al final y se mantienen nulas, sin atribuirles una fecha inventada. No promediar ni sintetizar ubicaciones. Conservar `sampleId`, `flowPointCode`, `measurementSource`, `gpsAccuracyM`, `gpsCapturedAt` y `isSimulation` de la muestra elegida. `hasSimulation` informa si el subconjunto admitido contiene simulaciones, incluso en casos mixtos. Filtros Q/fuente seleccionan casos por muestras elegibles; no cambian el orden de elección GPS dentro de ese subconjunto de simulación. Conteos/fuentes/integridad corresponden al subconjunto admitido, no recalculan el veredicto del caso.
+
+Sólo coordenadas finitas en latitud [-90,90], longitud [-180,180] generan markers; null no equivale a cero. No se descarta (0,0) si es una coordenada válida registrada. GPS ausente no se sustituye por coordenadas de otra entidad. Bbox opcional requiere los cuatro límites; admite cruce del antimeridiano (`west > east`).
+
+Fechas: RV filtra última revisión efectiva (`COALESCE(submitted_at,started_at)`); Construction filtra creación; Diagnósticos filtra creación del caso. Rangos UTC `[from,to)`, interfaz con días locales de Hermosillo. Búsqueda en servidor: cuenta RV; identificador/cuenta/contratista/empresa Construction; medidor/técnico/banco funcional. Sin municipio/localidad.
+
+Cada capa entrega `{items, limit, truncated}` (Diagnósticos conserva envoltura `{data: ...}`). Máximo 2000, una fila adicional detecta truncamiento sin COUNT global. El contador de interfaz representa elementos cargados y elementos dentro del encuadre, nunca total global. No incluye fotos, blobs, rutas de archivos ni muestras completas. Autorización administrativa existente; Construction mantiene restricción admin/supervisor.
+
 ## Campos descartados / legacy
 
 | Campo/concepto | Decisión | Evidencia | Tratamiento |
@@ -278,3 +294,27 @@ La galería global no es fuente ni dependencia del expediente maestro de Fase 2.
 1. `origin/main` de API avanzó durante la auditoría a `64e51b5` e incluye DDL de fotos condicionales de medidor/venturi, pero `photo.routes.ts` confirma los siete slots obligatorios vigentes. Las fotos adicionales se conservan aparte y no alteran el divisor 7.
 2. La línea acumulativa `fix/field-session-start-500` contiene sesiones permanentes, estados globales, reportes inmutables y fotos generales, pero no está integrada a `main`. Flutter local está en una rama equivalente reciente. Es una fuente de evolución, no se presupone desplegada por el dashboard basado en `main`.
 3. El endpoint administrativo existente usa `rv.vw_inspection_summary`, que aún arrastra municipio/localidad, y el detalle omite tipos/opciones/orden completo del checklist y rutas de foto admin. Por eso Fase 1 necesita una extensión de lectura aislada.
+
+
+### Ajuste operativo del mapa: estados, revisiones y proximidad (2026-09-17)
+
+- `view=hydrants`: universo del catálogo georreferenciado, con o sin revisiones; color por `rvStatus`. Los filtros y el encuadre siguen delimitando los resultados.
+- `view=reviews`: sólo hidrantes con revisiones, usando el mismo endpoint compacto con `hasInspections=true` en servidor. Un punto por ubicación maestra, coloreado por `latestInspectionStatus`; el expediente permite abrir la última revisión. No descarga historiales ni cambia la ubicación por GPS de inspección.
+- Levantamientos: color por `status`. Diagnósticos: color por `overallVerdict`. Las formas e iconos mantienen la distinción de dominios; texto y tarjeta explican el estado.
+- Leyenda desplegable/retráctil «Colores y estados»: únicamente capas activas y estados presentes en el encuadre, con cantidades. Estados desconocidos tienen una alternativa gris explícita.
+- Radio de clustering reducido de 70 a 35 píxeles. Es independiente de la agrupación física de hidrantes.
+- Hidrantes cargados con separación estrictamente menor a 4 metros se agrupan visualmente por componentes conectados; incluye ubicaciones idénticas y cadenas de vecinos. La coordenada representativa es la del primer identificador ordenado, no un promedio. No se fusionan registros de base de datos ni otros dominios.
+- El punto agrupado muestra cantidad y permite seleccionar cada cuenta/expediente. Conserva el color cuando el estado es común; estados distintos usan gris oscuro y leyenda explícita. Los clusters contabilizan registros originales. La agrupación se recalcula con filtros/encuadre sobre la respuesta acotada existente.
+- No se requieren cambios adicionales de API, migraciones ni reinicio del backend para este ajuste.
+
+
+Ajuste incremental posterior solicitado: radio de clustering reducido nuevamente de 35 a **17,5 px** (la cuarta parte de los 70 px originales). Se mantiene la regla independiente de hidrantes a menos de 4 metros.
+
+
+### Carga por vista y actualización manual (2026-09-17)
+
+Por solicitud operativa se elimina la recarga de datos al mover o cambiar el zoom. El frontend consulta una instantánea compacta por vista/filtros, sin bbox, y mantiene esos puntos en memoria mientras se explora. El encuadre actualiza localmente resultados, leyenda y contadores; no vuelve a consultar la API. `Ver conjunto` sólo ajusta la cámara. `Actualizar` consulta nuevamente las capas activas con los filtros vigentes, conserva el encuadre y mantiene la instantánea anterior con aviso si falla la recarga. Cambiar vista/filtros realiza una nueva consulta; no es una caché persistente entre rutas.
+
+Se mantienen límites de 2.000 por capa y advertencia de truncamiento: en ese caso deben aplicarse filtros, acercar el mapa ya no descarga datos adicionales. Los endpoints conservan soporte de bbox para otros consumidores. No se modificó API.
+
+Radio de clustering actual: **8,75 px**, otro 50% menos que 17,5 px. La agrupación geográfica de hidrantes a menos de 4 m permanece igual.

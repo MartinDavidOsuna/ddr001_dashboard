@@ -2,6 +2,8 @@
 
 Fecha de apertura: 2026-08-26. Estado: **SUBETAPA 3.2 — IMPLEMENTADA — PENDIENTE DEPLOYMENT Y CERTIFICACIÓN**.
 
+Actualización 2026-09-17: Mapa Global multidominio **IMPLEMENTADO — PENDIENTE DESPLIEGUE API**. Se trabajó sobre los clones existentes en ramas de Mapa, preservando Diagnósticos y cambios locales. Validación API, SQL TEST, frontend y E2E responsive completada; no se declara certificación productiva. Baseline vigente, resultados y archivos: [reporte de Mapa](global-map-validation.md). El resto del documento conserva el corte histórico de Fase 3.
+
 ## Línea base
 
 - Dashboard: `feature/fase-2-hydrant-master-record`; Fases 1 y 2 certificadas, sin crear otra rama.
@@ -20,7 +22,7 @@ Fecha de apertura: 2026-08-26. Estado: **SUBETAPA 3.2 — IMPLEMENTADA — PENDI
 | Cuadrillas | endpoint genérico de lectura; sin módulo dashboard ni comandos controlados | pendiente |
 | Jornadas | endpoint genérico de lectura; sin detalle administrativo | pendiente |
 | Dispositivos | tabla existente, sin endpoint administrativo ni UI | pendiente |
-| Mapa global | ausente | pendiente |
+| Mapa global multidominio | vistas RV/Levantamientos/Diagnósticos/Todos implementadas | validado localmente; pendiente despliegue API |
 | Validación/rechazo | transición parcial existente para admin/supervisor; faltan código de rechazo, conflicto formal y UI | pendiente |
 | CRUD controlado | ausente | pendiente |
 | Comparador | ausente; detalles existentes pueden reutilizarse | pendiente |
@@ -48,7 +50,7 @@ El flujo Flutter usa `/field-sessions/start`, `/current`, `/refresh`, `/:id/end`
 | 3.4 Cuadrillas | pendiente | pendiente | pendiente | pendiente | pendiente | pendiente |
 | 3.5 Jornadas | pendiente | pendiente | pendiente | pendiente | pendiente | pendiente |
 | 3.6 Dispositivos | pendiente | pendiente | pendiente | pendiente | pendiente | pendiente |
-| 3.7 Mapa global | pendiente | pendiente | pendiente | pendiente | pendiente | pendiente |
+| 3.7 Mapa global | completa, multidominio | API/frontend y SQL TEST completos | pendiente, no ejecutado | 5 escenarios aislados completos | 1440/768/390 completos | **IMPLEMENTADO — PENDIENTE DESPLIEGUE API** |
 | 3.8 Validación/rechazo | pendiente | pendiente | pendiente | pendiente | pendiente | pendiente |
 | 3.9 CRUD controlado | pendiente | pendiente | pendiente | pendiente | pendiente | pendiente |
 | 3.10 Comparador | pendiente | pendiente | pendiente | pendiente | pendiente | pendiente |
