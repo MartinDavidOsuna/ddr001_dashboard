@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import AppLayout from "@/layouts/AppLayout.vue";
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: "/login",
@@ -14,6 +14,23 @@ const router = createRouter({
       path: "/",
       component: AppLayout,
       children: [
+        {
+          path: "mapa",
+          name: "global-map",
+          component: () => import("@/features/map/MapView.vue"),
+        },
+        {
+          path: "diagnosticos",
+          name: "functional-diagnostics",
+          component: () =>
+            import("@/features/diagnostics/DiagnosticListView.vue"),
+        },
+        {
+          path: "diagnosticos/:caseId",
+          name: "functional-diagnostic-detail",
+          component: () =>
+            import("@/features/diagnostics/DiagnosticDetailView.vue"),
+        },
         { path: "", redirect: "/dashboard" },
         {
           path: "dashboard",
@@ -25,6 +42,12 @@ const router = createRouter({
           name: "inspections",
           component: () =>
             import("@/features/inspections/InspectionListView.vue"),
+        },
+        {
+          path: "revisiones/archivo",
+          name: "inspection-archive",
+          component: () =>
+            import("@/features/inspections/InspectionArchiveView.vue"),
         },
         {
           path: "revisiones/:id",
@@ -45,12 +68,14 @@ const router = createRouter({
         {
           path: "levantamientos",
           name: "construction-surveys",
-          component: () => import("@/features/construction/ConstructionListView.vue"),
+          component: () =>
+            import("@/features/construction/ConstructionListView.vue"),
         },
         {
           path: "levantamientos/:surveyId",
           name: "construction-survey-detail",
-          component: () => import("@/features/construction/ConstructionDetailView.vue"),
+          component: () =>
+            import("@/features/construction/ConstructionDetailView.vue"),
         },
         {
           path: "fotografias",
@@ -73,7 +98,7 @@ const router = createRouter({
           component: () => import("@/features/users/UserDetailView.vue"),
         },
         {
-          path: ":module(mapa|cuadrillas|jornadas|dispositivos)",
+          path: ":module(cuadrillas|jornadas|dispositivos)",
           name: "future",
           component: () => import("@/features/shared/FutureModuleView.vue"),
         },

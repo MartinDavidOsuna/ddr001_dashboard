@@ -1,0 +1,92 @@
+{
+  "productionBrandingVerified": true,
+  "gitBaseline": "origin/main",
+  "files": [
+    {
+      "path": "public/favicon.svg",
+      "originMainSha256": "4907df69c3ee55f56033a2d9184436a4509ff111f8cc6a54d719f4ad095e856a",
+      "candidateSha256": "4907df69c3ee55f56033a2d9184436a4509ff111f8cc6a54d719f4ad095e856a",
+      "identical": true
+    },
+    {
+      "path": "src/assets/main.css",
+      "originMainSha256": "91f433e9324852a4529c34337ce8229528dd40ec1553e245362eaab70b4ffa11",
+      "candidateSha256": "91f433e9324852a4529c34337ce8229528dd40ec1553e245362eaab70b4ffa11",
+      "identical": true
+    },
+    {
+      "path": "src/features/auth/LoginView.vue",
+      "originMainSha256": "6795c58dc2e0fd2727793063362f12529dafb007d8a45924159ac3adfa2a1512",
+      "candidateSha256": "6795c58dc2e0fd2727793063362f12529dafb007d8a45924159ac3adfa2a1512",
+      "identical": true
+    },
+    {
+      "path": "index.html",
+      "originMainSha256": "264184780e56136343f3b53511ba5c6f9cbdb834addab08bc25ddd6ea6b48e42",
+      "candidateSha256": "264184780e56136343f3b53511ba5c6f9cbdb834addab08bc25ddd6ea6b48e42",
+      "identical": true
+    }
+  ],
+  "layout": "Preserved existing brand/district blocks and styling; retains new navigation and version label. No old production bundle was copied into source or the candidate artifact.",
+  "productionUrl": "http://cifra.aquafim.com:8080/ddr001/dashboard",
+  "verifiedAtUtc": "2026-09-17T22:46:07.304828+00:00",
+  "verificationScope": "Read-only deployed public HTML, AppLayout and LoginView bundles, matching CSS rules and branding text; no production authentication or modification. No connected browser available for a manual visual session.",
+  "productionBasePath": "/ddr001/",
+  "productionApiBaseUrl": "http://cifra.aquafim.com:3002/api/v1",
+  "publicArtifacts": [
+    {
+      "name": "index-Cz16AWhe.js",
+      "sha256": "fa418643a4bf129e2a40e813c877485759ecf75cd640b08b2d8cf3dfddb0aa38",
+      "bytes": 101041
+    },
+    {
+      "name": "index-sTIu8Mx_.css",
+      "sha256": "bad1a16c32a2311ed2703302b01a5f1cc4a69796c23ff0713eab3958f69f2d91",
+      "bytes": 20980
+    },
+    {
+      "name": "LoginView-BsDFoKma.js",
+      "sha256": "247a16936ca0738ac0b807370a8d77a24567a2b0555032428860797479f473a2",
+      "bytes": 2856
+    },
+    {
+      "name": "LoginView-CxCFgWOG.css",
+      "sha256": "c87e3333241aced8224ed6cd4fde016c8248fa29bf736d3e3e5b90dbaeccbe6b",
+      "bytes": 2131
+    },
+    {
+      "name": "production-index.html",
+      "sha256": "a77a5f3badc91f6992b6a72f41e36be6a5ed207097ac2a4d31ffa188318c02f8",
+      "bytes": 605
+    }
+  ],
+  "matches": {
+    "layoutBrandingRules": {
+      ".brand": "border-bottom:1px solid #28405c;align-items:center;gap:11px;height:64px;padding:12px 16px;display:flex",
+      ".brand-mark": "background:var(--blue);color:#fff;border-radius:6px;place-items:center;width:36px;height:36px;font-size:24px;display:grid",
+      ".brand div:last-child": "display:grid",
+      ".brand small,.profile small": "color:#8197b0;font-size:.68rem",
+      ".district": "border-bottom:1px solid #28405c;align-items:center;gap:7px;height:84px;padding:16px;display:flex",
+      ".district span": "text-align:center;border:1px solid #35516f;border-radius:4px;padding:5px;font-size:.56rem",
+      ".district small": "color:#7690ad"
+    },
+    "themeVariables": [
+      "--navy:#11253e",
+      "--blue:#1463f3",
+      "--line:#dbe3ed",
+      "--muted:#70819a",
+      "--green:#129c52",
+      "--red:#d63b3b",
+      "--amber:#ad7200"
+    ],
+    "loginCssByteIdentical": true,
+    "brandText": [
+      "DDR001",
+      "Sistema de Supervisión",
+      "CNA / GUA",
+      "DDR",
+      "Distrito de Riego 001"
+    ],
+    "additionalLogoAssetsInLoadedPublicBundles": false
+  }
+}

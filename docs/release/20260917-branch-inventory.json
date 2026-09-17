@@ -1,0 +1,54 @@
+{
+  "auditDate": "2026-09-17",
+  "snapshotHead": "d0ee5ac065ab9c2df42e419af6706e8556c80a58",
+  "originMain": "53c3f0671f5ffcc32f250e64c79b25033b697f80",
+  "candidateBranch": "integration/production-cumulative-20260917",
+  "remote": "https://github.com/MartinDavidOsuna/ddr001_dashboard.git",
+  "refs": [
+    {
+      "ref": "feature/functional-diagnostics-dashboard",
+      "sha": "2b335cbcdfeaefb67214804fbfa687af815e618a",
+      "ancestorOfCandidate": true
+    },
+    {
+      "ref": "feature/global-multidomain-map",
+      "sha": "d0ee5ac065ab9c2df42e419af6706e8556c80a58",
+      "ancestorOfCandidate": true
+    },
+    {
+      "ref": "feature/rv-cleanup-0.2.0",
+      "sha": "53c3f0671f5ffcc32f250e64c79b25033b697f80",
+      "ancestorOfCandidate": true
+    },
+    {
+      "ref": "integration/production-cumulative-20260917",
+      "sha": "d0ee5ac065ab9c2df42e419af6706e8556c80a58",
+      "ancestorOfCandidate": true
+    },
+    {
+      "ref": "main",
+      "sha": "53c3f0671f5ffcc32f250e64c79b25033b697f80",
+      "ancestorOfCandidate": true
+    },
+    {
+      "ref": "origin/feature/construction-dashboard-ui",
+      "sha": "271ca94ad6252643dae85b5c0b11fa54f5577102",
+      "ancestorOfCandidate": true
+    },
+    {
+      "ref": "origin/feature/fase-1-visor-rv",
+      "sha": "4f461cbd9df4815c38cb2dfd498a43ac45688cdc",
+      "ancestorOfCandidate": true
+    },
+    {
+      "ref": "origin/feature/fase-2-hydrant-master-record",
+      "sha": "53c3f0671f5ffcc32f250e64c79b25033b697f80",
+      "ancestorOfCandidate": true
+    },
+    {
+      "ref": "origin/main",
+      "sha": "53c3f0671f5ffcc32f250e64c79b25033b697f80",
+      "ancestorOfCandidate": true
+    }
+  ]
+}

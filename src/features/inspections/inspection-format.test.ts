@@ -22,6 +22,11 @@ const base: any = {
 };
 
 describe("inspection formatting", () => {
+  it("uses resolved values without requiring a synthetic answer ID", () => {
+    expect(answerDisplay({ ...base, displayValue: 'Técnico' })).toBe('Técnico');
+    expect(checklistCounts([{ ...base, displayValue: 'Marca', isCaptured: true }])).toEqual({captured:1,total:1});
+    expect(answerDisplay({ ...base, answerId: 'a', valueBoolean: null })).toBe('No capturado');
+  });
   it("preserves false as No", () =>
     expect(
       answerDisplay({ ...base, answerId: "a", valueBoolean: false }),

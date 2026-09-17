@@ -21,9 +21,10 @@ export function parseJson(value?: string) {
   }
 }
 export function answerDisplay(item: ChecklistItem) {
+  if (item.displayValue !== undefined) return item.displayValue;
   if (item.isNotApplicable) return "No aplica";
   if (!item.answerId) return "No capturado";
-  if (item.fieldType === "boolean") return item.valueBoolean ? "Sí" : "No";
+  if (item.fieldType === "boolean") return item.valueBoolean == null ? "No capturado" : item.valueBoolean ? "Sí" : "No";
   if (item.valueNumber !== null && item.valueNumber !== undefined)
     return `${item.valueNumber}${item.unit ? ` ${item.unit}` : ""}`;
   const raw = item.valueJson ? parseJson(item.valueJson) : item.valueText;
@@ -64,7 +65,7 @@ export function checklistCounts(items: ChecklistItem[]) {
       !["photo", "coordinates", "signal", "readonly"].includes(i.fieldType),
   );
   return {
-    captured: answerable.filter((i) => i.answerId || i.isNotApplicable).length,
+    captured: answerable.filter((i) => i.isNotApplicable || (i.isCaptured ?? Boolean(i.answerId))).length,
     total: answerable.length,
   };
 }

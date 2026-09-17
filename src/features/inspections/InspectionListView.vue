@@ -9,8 +9,11 @@ import {
   Camera,
 } from "@lucide/vue";
 import AppStatus from "@/components/AppStatus.vue";
+import InspectionDashboardSection from "./InspectionDashboardSection.vue";
 import { dashboardService } from "@/services/dashboard";
 import { problemMessage } from "@/api/client";
+import { useAuthStore } from "@/stores/auth";
+const auth = useAuthStore();
 import type { FilterOption, InspectionListItem, Page } from "@/api/types";
 const page = ref<Page<InspectionListItem>>(),
   loading = ref(false),
@@ -94,12 +97,15 @@ watch(() => filters.page, load);
     <div class="page-head">
       <div>
         <h1 class="page-title">Revisiones visuales</h1>
-        <p class="page-subtitle">Listado y filtrado de inspecciones reales</p>
+        <p class="page-subtitle">Indicadores, actividad y seguimiento de revisiones visuales</p>
+        <RouterLink v-if="auth.user?.role === 'admin'" class="btn" to="/revisiones/archivo">Archivo de bajas RV</RouterLink>
       </div>
       <span v-if="page" class="muted desktop-only"
         >{{ page.total.toLocaleString() }} registros</span
       >
     </div>
+    <InspectionDashboardSection />
+    <h2 class="list-title">Listado de revisiones</h2>
     <div class="list-toolbar">
       <div class="search">
         <Search :size="18" /><label class="sr-only" for="search"
@@ -329,6 +335,10 @@ watch(() => filters.page, load);
 <style scoped>
 .list-content {
   max-width: none;
+}
+.list-title {
+  font-size: 1rem;
+  margin: 0 0 14px;
 }
 .list-toolbar {
   display: flex;

@@ -1,0 +1,73 @@
+{
+  "dashboard": {
+    "typecheck": "passed",
+    "lint": "passed",
+    "unitTests": 133,
+    "testFiles": 25,
+    "build": "passed",
+    "diffCheck": "passed",
+    "e2e": [
+      {
+        "role": "admin",
+        "width": 1440,
+        "requests": 28,
+        "pass": true
+      },
+      {
+        "role": "admin",
+        "width": 768,
+        "requests": 27,
+        "pass": true
+      },
+      {
+        "role": "admin",
+        "width": 390,
+        "requests": 27,
+        "pass": true
+      },
+      {
+        "role": "viewer",
+        "width": 1440,
+        "requests": 26,
+        "pass": true
+      },
+      {
+        "role": "supervisor",
+        "width": 1440,
+        "requests": 27,
+        "pass": true
+      }
+    ]
+  },
+  "productionBranding": "verified against deployed public bundles/CSS; already preserved in candidate",
+  "productionSql": "not executed",
+  "mainMerge": "not executed",
+  "push": "not executed",
+  "deployment": "not executed",
+  "api": {
+    "typecheck": "passed",
+    "lint": "passed",
+    "build": "passed",
+    "unit": {
+      "success": true,
+      "numTotalTests": 363,
+      "numPassedTests": 363,
+      "numFailedTests": 0,
+      "numPendingTests": 0
+    },
+    "integration": {
+      "passed": 17,
+      "skipped": 43
+    },
+    "diffCheck": "passed"
+  },
+  "productionCandidateBuild": {
+    "result": "passed",
+    "base": "/ddr001/",
+    "apiBaseUrl": "http://cifra.aquafim.com:3002/api/v1",
+    "artifactManifest": "20260917-production-artifact.json",
+    "entrypointReferences": "passed",
+    "brandingCss": "passed",
+    "deployed": false
+  }
+}
