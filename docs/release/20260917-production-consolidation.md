@@ -1,6 +1,6 @@
 # Candidata acumulativa DDR001 - 2026-09-17
 
-Estado: cambios locales guardados; candidata local preparada para integrar a main. No publicada ni desplegada. **Branding productivo adicional pendiente de identificar y contrastar.**
+Estado: cambios locales guardados; candidata local preparada para integrar a main. No publicada ni desplegada. **Branding contrastado con el sitio productivo; conservado en la candidata.**
 
 ## Repositorios y puntos de recuperacion
 
@@ -29,12 +29,23 @@ La simulacion read-only con `git merge-tree` muestra conflictos al mezclar ramas
 
 `20260917-branding-inventory.json` registra hashes: favicon, CSS global, login e index son identicos a origin/main. AppLayout conserva marca DDR001, CNA/DR001; incorpora navegacion/version nuevas.
 
-El usuario informa branding adicional EN PRODUCCION. No esta en las ramas obtenidas y todavia no se conoce URL/carpeta/fuente. **No declarar preservado ese branding ni publicar esta candidata hasta recuperarlo.**
+Produccion identificada por el usuario: `http://cifra.aquafim.com:8080/ddr001/dashboard`.
+Se descargaron en modo solo lectura el HTML y los bundles publicos de layout/login/CSS. La marca DDR001, simbolo, distintivos CNA/GUA y DDR, nombre del distrito, colores y tipografia coinciden con la candidata. Las siete reglas CSS de marca/distrito coinciden; CSS de LoginView es identico byte a byte. No aparecieron logos externos adicionales en los archivos cargados. Se conservan la navegacion nueva y la etiqueta de version local.
 
-1. Identificar URL y fuente/commit o carpeta de la version desplegada; registrar SHA, artefacto de rollback y hashes de logos/favicon, colores, textos y tipografias. No copiar secretos.
-2. Incorporar cambios de marca sobre la candidata (assets + bloques visuales concretos). No reemplazar AppLayout entero: se perderian Diagnosticos, Mapa y menus nuevos. No copiar bundles minificados antiguos sobre el build nuevo.
-3. Comparar login, sidebar expandido/contraido y cabecera a 1440/768/390. Registrar evidencia y actualizar productionBrandingVerified del inventario solamente despues de la verificacion real.
-4. Conservar configuracion y archivos IIS propios del sitio; no sincronizar directorios productivos con borrado de archivos ni sustituir .env/configuracion productiva por TEST.
+Evidencia y hashes: `20260917-branding-inventory.json`. No se sustituyo codigo por bundles antiguos. Verificacion de archivos desplegados, sin login productivo; no hubo navegador conectado para una sesion visual manual.
+
+La publicacion usa base `/ddr001/` y API `http://cifra.aquafim.com:3002/api/v1`, ambas confirmadas en el HTML/bundle desplegado. El build productivo preparado usa esos valores y queda aislado de la configuracion local TEST:
+
+```powershell
+$oldApiBase = $env:VITE_API_BASE_URL
+try {
+  $env:VITE_API_BASE_URL = 'http://cifra.aquafim.com:3002/api/v1'
+  npm run build -- --base=/ddr001/ --outDir=.artifacts/production-release
+  if ($LASTEXITCODE -ne 0) { throw 'Build failed' }
+} finally { $env:VITE_API_BASE_URL = $oldApiBase }
+```
+
+Antes de publicar, comprobar que el sitio no haya cambiado desde los hashes registrados y conservar su artefacto de rollback/configuracion IIS. No reemplazar AppLayout entero ni copiar .env local o bundles antiguos encima de la nueva compilacion.
 
 ## Comportamiento actual preservado del Mapa
 
@@ -44,7 +55,7 @@ Se actualizaron pruebas/harness que aun esperaban tamanos y reglas anteriores, s
 
 ## Preparacion de main (comandos para la fase posterior, NO ejecutados)
 
-En cada clone existente, con arbol limpio y branding resuelto:
+En cada clone existente, con arbol limpio y sin cambios nuevos de branding desde esta auditoria:
 
 ```powershell
 git fetch --all --prune
@@ -59,7 +70,7 @@ Si origin/main avanza o deja de ser ancestro, reconciliar en la candidata y repe
 
 ## Orden productivo
 
-1. Resolver branding, registrar artefactos/SHA de rollback y preflight SQL read-only del API.
+1. Reconfirmar hashes de branding, registrar artefactos/SHA de rollback y preflight SQL read-only del API.
 2. Verificar esquemas Functional Diagnostics y vista `rv.dashboard_inspections`. El mapa no requiere migracion propia, pero los cambios acumulados de Diagnosticos/bajas SI tienen prerrequisitos SQL. Aplicar solo migraciones faltantes en una fase de despliegue independiente; no ejecutar rollbacks productivos.
 3. Publicar API antes del frontend: nuevos endpoints Mapa y Diagnosticos administrativos necesarios. Preservar secretos, storage, credenciales Runtime/Migrator y conexiones productivas.
 4. Build frontend con VITE_API_BASE_URL productivo confirmado. Nunca publicar dist generado con .env.local de TEST por accidente.
@@ -67,7 +78,7 @@ Si origin/main avanza o deja de ser ancestro, reconciliar en la candidata y repe
 
 ## Validacion
 
-Resultados exactos se registran al final del presente documento. Esta preparacion no certifica el branding no identificado ni el esquema real de produccion. No se ejecutaron migraciones ni escrituras productivas.
+Resultados exactos se registran al final del presente documento. El branding publico desplegado fue contrastado; el esquema real de produccion sigue requiriendo preflight. No se ejecutaron migraciones ni escrituras productivas.
 
 ### Resultado de preparacion
 
@@ -76,6 +87,8 @@ Resultados exactos se registran al final del presente documento. Esta preparacio
 - API type-check/lint/build: correctos; integracion normal 17 aprobados y 43 omitidos por configuracion (SQL y escenarios externos no habilitados).
 - No se repitieron suites SQL ni pruebas productivas; el preflight adjunto solo se preparo.
 - Advertencia preexistente: chunk ECharts mayor de 500 kB. No bloquea build.
-- Pendiente real: recuperar/contrastar branding adicional desplegado. Por ello no se certifica aun la publicacion productiva ni se ejecuta merge a main.
+- Branding: contraste completado mediante archivos publicos desplegados, con reglas CSS y hashes. Pendientes de la fase posterior: merge/publicacion y preflight del esquema productivo. Ninguno fue ejecutado.
 
 API unitarios confirmados por reporte JSON: 363 aprobados, 0 fallidos. Type-check/lint/build correctos; integracion normal 17 aprobados, 43 omitidos por configuracion.
+
+Build de candidata productiva completado correctamente con base `/ddr001/` y API productiva. Referencias del HTML verificadas; CSS de marca/login coincide con produccion. Artefacto local: `.artifacts/production-release`; hashes por archivo y commit fuente: `20260917-production-artifact.json`. No desplegado.

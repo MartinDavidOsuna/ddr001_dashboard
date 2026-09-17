@@ -39,7 +39,7 @@
       }
     ]
   },
-  "productionBranding": "not verified - URL/source missing",
+  "productionBranding": "verified against deployed public bundles/CSS; already preserved in candidate",
   "productionSql": "not executed",
   "mainMerge": "not executed",
   "push": "not executed",
@@ -60,5 +60,14 @@
       "skipped": 43
     },
     "diffCheck": "passed"
+  },
+  "productionCandidateBuild": {
+    "result": "passed",
+    "base": "/ddr001/",
+    "apiBaseUrl": "http://cifra.aquafim.com:3002/api/v1",
+    "artifactManifest": "20260917-production-artifact.json",
+    "entrypointReferences": "passed",
+    "brandingCss": "passed",
+    "deployed": false
   }
 }
