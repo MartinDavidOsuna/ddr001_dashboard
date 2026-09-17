@@ -1,0 +1,32 @@
+{
+  "productionBrandingVerified": false,
+  "reason": "Production URL/source not identified; user reports additional branding outside known Git branches. Do not overwrite production until recovered and compared.",
+  "gitBaseline": "origin/main",
+  "files": [
+    {
+      "path": "public/favicon.svg",
+      "originMainSha256": "4907df69c3ee55f56033a2d9184436a4509ff111f8cc6a54d719f4ad095e856a",
+      "candidateSha256": "4907df69c3ee55f56033a2d9184436a4509ff111f8cc6a54d719f4ad095e856a",
+      "identical": true
+    },
+    {
+      "path": "src/assets/main.css",
+      "originMainSha256": "91f433e9324852a4529c34337ce8229528dd40ec1553e245362eaab70b4ffa11",
+      "candidateSha256": "91f433e9324852a4529c34337ce8229528dd40ec1553e245362eaab70b4ffa11",
+      "identical": true
+    },
+    {
+      "path": "src/features/auth/LoginView.vue",
+      "originMainSha256": "6795c58dc2e0fd2727793063362f12529dafb007d8a45924159ac3adfa2a1512",
+      "candidateSha256": "6795c58dc2e0fd2727793063362f12529dafb007d8a45924159ac3adfa2a1512",
+      "identical": true
+    },
+    {
+      "path": "index.html",
+      "originMainSha256": "264184780e56136343f3b53511ba5c6f9cbdb834addab08bc25ddd6ea6b48e42",
+      "candidateSha256": "264184780e56136343f3b53511ba5c6f9cbdb834addab08bc25ddd6ea6b48e42",
+      "identical": true
+    }
+  ],
+  "layout": "src/layouts/AppLayout.vue retains DDR001/CNA/DR001 branding; accumulated navigation changes require merging production-only branding into this newer layout, never replacing the full component with an old version."
+}

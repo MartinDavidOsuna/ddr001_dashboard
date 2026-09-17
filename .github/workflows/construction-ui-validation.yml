@@ -7,6 +7,8 @@ on:
   pull_request:
     paths:
       - 'src/features/construction/**'
+      - 'src/features/map/**'
+      - 'scripts/global-map-ui-e2e.mjs'
       - 'src/features/dashboard/**'
       - 'src/features/users/**'
       - 'src/layouts/**'
@@ -53,6 +55,8 @@ jobs:
           E2E_APP_URL: http://127.0.0.1:4173
           E2E_ARTIFACTS_DIR: .artifacts/construction-ui
         run: npm run e2e:construction-ui
+      - name: Run global map offline responsive E2E
+        run: npm run e2e:global-map
       - name: Upload responsive captures
         if: always()
         uses: actions/upload-artifact@v4

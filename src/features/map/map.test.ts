@@ -358,7 +358,7 @@ describe("status colors, reviews and nearby hydrants", () => {
       },
     });
     const { wrapper } = await view("view=hydrants");
-    expect(wrapper.findAll(".canvas-stub button")).toHaveLength(1);
+    expect(wrapper.findAll(".canvas-stub button")).toHaveLength(2);
     await wrapper.find(".canvas-stub button").trigger("click");
     expect(
       wrapper
@@ -369,7 +369,14 @@ describe("status colors, reviews and nearby hydrants", () => {
       .get('[aria-label="Hidrante del punto agrupado"]')
       .setValue("hydrants:h2");
     expect(wrapper.find('a[href="/hidrantes/h2"]').exists()).toBe(true);
-    expect(wrapper.get(".map-legend").text()).toContain("estados distintos");
+    expect(wrapper.get(".map-legend").text()).toContain("Estados distintos");
+    wrapper.getComponent({ name: "MapCanvas" }).vm.$emit("grouping", false);
+    await flushPromises();
+    expect(
+      wrapper.find('[aria-label="Hidrante del punto agrupado"]').exists(),
+    ).toBe(false);
+    expect(wrapper.get(".map-legend").text()).not.toContain("4 m");
+    expect(wrapper.get(".map-legend").text()).not.toContain("agrupan");
     wrapper.unmount();
   });
 });

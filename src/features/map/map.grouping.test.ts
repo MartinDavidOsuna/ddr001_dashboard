@@ -18,7 +18,7 @@ const item = (id: string, meters = 0, code = "pending"): MapItem => ({
 });
 describe("geographic aggregation", () => {
   it("halves pixel clustering again independently of the physical distance rule", () =>
-    expect(CLUSTER_RADIUS_PX).toBe(8.75));
+    expect(CLUSTER_RADIUS_PX).toBe(0.2734375));
   it("merges exact overlaps and under 4 metres, but keeps 4+ metres separate", () => {
     for (const distance of [0, 3.999])
       expect(

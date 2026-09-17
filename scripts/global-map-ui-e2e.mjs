@@ -125,7 +125,10 @@ try {
     if (i === 79) throw Error(logs);
     await delay(200);
   }
-  browser = await chromium.launch({ channel: "msedge", headless: true });
+  browser = await chromium.launch({
+    channel: process.platform === "win32" ? "msedge" : undefined,
+    headless: true,
+  });
   for (const [role, width] of [
     ["admin", 1440],
     ["admin", 768],
@@ -261,7 +264,7 @@ try {
     await page.getByLabel("Correo electrónico").fill("map@example.invalid");
     await page.getByLabel("Contraseña", { exact: true }).fill("test-only");
     await page.getByRole("button", { name: "Ingresar", exact: true }).click();
-    await page.locator(".global-cluster").first().waitFor();
+    await page.locator(".global-pin,.global-cluster").first().waitFor();
     const openResults = async () => {
       if (
         width <= 800 &&
@@ -339,12 +342,37 @@ try {
       "each grouped record remains reachable",
     );
     await accounts.selectOption("hydrants:h0");
+    const beforeUncluster = requests.length;
+    await page.locator(".leaflet-control-zoom-in").click();
+    await page.waitForTimeout(400);
+    assert(
+      (await page.locator(".global-cluster").count()) === 0,
+      "no clusters above initial zoom",
+    );
+    assert(
+      (await page.locator(".map-pin-count").count()) === 0,
+      "no merged hydrants above initial zoom",
+    );
+    assert(
+      (await page.locator(".global-pin").count()) === 60,
+      "every hydrant is an individual marker after zoom",
+    );
+    assert(
+      requests.length === beforeUncluster,
+      "unclustering uses cached data",
+    );
+    await page.locator(".leaflet-control-zoom-out").click();
+    await page.waitForTimeout(400);
+    assert(
+      (await page.locator(".map-pin-count").count()) > 0,
+      "initial zoom restores geographic grouping",
+    );
 
     await page.getByRole("link", { name: "Ver hidrante", exact: true }).click();
     await page.waitForURL("**/hidrantes/h0");
     await page.getByRole("heading", { name: /Hidrante.*RV-100/ }).waitFor();
     await page.goBack();
-    await page.locator(".global-cluster").first().waitFor();
+    await page.locator(".global-pin,.global-cluster").first().waitFor();
     await view("Levantamientos");
     if (role === "viewer") {
       assert(
@@ -452,7 +480,7 @@ try {
     await page.locator(".global-pin.selected").waitFor();
     assert(
       (await page.locator(".global-pin").count()) >= 2,
-      "coincident markers must spiderfy",
+      "coincident records remain individual markers",
     );
     await page
       .getByRole("button", { name: "Cerrar detalle", exact: true })
@@ -578,8 +606,8 @@ try {
         "stress dataset",
       );
       assert(
-        (await page.locator(".global-pin").count()) < 200,
-        "clustering must limit DOM markers",
+        (await page.locator(".global-pin").count()) <= 1800,
+        "all markers stay within the loaded dataset limit",
       );
       assert(Date.now() - started < 10000, "stress render budget");
     }
