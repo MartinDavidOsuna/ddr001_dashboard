@@ -47,3 +47,14 @@ un replay con Idempotency-Key y ruta en mayúsculas no eluda el cambio de rol.
 
 La baja no es borrado físico ni una limpieza masiva. No hay restauración UI en
 esta versión. El rollback de esquema rechaza tablas con bajas registradas.
+
+
+## HTTP deployment fix and last active revision regression (2026-09-17)
+
+The withdrawal button called crypto.randomUUID before opening its dialog. The public HTTP deployment does not expose that secure-context method. Operation IDs now share the existing Diagnostics fallback based on crypto.getRandomValues, producing UUID v4 and preserving the same command ID across retries. Diagnostics retains its reviewUuid export.
+
+Regression: opening and submitting without crypto.randomUUID passes; reason/confirmation and retry behavior remain covered. Dashboard: 134 tests in 25 files passed; typecheck and lint passed. Production-base build uses /ddr001/ and the existing API address; artifact: .artifacts/withdrawal-production-release.
+
+API SQL TEST regression passed (4 withdrawal integration tests, rolled back). A fresh hydrant with two active RV inspections remains completed after the first withdrawal; after the last it is pending, reviewed=false, inspectionCount=0, latestInspectionId/status/date=null in list and map. Detail/history and filters agree; archived inspections remain accessible. No Field capture or SQL schema change was required. The map can be refreshed with Actualizar if it already has an older loaded snapshot.
+
+No production data was changed for these checks. This fix requires publishing the new dashboard build; API changes for this fix are regression tests/documentation only.

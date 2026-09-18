@@ -1,5 +1,5 @@
 import { mount, flushPromises } from '@vue/test-utils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import InspectionWithdrawal from './InspectionWithdrawal.vue'
 import { dashboardService } from '@/services/dashboard'
 
@@ -10,7 +10,25 @@ beforeEach(() => {
   HTMLDialogElement.prototype.showModal = vi.fn()
   HTMLDialogElement.prototype.close = vi.fn()
 })
+afterEach(() => vi.unstubAllGlobals())
+
 describe('RV withdrawal confirmation', () => {
+  it('opens and submits over HTTP without crypto.randomUUID', async () => {
+    const getRandomValues = crypto.getRandomValues.bind(crypto)
+    vi.stubGlobal('crypto', { getRandomValues })
+    vi.mocked(dashboardService.withdrawInspection).mockResolvedValue({ inspectionId: 'rv-id', withdrawnAt: '2026-09-15', alreadyWithdrawn: false })
+    const wrapper = mount(InspectionWithdrawal, { props })
+    await wrapper.get('button').trigger('click')
+    expect(HTMLDialogElement.prototype.showModal).toHaveBeenCalledOnce()
+    await wrapper.get('textarea').setValue('Registro duplicado')
+    await wrapper.get('input[type=checkbox]').setValue(true)
+    await wrapper.get('form').trigger('submit'); await flushPromises()
+    expect(dashboardService.withdrawInspection).toHaveBeenCalledWith('rv-id', {
+      reason: 'Registro duplicado', rowVersion: props.rowVersion,
+      commandId: expect.stringMatching(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/),
+    })
+    expect(wrapper.emitted('withdrawn')).toHaveLength(1)
+  })
   it('requires a reason and explicit confirmation before submitting', async () => {
     vi.mocked(dashboardService.withdrawInspection).mockResolvedValue({ inspectionId: 'rv-id', withdrawnAt: '2026-09-15', alreadyWithdrawn: false })
     const wrapper = mount(InspectionWithdrawal, { props })

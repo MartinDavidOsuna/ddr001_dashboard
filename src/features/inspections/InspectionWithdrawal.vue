@@ -2,13 +2,14 @@
 import { ref } from 'vue'
 import { dashboardService } from '@/services/dashboard'
 import { problemMessage } from '@/api/client'
+import { commandUuid } from '@/utils/commandUuid'
 
 const props = defineProps<{ inspectionId: string; rowVersion: string; accountNumber: string; revisionNumber: number }>()
 const emit = defineEmits<{ withdrawn: [] }>()
 const dialog = ref<HTMLDialogElement>(), reason = ref(''), confirmed = ref(false), busy = ref(false), error = ref('')
 let commandId = ''
 function open() {
-  commandId = crypto.randomUUID()
+  commandId = commandUuid()
   reason.value = ''; confirmed.value = false; error.value = ''
   dialog.value?.showModal()
 }
@@ -31,7 +32,7 @@ async function submit() {
       <p><strong>Hidrante {{ accountNumber }} · Revisión #{{ revisionNumber }}</strong></p>
       <p>Se ocultará de los listados, indicadores y exportaciones habituales del dashboard.
         El historial, las respuestas y las fotografías se conservarán en el archivo de bajas.</p>
-      <p>La baja no cambia el estado de la revisión ni habilita una nueva captura del hidrante.</p>
+      <p>Si no quedan revisiones activas, el hidrante aparecerá como pendiente en el dashboard y el mapa. La revisión y su evidencia se conservarán archivadas.</p>
       <label for="withdrawal-reason">Motivo de la baja</label>
       <textarea id="withdrawal-reason" v-model="reason" required minlength="3" maxlength="500" rows="4" :disabled="busy" autofocus />
       <label class="confirmation"><input v-model="confirmed" type="checkbox" :disabled="busy" required />
