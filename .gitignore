@@ -6,4 +6,5 @@ dist/
 !.env.example
 coverage/
 .artifacts/
-
+docs/brading-reference/
+docs/design-reference/

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { Eye, EyeOff, LockKeyhole } from "@lucide/vue";
+import { Eye, EyeOff, ShieldUser } from "@lucide/vue";
 import { useAuthStore } from "@/stores/auth";
 const email = ref(""),
   password = ref(""),
@@ -25,23 +25,31 @@ async function submit() {
 <template>
   <main class="login">
     <section class="login-panel">
+      <img
+        class="login-watermark"
+        src="/branding/ddr001-watermark.png"
+        alt=""
+        aria-hidden="true"
+      />
       <div class="login-brand">
-        <div>⌁</div>
+        <img src="/branding/aquafim-icon.png" alt="" width="42" height="42" />
         <span
-          ><strong>DDR001</strong><small>Sistema de Supervisión</small></span
+          ><strong>Aquafim | Conagua Aguascalientes</strong
+          ><small>Hidrantes parcelarios DDR001</small></span
         >
       </div>
       <div class="copy">
+        <div class="institutional-logos">
+          <img src="/branding/Aquafim-logo.png" alt="Aquafim" />
+          <span class="logo-divider" aria-hidden="true"></span>
+          <img src="/branding/conagua-logo.png" alt="CONAGUA" />
+        </div>
         <p>PLATAFORMA ADMINISTRATIVA</p>
-        <span
-          >Consulta revisiones visuales reales, fotografías, ubicación y
-          trazabilidad operativa.</span
-        >
       </div>
     </section>
     <section class="form-panel">
       <form class="login-card card" @submit.prevent="submit">
-        <div class="lock"><LockKeyhole /></div>
+        <div class="lock"><ShieldUser :size="28" aria-hidden="true" /></div>
         <h2>Iniciar sesión</h2>
         <p>Acceso exclusivo para personal autorizado</p>
         <div class="field">
@@ -77,11 +85,8 @@ async function submit() {
           {{ auth.error }}
         </p>
         <button class="btn btn--primary" :disabled="auth.loading">
-          {{ auth.loading ? "Ingresando…" : "Ingresar" }}</button
-        ><small
-          >Las credenciales se validan contra la administración de
-          DDR001.</small
-        >
+          {{ auth.loading ? "Ingresando…" : "Ingresar" }}
+        </button>
       </form>
     </section>
   </main>
@@ -90,13 +95,16 @@ async function submit() {
 .login {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
   background: white;
 }
 .login-panel {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   background: linear-gradient(145deg, #0e2139, #132f50);
   color: white;
-  padding: 45px 7vw;
+  padding: 32px clamp(24px, 3.3vw, 60px);
   display: flex;
   flex-direction: column;
 }
@@ -105,39 +113,57 @@ async function submit() {
   gap: 12px;
   align-items: center;
 }
-.login-brand > div {
+.login-brand > img {
   width: 42px;
   height: 42px;
-  border-radius: 7px;
-  background: #1768fa;
-  display: grid;
-  place-items: center;
-  font-size: 27px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 .login-brand span {
   display: grid;
+  gap: 4px;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .login-brand small {
   color: #8daac8;
 }
 .copy {
   margin: auto 0;
+  padding: 48px 0;
+}
+.institutional-logos {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) 1px minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(12px, 1.5vw, 28px);
+  padding: clamp(16px, 2vw, 28px);
+  border-radius: 8px;
+}
+.institutional-logos img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.logo-divider {
+  align-self: stretch;
+  background: #c4ceda;
+}
+.login-watermark {
+  position: absolute;
+  z-index: -1;
+  width: 90%;
+  height: auto;
+  right: -18%;
+  bottom: -12%;
+  opacity: 0.055;
+  pointer-events: none;
 }
 .copy p {
+  margin: 32px 0 0;
   font-size: 0.75rem;
   letter-spacing: 0.18em;
   color: #6fa5e5;
-}
-.copy h1 {
-  font-size: clamp(2.2rem, 4vw, 4.3rem);
-  line-height: 1.08;
-  margin: 18px 0;
-}
-.copy span {
-  color: #acc2da;
-  max-width: 520px;
-  display: block;
-  line-height: 1.7;
 }
 .form-panel {
   display: grid;
@@ -186,10 +212,6 @@ async function submit() {
   cursor: pointer;
   color: #667891;
 }
-.login-card > small {
-  text-align: center;
-  color: var(--muted);
-}
 .login-error {
   color: #b32626 !important;
   background: #fff0f0;
@@ -198,23 +220,30 @@ async function submit() {
   margin: 0 !important;
   font-size: 0.84rem;
 }
-@media (max-width: 750px) {
+@media (max-width: 800px) {
   .login {
     grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
   }
   .login-panel {
     padding: 22px;
-    min-height: 190px;
   }
   .copy {
-    margin: 28px 0 0;
+    margin: 24px 0 0;
+    padding: 0;
+    max-width: 440px;
   }
-  .copy h1 {
-    font-size: 1.8rem;
-    margin: 10px 0;
+  .copy p {
+    margin-top: 18px;
+    font-size: 0.65rem;
   }
-  .copy span {
-    display: none;
+  .login-brand strong {
+    font-size: 0.9rem;
+  }
+  .login-watermark {
+    width: 55%;
+    right: -8%;
+    bottom: -45%;
   }
   .form-panel {
     padding: 18px;
