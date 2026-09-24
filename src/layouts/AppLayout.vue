@@ -122,7 +122,7 @@ window.addEventListener("ddr001:unauthorized", () => router.replace("/login"));
         </section>
       </nav>
       <footer class="sidebar-footer">
-        <RouterLink class="sidebar-version" to="/acerca-de" :aria-label="`Versión ${platformVersion}`">Versión {{ platformVersion }}</RouterLink>
+        <RouterLink class="sidebar-version" to="/acerca-de" :aria-label="`Versión ${platformVersion}`">{{ collapsed ? `v${platformVersion}` : `Versión ${platformVersion}` }}</RouterLink>
         <button
           class="collapse desktop-only"
           :aria-label="collapsed ? 'Expandir menú' : 'Contraer menú'"
