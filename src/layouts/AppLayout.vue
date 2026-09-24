@@ -23,6 +23,7 @@ import {
 } from "@lucide/vue";
 import { useAuthStore } from "@/stores/auth";
 const platformVersion = __PLATFORM_VERSION__;
+const aquafimIcon = `${import.meta.env.BASE_URL}branding/aquafim-icon.png`;
 const route = useRoute(),
   router = useRouter(),
   auth = useAuthStore(),
@@ -83,9 +84,9 @@ window.addEventListener("ddr001:unauthorized", () => router.replace("/login"));
     />
     <aside ref="sidebar" class="sidebar" :class="{ open, 'submenu-open': expandedGroup }" @keydown.esc="expandedGroup = null">
       <div class="brand">
-        <div class="brand-mark">⌁</div>
+        <img class="brand-mark" :src="aquafimIcon" alt="" width="36" height="36" />
         <div v-if="!collapsed">
-          <strong>DDR001</strong><small>Sistema de Supervisión · <RouterLink to="/acerca-de">v{{ platformVersion }}</RouterLink></small>
+          <strong>Aquafim</strong><small>Sistema de Supervisión · <RouterLink to="/acerca-de">v{{ platformVersion }}</RouterLink></small>
         </div>
       </div>
       <div class="district" v-if="!collapsed">
@@ -187,12 +188,11 @@ window.addEventListener("ddr001:unauthorized", () => router.replace("/login"));
 .brand-mark {
   width: 36px;
   height: 36px;
-  background: var(--blue);
-  color: #fff;
-  display: grid;
-  place-items: center;
+  flex-shrink: 0;
+  object-fit: contain;
+  background: #fff;
+  display: block;
   border-radius: 6px;
-  font-size: 24px;
 }
 .brand div:last-child {
   display: grid;
