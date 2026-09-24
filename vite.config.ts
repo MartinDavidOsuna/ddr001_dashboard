@@ -1,10 +1,15 @@
 import { fileURLToPath, URL } from 'node:url'
 import { readFileSync } from 'node:fs'
+import { execFileSync } from 'node:child_process'
 import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
-  define: { __PLATFORM_VERSION__: JSON.stringify(JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')).version) },
+  define: {
+    __PLATFORM_VERSION__: JSON.stringify(JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')).version),
+    __BUILD_COMMIT__: JSON.stringify(process.env.GIT_COMMIT || execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim() + (execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim()?'-dirty':'')),
+    __BUILD_DATE__: JSON.stringify(process.env.BUILD_DATE || new Date().toISOString()),
+  },
   plugins: [vue()],
   server: {
     host: 'localhost',

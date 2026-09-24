@@ -1,5 +1,9 @@
 ﻿# Historial de la plataforma DDR001
 
+## Unreleased - 2026-09-24
+
+Administracion auditada de usuarios, cuadrillas, jornadas y dispositivos; revision/comparacion RV; compatibilidad Ausente y correcciones dispensadas; descargas de diagnosticos; metricas, evidencia ausente, concurrencia, CI y trazabilidad. [Detalle y validacion](docs/dashboard-api-completion.md). Requiere la migracion aditiva API antes del despliegue.
+
 ## 0.3.0 — 2026-09-15 — local, pendiente de publicación
 
 - Módulo aislado Diagnósticos: resumen, filtros server-side, cursores, métricas, técnicos y reportes.

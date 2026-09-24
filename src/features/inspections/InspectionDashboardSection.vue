@@ -11,7 +11,7 @@ const data = ref<DashboardSummary>()
 const emit = defineEmits<{ ready: [] }>()
 const loading = ref(true)
 const error = ref('')
-const statusLabels: Record<string, string> = { draft: 'Borrador', in_progress: 'En progreso', pending_sync: 'Pendiente sync', submitted: 'Enviada', validated: 'Validada', rejected: 'Rechazada', cancelled: 'Cancelada', conflict: 'En conflicto' }
+const statusLabels: Record<string, string> = { inactive: 'Ausente', draft: 'Borrador', in_progress: 'En progreso', pending_sync: 'Pendiente sync', submitted: 'Enviada', validated: 'Validada', rejected: 'Rechazada', cancelled: 'Cancelada', conflict: 'En conflicto' }
 
 onMounted(async () => {
   try { data.value = await dashboardService.summary() }

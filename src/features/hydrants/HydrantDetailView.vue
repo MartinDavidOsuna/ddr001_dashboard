@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { AlertTriangle, ArrowLeft, Camera, ClipboardList, Copy, MapPin, Radio, Ruler } from '@lucide/vue'
+import { AlertTriangle, ArrowLeft, Camera, ClipboardList, Copy, MapPin, Radio } from '@lucide/vue'
 import AppStatus from '@/components/AppStatus.vue'
 import InspectionMap from '@/components/InspectionMap.vue'
 import { problemMessage } from '@/api/client'

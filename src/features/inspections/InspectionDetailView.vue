@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import InspectionWithdrawal from "./InspectionWithdrawal.vue";
+import InspectionReview from './InspectionReview.vue';
 const auth = useAuthStore(), router = useRouter();
 import {
   ArrowLeft,
@@ -43,7 +44,7 @@ const route = useRoute(),
   lightbox = ref<number | null>(null),
   fullUrl = ref(""),
   zoomLevel = ref(1);
-const tabs: [string, string][] = [
+const allTabs: [string, string][] = [
   ["summary", "Resumen"],
   ["checklist", "Checklist"],
   ["photos", "Fotografías"],
@@ -52,6 +53,7 @@ const tabs: [string, string][] = [
   ["history", "Historial"],
   ["audit", "Auditoría"],
 ];
+const tabs = computed(() => data.value?.status === 'inactive' ? allTabs.filter(([key]) => !['checklist', 'signal'].includes(key)) : allTabs);
 const groups = computed(() => groupChecklist(data.value?.checklistItems || [])),
   counts = computed(() => checklistCounts(data.value?.checklistItems || []));
 const mandatoryCards = computed(() =>
@@ -64,7 +66,7 @@ const mandatoryCards = computed(() =>
   })),
 );
 const additionalCards = computed(() =>
-  (data.value?.photos.filter((photo) => !photo.isMandatory) || []).map(
+  (data.value?.photos.filter((photo) => data.value?.status === 'inactive' || !photo.isMandatory) || []).map(
     (photo) => ({
       slot: photo.slotCode + ":" + photo.photoId,
       label: photo.slotLabel || "Fotografía adicional",
@@ -73,7 +75,7 @@ const additionalCards = computed(() =>
   ),
 );
 const photoCards = computed(() => [
-  ...mandatoryCards.value,
+  ...(data.value?.status === 'inactive' ? [] : mandatoryCards.value),
   ...additionalCards.value,
 ]);
 function formatDate(v?: string) {
@@ -85,9 +87,13 @@ function formatDate(v?: string) {
       }).format(new Date(v))
     : "No disponible";
 }
+async function refreshAfterReview() {
+  try { data.value = await dashboardService.inspection(String(route.params.id)); }
+  catch (e) { error.value = problemMessage(e, 'La revisión se guardó, pero no se pudo actualizar la vista. Recarga la página.'); }
+}
 function toggle(id: string) {
   const next = new Set(openSections.value);
-  next.has(id) ? next.delete(id) : next.add(id);
+  if(next.has(id))next.delete(id);else next.add(id);
   openSections.value = next;
 }
 async function loadPhoto(p: Photo) {
@@ -210,7 +216,7 @@ onBeforeUnmount(() => {
             <p>{{ data.withdrawalReason }}</p>
             <RouterLink to="/revisiones/archivo">Volver al archivo de bajas</RouterLink>
           </div>
-          <span
+          <template v-if="data.status !== 'inactive'"><span
             ><CheckCircle2 />Checklist:
             <b>{{ counts.captured }}/{{ counts.total }}</b></span
           ><span
@@ -232,7 +238,7 @@ onBeforeUnmount(() => {
                 · {{ data.signal.dbm }} dBm</template
               ></b
             ></span
-          >
+          ></template>
         </div>
         <nav class="tabs" aria-label="Secciones del detalle">
           <button
@@ -246,6 +252,17 @@ onBeforeUnmount(() => {
         </nav>
       </section>
       <main class="detail-body">
+        <RouterLink :to="`/revisiones/${data.inspectionId}/comparar`" class="btn">Comparar con otra revisión</RouterLink>
+        <InspectionReview v-if="['admin','supervisor'].includes(auth.user?.role||'') && data.status==='submitted' && data.rowVersion && !data.withdrawnAt" :id="data.inspectionId" :row-version="data.rowVersion" @reviewed="refreshAfterReview" />
+        <article v-if="data.status === 'inactive'" class="card info" aria-label="Cierre por ausencia">
+          <h2>Ausente: no se encontró el hidrante</h2>
+          <template v-if="data.inactiveClosure">
+            <p>{{ data.inactiveClosure.closure.comment }}</p>
+            <p>Cierre: {{ formatDate(data.inactiveClosure.closure.closedAt) }} · Recibido: {{ formatDate(data.inactiveClosure.receivedAt) }}</p>
+            <p>Ubicación: {{ data.inactiveClosure.closure.location.latitude }}, {{ data.inactiveClosure.closure.location.longitude }} · {{ data.inactiveClosure.closure.photoIds.length }} fotografías de evidencia</p>
+          </template>
+          <p>Este cierre no requiere el checklist ni las siete fotografías de una revisión ordinaria. El hidrante permanece en el catálogo.</p>
+        </article>
         <section v-if="tab === 'summary'" class="summary-grid">
           <article class="card info">
             <h2>Datos del hidrante</h2>
@@ -387,7 +404,7 @@ onBeforeUnmount(() => {
           </article>
         </section>
         <section v-if="tab === 'photos'" class="photo-sections">
-          <div>
+          <div v-if="data.status !== 'inactive'">
             <h2>Evidencias obligatorias</h2>
             <p class="muted">
               {{ data.mandatoryPhotosCompleted }}/{{
@@ -437,7 +454,7 @@ onBeforeUnmount(() => {
             </div>
           </div>
           <div v-if="additionalCards.length">
-            <h2>Fotografías adicionales ({{ additionalCards.length }})</h2>
+            <h2>{{ data.status === 'inactive' ? 'Evidencia de ausencia' : 'Fotografías adicionales' }} ({{ additionalCards.length }})</h2>
             <div class="gallery">
               <article
                 v-for="(x, offset) in additionalCards"
@@ -446,7 +463,7 @@ onBeforeUnmount(() => {
               >
                 <button
                   v-if="x.photo"
-                  @click="openPhoto(mandatoryCards.length + offset)"
+                  @click="openPhoto((data.status === 'inactive' ? 0 : mandatoryCards.length) + offset)"
                 >
                   <img
                     v-if="photoUrls.get(x.photo.photoId)"

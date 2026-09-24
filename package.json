@@ -11,14 +11,15 @@
     "dev": "vite",
     "build": "vue-tsc --noEmit -p tsconfig.app.json && vite build",
     "typecheck": "vue-tsc --noEmit -p tsconfig.app.json",
-    "lint": "eslint \"src/**/*.ts\" \"scripts/**/*.mjs\" vite.config.ts eslint.config.js",
+    "lint": "eslint \"src/**/*.{ts,vue}\" \"scripts/**/*.mjs\" vite.config.ts eslint.config.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "e2e:edge": "node scripts/edge-e2e.mjs",
     "e2e:construction-ui": "node scripts/construction-ui-e2e.mjs",
     "e2e:construction-api": "node scripts/construction-api-e2e.mjs",
     "e2e:functional-diagnostics-ui": "node scripts/functional-diagnostics-ui-e2e.mjs",
-    "test:functional-diagnostics-contract": "node scripts/functional-diagnostics-contract-check.mjs"
+    "test:functional-diagnostics-contract": "node scripts/functional-diagnostics-contract-check.mjs",
+    "e2e:administration-ui": "node scripts/administration-ui-e2e.mjs"
   },
   "dependencies": {
     "@lucide/vue": "^1.31.0",

@@ -78,3 +78,7 @@ revisiones, checklists ni migraciones históricas.
 [CHANGELOG.md](CHANGELOG.md) centraliza las entregas de plataforma y enlaza el
 plan. No hay tag nuevo, publicación ni cambio funcional por esta incorporación
 documental. La siguiente implementación debe mantener este registro actualizado.
+
+## Trazabilidad de esta entrega
+
+La pagina `/acerca-de` identifica commit y fecha de compilacion del Dashboard y consulta `/api/v1/version` para API. Builds con cambios locales se marcan `-dirty`; no constituyen un release publicado. El API genera `dist/build-info.json` y permite exigir arbol limpio con `RELEASE_BUILD=true`. La version de paquete se mantiene hasta preparar el release.

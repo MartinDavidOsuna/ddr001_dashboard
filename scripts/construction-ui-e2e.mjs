@@ -1,7 +1,8 @@
-import { mkdirSync } from 'node:fs'
+import { mkdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { chromium } from 'playwright-core'
 
+const diagnostics = JSON.parse(readFileSync(new URL('../tests/fixtures/functional-diagnostics.json', import.meta.url),'utf8'))
 const appUrl = process.env.E2E_APP_URL || 'http://127.0.0.1:4173'
 const artifactsDir = process.env.E2E_ARTIFACTS_DIR || '.artifacts/construction-ui'
 const transparentPng = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64')
@@ -73,7 +74,7 @@ function assert(condition, message) {
 }
 
 mkdirSync(artifactsDir, { recursive: true })
-const browser = await chromium.launch({ headless: true })
+const browser = await chromium.launch({ headless: true, ...(process.platform==='win32'?{channel:'msedge'}:{}) })
 const context = await browser.newContext()
 const forbiddenRequests = []
 const unexpectedApiRequests = []
@@ -81,6 +82,7 @@ const unexpectedApiRequests = []
 await context.route('**/*', async (route) => {
   const request = route.request()
   const url = new URL(request.url())
+  url.pathname = url.pathname.replace(/^\/api\/v1(?=\/)/, '')
 
   if (url.hostname === 'cifra.aquafim.com') {
     forbiddenRequests.push(request.url())
@@ -89,8 +91,11 @@ await context.route('**/*', async (route) => {
   if (url.hostname.endsWith('tile.openstreetmap.org')) {
     return route.fulfill({ status: 200, contentType: 'image/png', body: transparentPng })
   }
-  if (url.origin !== appUrl) return route.continue()
+  if (url.origin !== appUrl) return route.abort()
 
+  if (url.pathname === '/admin/dashboard/administration/users/mock-user-1/history') return json(route,{items:[]})
+  const diagnosticKey = url.pathname.replace('/admin/dashboard/functional-diagnostics/','')
+  if (['summary','metrics','trends'].includes(diagnosticKey)) return json(route,{data:diagnostics[diagnosticKey]})
   if (url.pathname === '/admin/auth/refresh') return json(route, { accessToken: 'mock-access-token', refreshToken: 'mock-refresh-token' })
   if (url.pathname === '/admin/auth/me') return json(route, { kind: 'admin', userId: 'mock-admin', role: 'admin', tokenId: 'mock-token' })
   if (url.pathname === '/admin/dashboard/summary') return json(route, summary)

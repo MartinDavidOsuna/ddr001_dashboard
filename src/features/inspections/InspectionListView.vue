@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { inspectionStatusLabel } from '@/features/inspections/inspection-status';
 import { onMounted, reactive, ref, watch } from "vue";
 import {
   Search,
@@ -153,7 +154,7 @@ watch(() => filters.page, load);
         <label>Estado</label
         ><select v-model="filters.status">
           <option value="">Todos</option>
-          <option v-for="x in statuses" :key="x" :value="x">{{ x }}</option>
+          <option v-for="x in statuses" :key="x" :value="x">{{ inspectionStatusLabel(x) }}</option>
         </select>
       </div>
       <div class="field">
@@ -221,7 +222,8 @@ watch(() => filters.page, load);
               <td class="mono">#{{ x.revisionNumber }}</td>
               <td><AppStatus :status="x.status" /></td>
               <td>
-                <span class="photo-count" :class="{ missing: !x.mandatoryPhotosComplete }">
+                <span v-if="x.status==='inactive'" class="photo-count"><Camera :size="15" />{{ x.totalPhotos }} de ausencia</span>
+                <span v-else class="photo-count" :class="{ missing: !x.mandatoryPhotosComplete }">
                   <Camera :size="15" />
                   <b>{{ x.mandatoryPhotosCompleted }}/{{ x.mandatoryPhotosRequired }}</b>
                   obligatorias
@@ -280,7 +282,7 @@ watch(() => filters.page, load);
             {{ date(x.startedAt) }}</small
           >
           <div>
-            <span
+            <span v-if="x.status==='inactive'"><Camera :size="15" />{{ x.totalPhotos }} de ausencia</span><span v-else
               ><Camera :size="15" />{{ x.mandatoryPhotosCompleted }}/{{
                 x.mandatoryPhotosRequired
               }} · {{ x.totalPhotos }} total</span

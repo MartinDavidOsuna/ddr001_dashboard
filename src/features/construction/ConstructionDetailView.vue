@@ -119,7 +119,7 @@ function integrityLabel(photo: ConstructionPhoto) {
         <div v-if="!hasCorrections" class="empty-box">No hay rondas de corrección registradas.</div>
         <div v-else class="corrections">
           <article v-for="correction in survey.corrections" :key="correction.id" class="correction">
-            <div class="round">Ronda {{ correction.round }}</div><div><strong>Motivo de rechazo</strong><p>{{ correction.rejectionReason }}</p></div><div><strong>Comentario de corrección</strong><p>{{ correction.contractorComment }}</p></div><div class="correction-meta"><span>Fotos: {{ correction.photoIds.length }}</span><span>Estado: {{ correction.state === 'resolved' ? 'Resuelta' : correction.state === 'submitted' ? 'Enviada' : 'Pendiente' }}</span><span>{{ formatDate(correction.createdAt) }}</span></div>
+            <div class="round">Ronda {{ correction.round }}</div><div><strong>Motivo de rechazo</strong><p>{{ correction.rejectionReason }}</p></div><div><strong>Comentario de corrección</strong><p>{{ correction.contractorComment }}</p></div><div class="correction-meta"><span>Fotos: {{ correction.photoIds.length }}</span><span>Estado: {{ correction.state === 'waived' ? 'Dispensada por revisor' : correction.state === 'resolved' ? 'Resuelta' : correction.state === 'submitted' ? 'Enviada' : 'Pendiente' }}</span><span>{{ formatDate(correction.createdAt) }}</span></div>
           </article>
         </div>
       </article>

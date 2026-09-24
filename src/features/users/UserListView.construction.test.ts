@@ -1,3 +1,4 @@
+import { createPinia } from 'pinia'
 import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -21,7 +22,7 @@ import UserListView from './UserListView.vue'
 
 describe('UserListView Construction preview', () => {
   it('keeps RV crew data and adds Empresa plus Rol Levantamientos', async () => {
-    const wrapper = mount(UserListView, { global: { stubs: { RouterLink: { props: ['to'], template: '<a><slot /></a>' } } } })
+    const wrapper = mount(UserListView, { global: { plugins: [createPinia()], stubs: { RouterLink: { props: ['to'], template: '<a><slot /></a>' } } } })
     await flushPromises()
     expect(wrapper.text()).toContain('Cuadrilla RV Demo')
     expect(wrapper.text()).toContain('Empresa')

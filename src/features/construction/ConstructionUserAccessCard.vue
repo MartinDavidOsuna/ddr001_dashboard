@@ -19,6 +19,7 @@ type PreviewRole = ConstructionRole | 'none'
 const selectedRole = ref<PreviewRole>(access.value?.role || 'none')
 const saving = ref(false)
 const message = ref('')
+const reason = ref('')
 const history = ref<ConstructionAccessHistoryItem[]>([])
 const privilegedPreview = computed(() => realMode ? auth.user?.role === 'admin' : auth.user?.role === 'admin' || auth.user?.role === 'supervisor')
 let requestId = 0
@@ -48,7 +49,8 @@ async function save() {
   const userId = props.userId
   const role = selectedRole.value === 'none' ? null : selectedRole.value
   try {
-    await updateConstructionAccess(userId, role)
+    if(reason.value.trim().length<3 || !access.value.rowVersion) {message.value='Indica el motivo y recarga el acceso antes de guardar.';saving.value=false;return}
+    await updateConstructionAccess(userId, role,reason.value,access.value.rowVersion)
   } catch (cause) {
     if (userId === props.userId) {
       selectedRole.value = access.value?.role || 'none'
@@ -103,6 +105,7 @@ function formatDate(value?: string | null) {
       <div><small>Última actividad Construction</small><strong>{{ formatDate(access.lastActivityAt) }}</strong></div>
     </div>
 
+    <label v-if="realMode && privilegedPreview">Motivo del cambio<input v-model.trim="reason" minlength="3" maxlength="500" :disabled="saving" /></label>
     <div class="role-editor">
       <div class="field"><label for="construction-role-preview">{{ realMode ? 'Rol de Levantamientos' : 'Previsualizar rol' }}</label><select id="construction-role-preview" v-model="selectedRole" :disabled="!privilegedPreview || saving"><option value="none">Sin acceso</option><option value="contractor">Contratista</option><option value="resident">Residente</option><option v-if="!realMode" value="admin">Administrador</option><option v-if="access.role === 'superadmin'" value="superadmin" disabled>Superadministrador (derivado)</option></select></div>
       <div class="role-description"><strong>{{ roleLabel }}</strong><p>{{ description }}</p></div>

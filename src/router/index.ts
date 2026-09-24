@@ -14,6 +14,7 @@ const router = createRouter({
       path: "/",
       component: AppLayout,
       children: [
+        { path: 'acerca-de', name: 'about', component: () => import('@/features/shared/AboutView.vue') },
         {
           path: "mapa",
           name: "global-map",
@@ -48,6 +49,11 @@ const router = createRouter({
           name: "inspection-archive",
           component: () =>
             import("@/features/inspections/InspectionArchiveView.vue"),
+        },
+        {
+          path: "revisiones/:id/comparar",
+          name: "inspection-compare",
+          component: () => import("@/features/inspections/InspectionCompareView.vue"),
         },
         {
           path: "revisiones/:id",
@@ -93,14 +99,19 @@ const router = createRouter({
           component: () => import("@/features/users/UserListView.vue"),
         },
         {
+          path: "usuarios/nuevo",
+          name: "user-create",
+          component: () => import("@/features/users/UserCreateView.vue"),
+        },
+        {
           path: "usuarios/:id",
           name: "user-detail",
           component: () => import("@/features/users/UserDetailView.vue"),
         },
         {
           path: ":module(cuadrillas|jornadas|dispositivos)",
-          name: "future",
-          component: () => import("@/features/shared/FutureModuleView.vue"),
+          name: "administration",
+          component: () => import("@/features/users/AdminDirectoryView.vue"),
         },
       ],
     },

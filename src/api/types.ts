@@ -205,6 +205,16 @@ export interface AuditEntry {
   requestId?: string;
 }
 export interface InspectionDetail {
+  inactiveClosure?: {
+    receivedAt: string;
+    closure: {
+      reasonCode: string;
+      comment: string;
+      closedAt: string;
+      photoIds: string[];
+      location: { latitude: number; longitude: number; horizontalAccuracy?: number; capturedAt: string };
+    };
+  } | null;
   rowVersion?: string;
   withdrawnAt?: string | null;
   withdrawalReason?: string | null;

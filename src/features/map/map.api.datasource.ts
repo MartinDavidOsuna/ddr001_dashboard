@@ -10,6 +10,7 @@ export const mapEndpoints: Record<Domain, string> = {
 type Row = Record<string, unknown>;
 const text = (v: unknown) => (v == null ? "No disponible" : String(v));
 const states: Record<string, string> = {
+  inactive: "Ausente",
   pending: "Pendiente",
   conflict: "En conflicto",
   completed: "Completado",

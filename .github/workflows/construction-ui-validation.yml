@@ -2,21 +2,9 @@ name: Construction UI validation
 
 on:
   push:
-    branches:
-      - feature/construction-dashboard-ui
+    branches: [main]
   pull_request:
-    paths:
-      - 'src/features/construction/**'
-      - 'src/features/map/**'
-      - 'scripts/global-map-ui-e2e.mjs'
-      - 'src/features/dashboard/**'
-      - 'src/features/users/**'
-      - 'src/layouts/**'
-      - 'src/router/**'
-      - 'src/components/EChart.vue'
-      - 'scripts/construction-ui-e2e.mjs'
-      - 'package.json'
-      - 'docs/construction-dashboard-ui.md'
+
 
 permissions:
   contents: read
@@ -38,9 +26,14 @@ jobs:
       - run: npm run build
       - name: Install Chromium for mock-only responsive E2E
         run: npx playwright-core install chromium
+      - name: Build isolated mock browser artifact
+        run: npm run build -- --outDir=.artifacts/mock-ui
+        env:
+          VITE_CONSTRUCTION_DATA_MODE: mock
+          VITE_API_BASE_URL: /api/v1
       - name: Start local production preview
         run: |
-          npx vite preview --host 127.0.0.1 --port 4173 > /tmp/ddr001-vite.log 2>&1 &
+          npx vite preview --outDir=.artifacts/mock-ui --host 127.0.0.1 --port 4173 > /tmp/ddr001-vite.log 2>&1 &
           echo $! > /tmp/ddr001-vite.pid
           for attempt in {1..30}; do
             if curl --fail --silent http://127.0.0.1:4173/dashboard > /dev/null; then
@@ -55,6 +48,10 @@ jobs:
           E2E_APP_URL: http://127.0.0.1:4173
           E2E_ARTIFACTS_DIR: .artifacts/construction-ui
         run: npm run e2e:construction-ui
+      - name: Run administration responsive E2E
+        run: npm run e2e:administration-ui
+      - name: Run diagnostics responsive E2E
+        run: npm run e2e:functional-diagnostics-ui
       - name: Run global map offline responsive E2E
         run: npm run e2e:global-map
       - name: Upload responsive captures
@@ -62,7 +59,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: construction-ui-responsive
-          path: .artifacts/construction-ui
+          path: .artifacts/
           if-no-files-found: ignore
           retention-days: 14
       - name: Stop local preview

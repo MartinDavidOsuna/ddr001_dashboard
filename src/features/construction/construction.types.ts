@@ -41,7 +41,7 @@ export interface ConstructionCorrection {
   rejectionReason: string
   contractorComment: string
   photoIds: string[]
-  state: 'pending' | 'submitted' | 'resolved'
+  state: 'pending' | 'submitted' | 'resolved' | 'waived'
   createdAt: string
   submittedAt?: string | null
 }
@@ -90,6 +90,7 @@ export interface ConstructionSurvey {
 }
 
 export interface ConstructionUserAccess {
+  rowVersion?: string
   userId: string
   role: ConstructionRole | null
   companyName?: string | null

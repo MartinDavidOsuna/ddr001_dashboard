@@ -1,0 +1,2 @@
+export const inspectionStatusLabels:Record<string,string>={inactive:'Ausente',draft:'Borrador',in_progress:'En progreso',pending_sync:'Pendiente de sincronizar',submitted:'Enviada',validated:'Validada',rejected:'Rechazada',cancelled:'Cancelada',conflict:'En conflicto',completed:'RV completado',pending:'Pendiente'}
+export function inspectionStatusLabel(status:string){return inspectionStatusLabels[status]||status}

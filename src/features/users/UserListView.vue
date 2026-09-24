@@ -7,7 +7,9 @@ import type { DashboardUser, FilterOption, Page, UserFilters } from "@/api/types
 import { constructionRoleLabels, type ConstructionUserAccess } from "@/features/construction/construction.types";
 import { mockConstructionAccessFor } from "@/features/construction/construction.mock";
 import { CONSTRUCTION_DATA_MODE } from '@/features/construction/construction.datasource';
-import { getConstructionAccess } from '@/features/construction/construction.access.service';
+import { getConstructionAccesses } from '@/features/construction/construction.access.service';
+import { useAuthStore } from '@/stores/auth';
+const auth=useAuthStore();
 import { userDate, userInitials } from "./user-format";
 
 const realMode = CONSTRUCTION_DATA_MODE === 'API_REAL';
@@ -60,18 +62,11 @@ async function load() {
   }
 }
 async function loadAccesses(users: DashboardUser[], id: number) {
-  // Bound concurrency even when the user selects a 100-row page.
-  let next = 0;
-  await Promise.all(Array.from({ length: Math.min(4, users.length) }, async () => {
-    while (id === requestId && next < users.length) {
-      const user = users[next++];
-      if (!user) break;
-      let access: ConstructionUserAccess | null = null;
-      try { access = await getConstructionAccess(user.userId); } catch { /* Display unavailable, never a fabricated role. */ }
-      if (id === requestId) accesses.value[user.userId] = access;
-    }
-  }));
-  if (id === requestId) accessLoading.value = false;
+  try {
+    const rows=await getConstructionAccesses(users.map(u=>u.userId));
+    if(id===requestId)accesses.value=Object.fromEntries(rows.map(row=>[row.userId,row]));
+  } catch { if(id===requestId) accesses.value=Object.fromEntries(users.map(u=>[u.userId,null])); }
+  finally {if(id===requestId)accessLoading.value=false;}
 }
 function search() {
   clearTimeout(timer);
@@ -104,7 +99,7 @@ onUnmounted(() => { clearTimeout(timer); ++requestId; });
 <template>
   <div class="content user-content">
     <div class="page-head">
-      <div><h1 class="page-title">Usuarios</h1><p class="page-subtitle">Técnicos de campo y su actividad operativa</p></div>
+      <RouterLink v-if="auth.user?.role==='admin'" class="btn" to="/usuarios/nuevo">Crear usuario</RouterLink><div><h1 class="page-title">Usuarios</h1><p class="page-subtitle">Técnicos de campo y su actividad operativa</p></div>
       <span v-if="page" class="muted desktop-only">{{ page.total.toLocaleString() }} usuarios</span>
     </div>
     <div class="construction-preview"><HardHat :size="16"/><div><strong>Acceso DDR001 Levantamientos</strong><small>{{ realMode ? 'Empresa y rol consultados en el servidor. Administra el acceso desde la ficha del usuario.' : 'Rol Levantamientos y Empresa son una previsualización local. No se persisten cambios en esta fase.' }}</small></div></div>

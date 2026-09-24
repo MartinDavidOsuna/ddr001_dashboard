@@ -64,7 +64,7 @@ try {
   }
   assert(ready, "Isolated Vite did not start");
   browser = await chromium.launch({
-    channel: process.env.E2E_BROWSER_CHANNEL || "msedge",
+    ...(process.env.E2E_BROWSER_CHANNEL || process.platform === "win32" ? { channel: process.env.E2E_BROWSER_CHANNEL || "msedge" } : {}),
     headless: true,
   });
   for (const role of ["viewer", "supervisor", "admin"])

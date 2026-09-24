@@ -46,3 +46,7 @@ proxy equivalente para `/api`, o compilar con una URL de API y CORS habilitado.
 Los archivos Figma originales se conservaron en `figma-local-backup-20260915/`
 y `figma.zip`. Ambos estan excluidos localmente en `.git/info/exclude`.
 El directorio `figma/` corresponde a la version del repositorio.
+
+## Entrega administrativa 2026-09-24
+
+[Estado implementado, validacion y limites](docs/dashboard-api-completion.md). La API necesita la migracion `20260924_dashboard_administration.sql` antes de ejecutar las nuevas funciones.

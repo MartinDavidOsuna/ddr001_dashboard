@@ -1,5 +1,6 @@
 import type { Domain, MapItem } from "./map.types";
 export const statusColors = {
+  inactive: { label: "Ausente", color: "#7c3aed" },
   pending: { label: "Pendiente", color: "#a16207" },
   completed: { label: "Completado", color: "#15803d" },
   conflict: { label: "En conflicto", color: "#c2410c" },

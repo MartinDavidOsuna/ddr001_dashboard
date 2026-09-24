@@ -1,10 +1,21 @@
 <script setup lang="ts">
-import { watch } from "vue";
+import { ref, watch } from "vue";
+import { api, problemMessage } from '@/api/client';
+import { saveExportBlob } from '@/features/exports/export-utils';
+import { useAuthStore } from '@/stores/auth';
+const auth=useAuthStore();
 import type { SummaryQuery } from "./diagnostics.types";
 import { diagnosticsApi } from "./diagnostics.api.datasource";
 import { useCursor } from "./diagnostics.cursor";
 import { date } from "./diagnostics.format";
 const props = defineProps<{ filters: SummaryQuery }>();
+const downloading=ref(''),downloadError=ref('');
+async function download(caseId:string,reportId:string,format:'html'|'pdf') {
+  downloading.value=reportId;downloadError.value='';
+  try {const r=await api.get<Blob>(`/admin/dashboard/functional-diagnostics/cases/${caseId}/reports/${reportId}/${format}`,{responseType:'blob'});saveExportBlob(r.data,`diagnostico-${reportId}.${format}`)}
+  catch(e){downloadError.value=problemMessage(e,'No se pudo descargar el reporte. Comprueba su disponibilidad e intenta de nuevo.')}
+  finally{downloading.value=''}
+}
 const list = useCursor((cursor, signal) =>
   diagnosticsApi.reports(
     {
@@ -24,9 +35,9 @@ watch(() => props.filters, list.reset, { deep: true, immediate: true });
   <section class="card diag-stack">
     <h2>Reportes registrados</h2>
     <p class="diag-note">
-      Archivos HTML/PDF no expuestos por el API administrativo actual. El filtro
-      de banco no aplica a este endpoint.
+      Descarga de archivos registrados. El filtro de banco no aplica a esta consulta.
     </p>
+    <p v-if="downloadError" role="alert">{{ downloadError }}</p>
     <p v-if="list.loading.value">Cargando reportes…</p>
     <div v-else-if="list.error.value" role="alert" class="diag-alert">
       {{ list.error.value }}
@@ -57,8 +68,9 @@ watch(() => props.filters, list.reset, { deep: true, immediate: true });
               <td>{{ date(r.createdAt) }}</td>
               <td>{{ date(r.receivedAt) }}</td>
               <td>
-                {{ r.htmlAvailable ? "Registrado" : "No disponible" }} /
-                {{ r.pdfAvailable ? "Registrado" : "No disponible" }}
+                <button v-if="r.htmlAvailable" class="btn" :disabled="!!downloading||auth.user?.role==='viewer'" @click="download(r.caseId,r.reportId,'html')">Descargar HTML</button>
+                <button v-if="r.pdfAvailable" class="btn" :disabled="!!downloading||auth.user?.role==='viewer'" @click="download(r.caseId,r.reportId,'pdf')">Descargar PDF</button>
+                <span v-if="!r.htmlAvailable&&!r.pdfAvailable">No disponible</span>
               </td>
               <td>
                 <code>{{ r.checksum }}</code>

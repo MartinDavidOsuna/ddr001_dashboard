@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { inspectionStatusLabel } from '@/features/inspections/inspection-status';
 import { computed, onMounted, reactive, ref } from "vue";
 import { Download, FileSpreadsheet, FileText } from "@lucide/vue";
 import { dashboardService } from "@/services/dashboard";
@@ -49,7 +50,7 @@ onMounted(async () => {
         <div class="field"><label>Cuenta o técnico</label><input v-model.trim="inspection.search" placeholder="Búsqueda del listado" /></div>
         <div class="field"><label>Técnico</label><select v-model="inspection.userId"><option value="">Todos</option><option v-for="item in technicians" :key="item.id" :value="item.id">{{ item.label }}</option></select></div>
         <div class="field"><label>Cuadrilla</label><select v-model="inspection.crewId"><option value="">Todas</option><option v-for="item in crews" :key="item.id" :value="item.id">{{ item.label }}</option></select></div>
-        <div class="field"><label>Estado</label><select v-model="inspection.status"><option value="">Todos</option><option v-for="item in statuses" :key="item" :value="item">{{ item }}</option></select></div>
+        <div class="field"><label>Estado</label><select v-model="inspection.status"><option value="">Todos</option><option v-for="item in statuses" :key="item" :value="item">{{ inspectionStatusLabel(item) }}</option></select></div>
         <div class="field"><label>GPS</label><select v-model="inspection.gps"><option value="">Todos</option><option value="present">Con GPS</option><option value="absent">Sin GPS</option></select></div>
         <div class="field"><label>Desde</label><input v-model="inspection.from" type="date" /></div>
         <div class="field"><label>Hasta</label><input v-model="inspection.to" type="date" /></div>

@@ -80,14 +80,16 @@ const companyOption = computed<EChartsCoreOption>(() => productivityOption(compa
     <div v-else-if="error" class="empty-box" role="alert">{{ error }} <button class="btn" @click="load">Reintentar</button></div>
     <template v-else>
     <div class="construction-kpis">
-      <article class="card"><HardHat :size="19" /><div><small>Total de bases esperadas</small><strong>460</strong></div></article>
+      <article class="card"><div><small>Levantamientos capturados</small><strong>{{ summary.total }}</strong></div></article>
+      <article class="card"><div><small>Avance sobre meta</small><strong>{{ apiMode ? (apiSummary?.targetCompletionPercent ?? '?') : (summary.finished*100/460).toFixed(1) }}%</strong></div></article>
+      <article class="card"><HardHat :size="19" /><div><small>Total de bases esperadas</small><strong>{{ apiMode ? (apiSummary?.targetBases ?? '?') : 460 }}</strong></div></article>
       <article class="card"><Clock3 :size="19" /><div><small>En construcción</small><strong>{{ summary.inProcess }}</strong></div></article>
       <article class="card"><CheckCircle2 :size="19" /><div><small>Ejecutadas</small><strong>{{ summary.finished }}</strong></div></article>
       <article class="card"><Camera :size="19" /><div><small>Pendientes de revisión</small><strong>{{ summary.pendingReview }}</strong></div></article>
       <article class="card"><TriangleAlert :size="19" /><div><small>Rechazadas</small><strong>{{ summary.rejected }}</strong></div></article>
       <article class="card"><PackageCheck :size="19" /><div><small>Entregadas</small><strong>{{ summary.delivered }}</strong></div></article>
       <article class="card"><div><small>Entregables</small><strong>{{ summary.accepted }}</strong></div></article>
-      <article class="card"><div><small>Avance general</small><strong>{{ summary.completionPercent }}%</strong></div></article>
+      <article class="card"><div><small>Ejecutadas / capturadas</small><strong>{{ summary.completionPercent }}%</strong></div></article>
     </div>
     <div class="construction-charts">
       <article class="card chart"><div><strong>Estado de levantamientos</strong><small>Distribución operativa</small></div><EChart :option="statusOption" aria-label="Estado de levantamientos" /></article>

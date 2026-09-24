@@ -85,7 +85,7 @@ window.addEventListener("ddr001:unauthorized", () => router.replace("/login"));
       <div class="brand">
         <div class="brand-mark">⌁</div>
         <div v-if="!collapsed">
-          <strong>DDR001</strong><small>Sistema de Supervisión · v{{ platformVersion }}</small>
+          <strong>DDR001</strong><small>Sistema de Supervisión · <RouterLink to="/acerca-de">v{{ platformVersion }}</RouterLink></small>
         </div>
       </div>
       <div class="district" v-if="!collapsed">
