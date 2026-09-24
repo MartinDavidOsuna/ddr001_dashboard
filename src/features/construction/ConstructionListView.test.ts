@@ -5,17 +5,17 @@ import ConstructionListView from './ConstructionListView.vue'
 const global = {
   stubs: {
     EChart: { template: '<div class="chart-stub" />' },
-    RouterLink: { props: ['to'], template: '<a><slot /></a>' },
+    RouterLink: { props: ['to'], template: '<a :href="to"><slot /></a>' },
   },
 }
 
 describe('ConstructionListView', () => {
-  it('renders Construction KPIs, filters and mock surveys', async () => {
+  it('renders filters and surveys with links to statistics and map', async () => {
     const wrapper = mount(ConstructionListView, { global })
     await flushPromises()
     expect(wrapper.text()).toContain('Levantamientos')
-    expect(wrapper.text()).toContain('Vista preliminar')
-    expect(wrapper.text()).toContain('Total de levantamientos')
+    expect(wrapper.get('a[href="/dashboard#estadisticas-levantamientos"]').text()).toBe('Estadísticas')
+    expect(wrapper.get('a[href="/mapa?view=construction"]').text()).toBe('Mapa de bases')
     expect(wrapper.text()).toContain('BASE DEMO 01')
     expect(wrapper.find('#construction-search').exists()).toBe(true)
   })

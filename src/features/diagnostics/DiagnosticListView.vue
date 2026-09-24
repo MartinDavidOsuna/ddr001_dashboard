@@ -106,7 +106,6 @@ onMounted(list.load);
           Expedientes técnicos y metrológicos · Verificador funcional
         </p>
       </div>
-      <span class="diag-badge neutral">Datos del API funcional</span>
     </div>
     <form class="card diag-stack" @submit.prevent="apply">
       <div class="diag-filters">

@@ -8,6 +8,7 @@ import { problemMessage } from '@/api/client'
 import type { DashboardSummary } from '@/api/types'
 
 const data = ref<DashboardSummary>()
+const emit = defineEmits<{ ready: [] }>()
 const loading = ref(true)
 const error = ref('')
 const statusLabels: Record<string, string> = { draft: 'Borrador', in_progress: 'En progreso', pending_sync: 'Pendiente sync', submitted: 'Enviada', validated: 'Validada', rejected: 'Rechazada', cancelled: 'Cancelada', conflict: 'En conflicto' }
@@ -15,7 +16,7 @@ const statusLabels: Record<string, string> = { draft: 'Borrador', in_progress: '
 onMounted(async () => {
   try { data.value = await dashboardService.summary() }
   catch (cause) { error.value = problemMessage(cause, 'No fue posible cargar el dashboard.') }
-  finally { loading.value = false }
+  finally { loading.value = false; emit('ready') }
 })
 
 const lineOption = computed<EChartsCoreOption>(() => ({

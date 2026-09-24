@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { AlertTriangle, ArrowLeft, Camera, Check, Circle, Clock3, FileWarning, HardHat, Image, Link2Off, MapPin, Navigation, UserRound } from '@lucide/vue'
+import { problemMessage } from '@/api/client'
 import InspectionMap from '@/components/InspectionMap.vue'
 import ConstructionPhotoThumbnail from './ConstructionPhotoThumbnail.vue'
 import { CONSTRUCTION_DATA_MODE, constructionDataSource } from './construction.datasource'
@@ -11,10 +12,21 @@ const route = useRoute()
 const survey = ref<ConstructionSurvey | null>(null)
 const loading = ref(true)
 
-onMounted(async () => {
-  survey.value = await constructionDataSource.getById(String(route.params.surveyId || ''))
-  loading.value = false
-})
+const error = ref('')
+let requestId = 0
+async function load() {
+  const id = ++requestId
+  loading.value = true
+  error.value = ''
+  survey.value = null
+  try {
+    const result = await constructionDataSource.getById(String(route.params.surveyId || ''))
+    if (id === requestId) survey.value = result
+  } catch (cause) {
+    if (id === requestId) error.value = problemMessage(cause, 'No fue posible cargar el expediente.')
+  } finally { if (id === requestId) loading.value = false }
+}
+watch(() => route.params.surveyId, load, { immediate: true })
 
 const finishedPhotos = computed(() => survey.value?.photos.filter((photo) => photo.stepNumber === 6) || [])
 const hasCorrections = computed(() => (survey.value?.corrections.length || 0) > 0)
@@ -45,7 +57,8 @@ function integrityLabel(photo: ConstructionPhoto) {
 
 <template>
   <section class="content detail-page">
-    <div v-if="loading" class="empty-box">Cargando expediente preliminar…</div>
+    <div v-if="loading" class="empty-box">Cargando expediente…</div>
+    <div v-else-if="error" class="empty-box" role="alert">{{ error }} <button class="btn" @click="load">Reintentar</button></div>
     <div v-else-if="!survey" class="empty-box"><FileWarning :size="28" /><strong>Levantamiento no encontrado</strong><RouterLink to="/levantamientos">Volver al listado</RouterLink></div>
     <template v-else>
       <div class="page-head">
@@ -59,7 +72,7 @@ function integrityLabel(photo: ConstructionPhoto) {
       </div>
 
       <div v-if="survey.alerts.length" class="alerts" aria-label="Alertas administrativas">
-        <div v-for="alert in survey.alerts" :key="alert.id" class="alert" :class="`alert--${alert.severity}`"><AlertTriangle :size="17" /><span>{{ alert.label }}</span><small>Regla visual preliminar · backend pendiente</small></div>
+        <div v-for="alert in survey.alerts" :key="alert.id" class="alert" :class="`alert--${alert.severity}`"><AlertTriangle :size="17" /><span>{{ alert.label }}</span><small>Estado del levantamiento</small></div>
       </div>
 
       <div class="identity-grid">
@@ -87,14 +100,14 @@ function integrityLabel(photo: ConstructionPhoto) {
       </article>
 
       <article class="card section-card evidence-section">
-        <div class="section-head"><div><strong>Evidencia fotográfica por etapa</strong><small>Metadata realista compatible con el modelo móvil actual</small></div><span>{{ survey.photos.length }} fotografías</span></div>
+        <div class="section-head"><div><strong>Evidencia fotográfica por etapa</strong><small>Evidencia registrada por etapa</small></div><span>{{ survey.photos.length }} fotografías</span></div>
         <div v-if="!survey.photos.length" class="empty-box"><Image :size="24" /> Aún no hay evidencia en este levantamiento.</div>
         <div v-else class="photo-grid">
           <article v-for="photo in survey.photos" :key="photo.id" class="photo-card">
             <ConstructionPhotoThumbnail v-if="CONSTRUCTION_DATA_MODE === 'API_REAL'" :thumbnail-url="photo.thumbnailUrl" :content-url="photo.contentUrl" />
             <div v-else class="photo-thumb"><Camera :size="26" /><span>Thumbnail mock</span></div>
             <div class="photo-info"><div><strong>{{ photoStage(photo) }}</strong><span v-if="photo.stepNumber === 6" class="purpose">{{ photoPurpose(photo) }}</span></div><small>{{ formatDate(photo.capturedAt) }}</small>
-              <dl><div><dt>Ubicación</dt><dd v-if="photo.location">{{ photo.location.latitude.toFixed(5) }}, {{ photo.location.longitude.toFixed(5) }}</dd><dd v-else>Faltante</dd></div><div><dt>Precisión GPS</dt><dd>{{ photo.location ? `${photo.location.accuracy.toFixed(1)} m` : '—' }}</dd></div><div><dt>Integridad</dt><dd>{{ integrityLabel(photo) }}</dd></div><div><dt>Sincronización</dt><dd>{{ photo.syncState === 'synchronized' ? 'Sincronizada' : 'Pendiente' }}</dd></div></dl>
+              <dl><div><dt>Ubicación</dt><dd v-if="photo.location">{{ photo.location.latitude.toFixed(5) }}, {{ photo.location.longitude.toFixed(5) }}</dd><dd v-else>Faltante</dd></div><div><dt>Precisión GPS</dt><dd>{{ photo.location?.accuracy != null ? `${photo.location.accuracy.toFixed(1)} m` : '—' }}</dd></div><div><dt>Integridad</dt><dd>{{ integrityLabel(photo) }}</dd></div><div><dt>Sincronización</dt><dd>{{ photo.syncState === 'synchronized' ? 'Sincronizada' : photo.syncState === 'requires_review' ? 'Revisar' : 'Pendiente' }}</dd></div></dl>
             </div>
           </article>
         </div>
@@ -115,9 +128,9 @@ function integrityLabel(photo: ConstructionPhoto) {
         <article class="card section-card location-card">
           <div class="section-head"><div><strong>Ubicación</strong><small>Coordenada canónica de la base</small></div><Navigation :size="20" /></div>
           <template v-if="survey.canonicalLocation">
-            <div class="location-meta"><div><small>Latitud</small><strong>{{ survey.canonicalLocation.latitude.toFixed(6) }}</strong></div><div><small>Longitud</small><strong>{{ survey.canonicalLocation.longitude.toFixed(6) }}</strong></div><div><small>Accuracy</small><strong>{{ survey.canonicalLocation.accuracy.toFixed(1) }} m</strong></div></div>
+            <div class="location-meta"><div><small>Latitud</small><strong>{{ survey.canonicalLocation.latitude.toFixed(6) }}</strong></div><div><small>Longitud</small><strong>{{ survey.canonicalLocation.longitude.toFixed(6) }}</strong></div><div><small>Accuracy</small><strong>{{ survey.canonicalLocation.accuracy == null ? 'No informada' : `${survey.canonicalLocation.accuracy.toFixed(1)} m` }}</strong></div></div>
             <InspectionMap :captured="survey.canonicalLocation" />
-            <p class="map-caption"><MapPin :size="14" /> Se reutiliza el mapa OpenStreetMap ya presente en DDR001; no se mezcla con el mapa global RV.</p>
+            <p class="map-caption"><MapPin :size="14" /> Ubicación canónica registrada en el levantamiento.</p>
           </template>
           <div v-else class="empty-box"><MapPin :size="24" /> Ubicación faltante.</div>
         </article>
@@ -131,7 +144,7 @@ function integrityLabel(photo: ConstructionPhoto) {
       </div>
 
       <article class="card contract-note">
-        <Link2Off :size="20" /><div><strong>UI ONLY — sin escritura Construction</strong><p>Este expediente usa fixtures locales. Las acciones administrativas y la lectura productiva requieren contratos backend específicos que se definirán después de la revisión visual.</p></div>
+        <Link2Off :size="20" /><div><strong>Expediente de consulta</strong><p>{{ CONSTRUCTION_DATA_MODE === 'API_REAL' ? 'Información y evidencia del servidor. La captura y revisión operativa se realizan en la aplicación de Levantamientos.' : 'Datos de demostración para pruebas de la interfaz.' }}</p></div>
       </article>
     </template>
   </section>

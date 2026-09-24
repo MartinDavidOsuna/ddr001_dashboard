@@ -13,7 +13,7 @@ import type {
   MetricsQuery,
 } from "./diagnostics.types";
 import DiagnosticFields from "./DiagnosticFields.vue";
-const props = defineProps<{ filters: SummaryQuery; metrics?: boolean }>();
+const props = defineProps<{ filters: SummaryQuery; metrics?: boolean; compact?: boolean }>();
 const summary = ref<Summary>(),
   metricsData = ref<Metrics>(),
   trend = ref<Trends>(),
@@ -222,7 +222,7 @@ const charts = computed(() => {
           ><strong>{{ number(value) }}</strong>
         </article>
       </div>
-      <section class="card">
+      <section v-if="!compact" class="card">
         <h2>Muestras por fuente</h2>
         <div class="diag-actions">
           <span v-for="(count, source) in summary.samplesBySource" :key="source"
@@ -230,7 +230,7 @@ const charts = computed(() => {
           >
         </div>
       </section>
-      <div class="diag-note">
+      <div v-if="!compact" class="diag-note">
         Última sincronización de casos seleccionados:
         {{ date(summary.sync.lastReceivedAt) }}<br />Estado global de
         sincronización (incluye simulaciones y otras fechas):
@@ -255,7 +255,7 @@ const charts = computed(() => {
           />
         </article>
       </div>
-      <section class="card">
+      <section v-if="!compact" class="card">
         <h2>Error y dispersión por Q</h2>
         <div class="diag-scroll">
           <table>
@@ -278,7 +278,7 @@ const charts = computed(() => {
           </table>
         </div>
       </section>
-      <section class="card">
+      <section v-if="!compact" class="card">
         <h2>Completitud de evidencias</h2>
         <DiagnosticFields
           :value="metricsData.evidenceCompleteness"
@@ -288,7 +288,7 @@ const charts = computed(() => {
           ]"
         />
       </section>
-      <details class="card">
+      <details v-if="!compact" class="card">
         <summary>Series, bancos y métricas completas</summary>
         <DiagnosticFields
           :value="metricsData as unknown as Record<string, unknown>"

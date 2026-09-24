@@ -2,17 +2,34 @@
 import { computed, onMounted, ref } from 'vue'
 import type { EChartsCoreOption } from 'echarts/core'
 import { Camera, CheckCircle2, Clock3, HardHat, PackageCheck, TriangleAlert } from '@lucide/vue'
+import { problemMessage } from '@/api/client'
 import EChart from '@/components/EChart.vue'
 import { CONSTRUCTION_DATA_MODE, constructionDataSource } from './construction.datasource'
 import type { ConstructionSurvey } from './construction.types'
 import { constructionStatusLabels, type SurveyStatus } from './construction.types'
 import { getConstructionMetrics, getConstructionSummary, type ConstructionApiMetrics, type ConstructionApiSummary } from './construction.analytics.service'
-import { constructionSummary, stageDistribution, statusDistribution, temporalActivity } from './construction.metrics'
+import { averageCycleDays, productivityBy, rejectionRate, constructionSummary, stageDistribution, statusDistribution, temporalActivity } from './construction.metrics'
 
+const emit = defineEmits<{ ready: [] }>()
 const constructionSurveys = ref<ConstructionSurvey[]>([])
 const apiMode=CONSTRUCTION_DATA_MODE==='API_REAL',apiSummary=ref<ConstructionApiSummary|null>(null),apiMetrics=ref<ConstructionApiMetrics|null>(null)
-onMounted(async()=>{if(apiMode){[apiSummary.value,apiMetrics.value]=await Promise.all([getConstructionSummary(),getConstructionMetrics()])}else constructionSurveys.value=await constructionDataSource.list()})
-const summary = computed(() => apiSummary.value?{...apiSummary.value,inProcess:apiSummary.value.created+apiSummary.value.inProgress}:constructionSummary(constructionSurveys.value))
+const loading = ref(apiMode)
+const error = ref('')
+async function load() {
+  loading.value = apiMode
+  error.value = ''
+  try {
+    if (apiMode) {
+      const [summary, metrics] = await Promise.all([getConstructionSummary(), getConstructionMetrics()])
+      apiSummary.value = summary
+      apiMetrics.value = metrics
+    } else constructionSurveys.value = await constructionDataSource.list()
+  } catch (cause) { error.value = problemMessage(cause, 'No fue posible cargar los indicadores de levantamientos.') }
+  finally { loading.value = false; emit('ready') }
+}
+onMounted(load)
+
+const summary = computed(() => apiSummary.value?{...apiSummary.value,inProcess:apiSummary.value.created+apiSummary.value.inProgress,photos:apiSummary.value.photoCount,confirmedEvidence:apiSummary.value.confirmedEvidenceCount}:constructionSummary(constructionSurveys.value))
 const stages = computed(() => apiMetrics.value?apiMetrics.value.stages.map(x=>({name:x.name,value:Number(x.count)})):stageDistribution(constructionSurveys.value))
 const activity = computed(() => apiMetrics.value?apiMetrics.value.temporal:temporalActivity(constructionSurveys.value))
 const statusOption = computed<EChartsCoreOption>(() => ({
@@ -30,6 +47,27 @@ const activityOption = computed<EChartsCoreOption>(() => ({
   xAxis: { type: 'category', data: activity.value.map((item) => item.date.slice(5)) }, yAxis: { type: 'value', minInterval: 1 },
   series: [{ name: 'Creados', type: 'line', smooth: true, data: activity.value.map((item) => item.created) }, { name: 'Terminados', type: 'line', smooth: true, data: activity.value.map((item) => item.finished) }],
 }))
+const contractorProductivity = computed(() => apiMetrics.value?apiMetrics.value.contractors.map(x=>({name:x.contractor,total:Number(x.total),finished:Number(x.finished)})):productivityBy(constructionSurveys.value, 'contractorName'))
+const companyProductivity = computed(() => apiMetrics.value?apiMetrics.value.companies.map(x=>({name:x.crewName||'Sin asignar',total:Number(x.total),finished:Number(x.finished)})):productivityBy(constructionSurveys.value, 'companyName'))
+const rejection = computed(() => apiMetrics.value?Number(apiMetrics.value.rejection.rejectionRate):rejectionRate(constructionSurveys.value))
+const cycleDays = computed(() => apiMetrics.value?(apiMetrics.value.rejection.averageCreatedToExecutedDays == null ? '—' : Number(apiMetrics.value.rejection.averageCreatedToExecutedDays).toFixed(1)):averageCycleDays(constructionSurveys.value))
+
+function productivityOption(items: { name: string; total: number; finished: number }[]): EChartsCoreOption {
+  return {
+    tooltip: { trigger: 'axis' },
+    legend: { data: ['Total', 'Terminados'] },
+    grid: { left: 42, right: 16, top: 42, bottom: 68 },
+    xAxis: { type: 'category', data: items.map((item) => item.name), axisLabel: { interval: 0, rotate: 20 } },
+    yAxis: { type: 'value', minInterval: 1 },
+    series: [
+      { name: 'Total', type: 'bar', data: items.map((item) => item.total), barMaxWidth: 28 },
+      { name: 'Terminados', type: 'bar', data: items.map((item) => item.finished), barMaxWidth: 28 },
+    ],
+  }
+}
+const contractorOption = computed<EChartsCoreOption>(() => productivityOption(contractorProductivity.value))
+const companyOption = computed<EChartsCoreOption>(() => productivityOption(companyProductivity.value))
+
 </script>
 
 <template>
@@ -38,24 +76,38 @@ const activityOption = computed<EChartsCoreOption>(() => ({
       <div><span class="eyebrow"><HardHat :size="15" /> LEVANTAMIENTOS / NUEVAS BASES</span><h2 id="construction-dashboard-title">Construcción de nuevos hidrantes</h2><p>Métricas Construction separadas de Revisión Visual.</p></div>
       <RouterLink to="/levantamientos" class="btn">Abrir módulo</RouterLink>
     </div>
-    <div class="preview-note">{{ CONSTRUCTION_DATA_MODE === 'API_REAL' ? 'Datos administrativos Construction' : 'Vista preliminar con fixtures locales · integración de datos pendiente' }}</div>
+    <div v-if="loading" class="empty-box">Cargando indicadores…</div>
+    <div v-else-if="error" class="empty-box" role="alert">{{ error }} <button class="btn" @click="load">Reintentar</button></div>
+    <template v-else>
     <div class="construction-kpis">
-      <article class="card"><HardHat :size="19" /><div><small>Total de bases</small><strong>{{ summary.total }}</strong></div></article>
+      <article class="card"><HardHat :size="19" /><div><small>Total de bases esperadas</small><strong>460</strong></div></article>
       <article class="card"><Clock3 :size="19" /><div><small>En construcción</small><strong>{{ summary.inProcess }}</strong></div></article>
       <article class="card"><CheckCircle2 :size="19" /><div><small>Ejecutadas</small><strong>{{ summary.finished }}</strong></div></article>
       <article class="card"><Camera :size="19" /><div><small>Pendientes de revisión</small><strong>{{ summary.pendingReview }}</strong></div></article>
       <article class="card"><TriangleAlert :size="19" /><div><small>Rechazadas</small><strong>{{ summary.rejected }}</strong></div></article>
       <article class="card"><PackageCheck :size="19" /><div><small>Entregadas</small><strong>{{ summary.delivered }}</strong></div></article>
+      <article class="card"><div><small>Entregables</small><strong>{{ summary.accepted }}</strong></div></article>
+      <article class="card"><div><small>Avance general</small><strong>{{ summary.completionPercent }}%</strong></div></article>
     </div>
     <div class="construction-charts">
-      <article class="card chart"><div><strong>Estado de levantamientos</strong><small>Distribución operativa</small></div><EChart :option="statusOption" aria-label="Estado mock de levantamientos" /></article>
-      <article class="card chart"><div><strong>Bases por etapa actual</strong><small>Cuellos de botella</small></div><EChart :option="stageOption" aria-label="Etapa actual mock de levantamientos" /></article>
-      <article class="card chart chart--wide"><div><strong>Levantamientos creados / terminados</strong><small>Actividad temporal</small></div><EChart :option="activityOption" aria-label="Actividad temporal mock de levantamientos" /></article>
+      <article class="card chart"><div><strong>Estado de levantamientos</strong><small>Distribución operativa</small></div><EChart :option="statusOption" aria-label="Estado de levantamientos" /></article>
+      <article class="card chart"><div><strong>Bases por etapa actual</strong><small>Cuellos de botella</small></div><EChart :option="stageOption" aria-label="Etapa actual de levantamientos" /></article>
+      <article class="card chart chart--wide"><div><strong>Levantamientos creados / terminados</strong><small>Actividad temporal</small></div><EChart :option="activityOption" aria-label="Actividad temporal de levantamientos" /></article>
+      <article class="card chart"><div class="chart-heading"><div><strong>Levantamientos por contratista</strong><small>Métrica operacional, no ranking laboral</small></div></div><EChart :option="contractorOption" aria-label="Productividad por contratista" /></article>
+      <article class="card chart"><div class="chart-heading"><div><strong>Avance por Empresa</strong><small>Empresa asociada al levantamiento</small></div></div><EChart :option="companyOption" aria-label="Avance por Empresa" /></article>
     </div>
+    <div class="secondary-metrics">
+      <article class="card metric"><small>Tasa de rechazo</small><strong>{{ rejection }}%</strong><span>{{ apiMode ? 'Actualmente rechazados / revisados' : 'Rechazados o con corrección / revisados' }}</span></article>
+      <article class="card metric"><small>Tiempo promedio de construcción</small><strong>{{ cycleDays }} días</strong><span>Creado  →  Ejecutado</span></article>
+      <article class="card metric"><small>Fotografías registradas</small><strong>{{ summary.photos }}</strong><span>{{ summary.confirmedEvidence }} evidencias confirmadas</span></article>
+    </div>
+    </template>
   </section>
 </template>
 
 <style scoped>
+.secondary-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.metric{padding:17px;display:grid;gap:6px}.metric strong{font-size:1.35rem;color:var(--navy)}.metric span{font-size:.72rem;color:var(--muted)}.chart-heading>div{display:grid;gap:3px}
+@media(max-width:800px){.secondary-metrics{grid-template-columns:1fr}}
 .construction-dashboard{display:grid;gap:12px;margin-top:28px;padding-top:24px;border-top:2px solid #dce5ef}.construction-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:14px}.construction-heading h2{margin:4px 0 2px;font-size:1.1rem;color:var(--navy)}.construction-heading p{margin:0;color:var(--muted);font-size:.78rem}.eyebrow{display:flex;align-items:center;gap:6px;font-size:.68rem;letter-spacing:.07em;font-weight:750;color:#52647d}.preview-note{justify-self:start;font-size:.68rem;color:#365775;background:#eef5fb;border:1px solid #d0e0ee;border-radius:999px;padding:6px 9px}.construction-kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:9px}.construction-kpis article{padding:12px;display:flex;align-items:center;gap:10px;color:#48617c}.construction-kpis article div{display:grid;gap:2px}.construction-kpis small{font-size:.65rem;color:var(--muted)}.construction-kpis strong{font-size:1.2rem;color:var(--navy)}.construction-charts{display:grid;grid-template-columns:1fr 1fr;gap:12px}.chart{height:330px;padding:14px;display:grid;grid-template-rows:auto 1fr}.chart>div{display:grid;gap:2px}.chart small{font-size:.68rem;color:var(--muted)}.chart--wide{grid-column:1/-1}
 @media(max-width:1200px){.construction-kpis{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:800px){.construction-kpis{grid-template-columns:repeat(2,1fr)}.construction-charts{grid-template-columns:1fr}.chart--wide{grid-column:auto}.construction-heading{align-items:flex-start}}

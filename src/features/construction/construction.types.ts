@@ -1,13 +1,13 @@
 export type ConstructionRole = 'contractor' | 'resident' | 'admin' | 'superadmin'
 export type SurveyStatus = 'created' | 'in_progress' | 'executed' | 'rejected' | 'accepted' | 'delivered'
-export type ConstructionSyncState = 'pending' | 'syncing' | 'synchronized' | 'offline' | 'requires_review'
+export type ConstructionSyncState = 'pending' | 'syncing' | 'synchronized' | 'offline' | 'requires_review' | 'unknown'
 export type ConstructionPhotoPurpose = 'north' | 'east' | 'south' | 'west' | 'additional'
 export type ConstructionIntegrityStatus = 'confirmed' | 'not_verified' | 'retry_required' | 'mapping_conflict'
 
 export interface ConstructionLocation {
   latitude: number
   longitude: number
-  accuracy: number
+  accuracy: number | null
   capturedAt?: string
   altitude?: number | null
 }
@@ -51,7 +51,7 @@ export interface ConstructionHistoryEntry {
   fromStatus?: SurveyStatus | null
   toStatus: SurveyStatus | 'correction'
   actor: string
-  actorType: 'contractor' | 'resident' | 'admin' | 'superadmin'
+  actorType: 'contractor' | 'resident' | 'admin' | 'superadmin' | 'system'
   timestamp: string
   reason?: string | null
 }
@@ -77,6 +77,7 @@ export interface ConstructionSurvey {
   syncState: ConstructionSyncState
   currentStep: number
   steps: ConstructionStep[]
+  photoCount?: number
   photos: ConstructionPhoto[]
   corrections: ConstructionCorrection[]
   history: ConstructionHistoryEntry[]

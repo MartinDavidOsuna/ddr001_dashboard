@@ -15,7 +15,9 @@ const featureSources = {
 
 describe('Construction UI HTTP boundary', () => {
   it.each(Object.entries(featureSources))('%s does not import or invoke a Construction HTTP client', (_file, source) => {
-    expect(source).not.toContain('@/api/client')
+    // Error formatting is shared with the API client; views still may not import transport.
+    const withoutErrorHelper = source.replace(/import\s*\{\s*problemMessage\s*\}\s*from\s*['"]@\/api\/client['"];?/g, '')
+    expect(withoutErrorHelper).not.toContain('@/api/client')
     expect(source).not.toContain('@/services/dashboard')
     expect(source).not.toMatch(/\baxios\b/)
     expect(source).not.toMatch(/\bfetch\s*\(/)

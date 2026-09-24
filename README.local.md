@@ -31,8 +31,12 @@ El proxy elimina el encabezado Origin en ese salto local para evitar el
 rechazo CORS de la API; la autenticacion administrativa sigue siendo necesaria.
 Construccion usa los datos reales de la API.
 
-`npm test` usa `.env.test.local` (ignorado por Git), que selecciona los fixtures
-de construccion requeridos por las pruebas unitarias del repositorio.
+`npm test` selecciona los fixtures de construccion en la configuracion de Vitest,
+sin depender de archivos locales. Fuera de las pruebas, API es el modo predeterminado;
+solo `VITE_CONSTRUCTION_DATA_MODE=mock` activa datos de demostracion.
+
+Estado de la integracion y pendientes de almacenamiento/publicacion:
+[Levantamientos con datos del servidor](docs/construction-real-data-validation.md).
 
 `npm run build` genera `dist/`. Para servir esa compilacion se necesita un
 proxy equivalente para `/api`, o compilar con una URL de API y CORS habilitado.

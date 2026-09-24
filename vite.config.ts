@@ -22,5 +22,5 @@ export default defineConfig({
     },
   },
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
-  test: { environment: 'happy-dom', include: ['src/**/*.test.ts', 'scripts/**/*.test.mjs'] },
+  test: { environment: 'happy-dom', env: { VITE_CONSTRUCTION_DATA_MODE: 'mock' }, include: ['src/**/*.test.ts', 'scripts/**/*.test.mjs'] },
 })

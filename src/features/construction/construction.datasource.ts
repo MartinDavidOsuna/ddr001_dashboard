@@ -22,6 +22,6 @@ export const mockConstructionDataSource: ConstructionDataSource = {
   },
 }
 
-const apiMode=import.meta.env.VITE_CONSTRUCTION_DATA_MODE==='api'
+const apiMode=import.meta.env.VITE_CONSTRUCTION_DATA_MODE!=='mock'
 export const constructionDataSource: ConstructionDataSource = apiMode ? apiConstructionDataSource : mockConstructionDataSource
 export const CONSTRUCTION_DATA_MODE = apiMode ? 'API_REAL' : 'UI_PREVIEW_MOCK'

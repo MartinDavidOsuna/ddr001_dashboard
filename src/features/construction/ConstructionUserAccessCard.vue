@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { LockKeyhole, Save, ShieldCheck } from '@lucide/vue'
+import { problemMessage } from '@/api/client'
+import type { ConstructionUserAccess } from './construction.types'
 import { useAuthStore } from '@/stores/auth'
 import { mockConstructionAccessFor } from './construction.mock'
 import { getConstructionAccess, getConstructionAccessHistory, updateConstructionAccess, type ConstructionAccessHistoryItem } from './construction.access.service'
@@ -9,16 +11,59 @@ import { constructionRoleLabels, type ConstructionRole } from './construction.ty
 
 const props = defineProps<{ userId: string; index?: number }>()
 const auth = useAuthStore()
-const access = ref(mockConstructionAccessFor(props.userId, props.index))
+const realMode = CONSTRUCTION_DATA_MODE === 'API_REAL'
+const access = ref<ConstructionUserAccess | null>(realMode ? null : mockConstructionAccessFor(props.userId, props.index))
+const loading = ref(realMode)
+const loadError = ref('')
 type PreviewRole = ConstructionRole | 'none'
-const selectedRole = ref<PreviewRole>(access.value.role || 'none')
+const selectedRole = ref<PreviewRole>(access.value?.role || 'none')
 const saving = ref(false)
 const message = ref('')
 const history = ref<ConstructionAccessHistoryItem[]>([])
-const realMode = CONSTRUCTION_DATA_MODE === 'API_REAL'
 const privilegedPreview = computed(() => realMode ? auth.user?.role === 'admin' : auth.user?.role === 'admin' || auth.user?.role === 'supervisor')
-onMounted(async()=>{if(!realMode)return;try{[access.value,history.value]=await Promise.all([getConstructionAccess(props.userId),getConstructionAccessHistory(props.userId)]);selectedRole.value=access.value.role||'none'}catch{message.value='No fue posible cargar el acceso Construction.'}})
-async function save(){if(!realMode||!privilegedPreview.value||selectedRole.value==='admin'||selectedRole.value==='superadmin')return;saving.value=true;message.value='';try{const role=selectedRole.value==='none'?null:selectedRole.value;await updateConstructionAccess(props.userId,role);access.value={...access.value,role,accessEnabled:role!==null};history.value=await getConstructionAccessHistory(props.userId);message.value='Acceso Construction guardado.'}catch{selectedRole.value=access.value.role||'none';message.value='El backend rechazó el cambio; no se modificó la vista.'}finally{saving.value=false}}
+let requestId = 0
+async function load() {
+  if (!realMode) { access.value = mockConstructionAccessFor(props.userId, props.index); return }
+  const id = ++requestId
+  loading.value = true
+  loadError.value = ''
+  access.value = null
+  history.value = []
+  message.value = ''
+  try {
+    const [current, audit] = await Promise.all([getConstructionAccess(props.userId), getConstructionAccessHistory(props.userId)])
+    if (id !== requestId) return
+    access.value = current
+    history.value = audit
+    selectedRole.value = current.role || 'none'
+  } catch (cause) {
+    if (id === requestId) loadError.value = problemMessage(cause, 'No fue posible cargar el acceso a Levantamientos.')
+  } finally { if (id === requestId) loading.value = false }
+}
+watch(() => props.userId, load, { immediate: true })
+async function save() {
+  if (!realMode || !privilegedPreview.value || !access.value || saving.value || selectedRole.value === 'admin' || selectedRole.value === 'superadmin') return
+  saving.value = true
+  message.value = ''
+  const userId = props.userId
+  const role = selectedRole.value === 'none' ? null : selectedRole.value
+  try {
+    await updateConstructionAccess(userId, role)
+  } catch (cause) {
+    if (userId === props.userId) {
+      selectedRole.value = access.value?.role || 'none'
+      message.value = problemMessage(cause, 'No fue posible confirmar el cambio. Recarga el acceso antes de reintentar.')
+    }
+    saving.value = false
+    return
+  }
+  if (userId === props.userId) {
+    await load()
+    message.value = loadError.value ? 'El cambio fue guardado, pero no fue posible actualizar la consulta.' : 'Acceso a Levantamientos guardado.'
+  }
+  saving.value = false
+}
+
 const roleLabel = computed(() => selectedRole.value === 'none' ? 'Sin acceso' : constructionRoleLabels[selectedRole.value])
 const description = computed(() => {
   if (selectedRole.value === 'contractor') return 'Puede crear y gestionar sus propios levantamientos, capturar evidencia, completar etapas y atender correcciones.'
@@ -47,6 +92,9 @@ function formatDate(value?: string | null) {
 <template>
   <article class="card construction-access">
     <div class="section-head"><div><span class="eyebrow"><ShieldCheck :size="15" /> ACCESO A LEVANTAMIENTOS</span><strong>Rol Construction</strong><small>Separado del rol administrativo de plataforma/RV.</small></div><span class="api-pending">{{ realMode ? 'API_AUTHORIZED' : 'AUTHORIZATION_API_PENDING' }}</span></div>
+    <div v-if="loading" class="empty-box">Cargando acceso…</div>
+    <div v-else-if="loadError" class="empty-box" role="alert">{{ loadError }} <button class="btn" @click="load">Reintentar</button></div>
+    <template v-else-if="access">
     <div class="access-summary">
       <div><small>Rol actual</small><strong>{{ access.role ? constructionRoleLabels[access.role] : 'Sin acceso' }}</strong></div>
       <div><small>Estado del acceso</small><strong>{{ access.accessEnabled ? 'Habilitado' : 'Sin acceso' }}</strong></div>
@@ -56,7 +104,7 @@ function formatDate(value?: string | null) {
     </div>
 
     <div class="role-editor">
-      <div class="field"><label for="construction-role-preview">Previsualizar rol</label><select id="construction-role-preview" v-model="selectedRole" :disabled="!privilegedPreview"><option value="none">Sin acceso</option><option value="contractor">Contratista</option><option value="resident">Residente</option><option value="admin">Administrador</option><option v-if="access.role === 'superadmin'" value="superadmin" disabled>Superadministrador (derivado)</option></select></div>
+      <div class="field"><label for="construction-role-preview">{{ realMode ? 'Rol de Levantamientos' : 'Previsualizar rol' }}</label><select id="construction-role-preview" v-model="selectedRole" :disabled="!privilegedPreview || saving"><option value="none">Sin acceso</option><option value="contractor">Contratista</option><option value="resident">Residente</option><option v-if="!realMode" value="admin">Administrador</option><option v-if="access.role === 'superadmin'" value="superadmin" disabled>Superadministrador (derivado)</option></select></div>
       <div class="role-description"><strong>{{ roleLabel }}</strong><p>{{ description }}</p></div>
       <button class="btn btn--primary save" :disabled="!realMode || !privilegedPreview || saving" @click="save"><Save :size="16" /> {{ saving ? 'Guardando…' : 'Guardar rol' }}</button>
     </div>
@@ -64,9 +112,11 @@ function formatDate(value?: string | null) {
     <p v-else class="authorization-note"><LockKeyhole :size="15" /> {{ realMode ? 'Los cambios requieren confirmación del backend y quedan auditados.' : 'El selector sólo cambia esta previsualización local. No se ejecuta POST, PATCH ni PUT.' }}</p>
     <p v-if="message" class="authorization-note">{{ message }}</p>
 
-    <div class="permissions"><strong>Permissions preview</strong><div class="permission-grid"><div v-for="[permission,value] in permissions" :key="permission"><span>{{ permission }}</span><strong>{{ value }}</strong></div></div></div>
+    <div class="permissions"><strong>Permisos del rol</strong><div class="permission-grid"><div v-for="[permission,value] in permissions" :key="permission"><span>{{ permission }}</span><strong>{{ value }}</strong></div></div></div>
 
     <div class="audit-placeholder"><strong>Historial de acceso Levantamientos</strong><template v-if="realMode"><div v-for="item in history" :key="item.auditId"><span>{{ formatDate(item.timestamp) }}</span><p>{{ item.before?.role ? constructionRoleLabels[item.before.role] : 'Sin acceso' }} → {{ item.after?.role ? constructionRoleLabels[item.after.role] : 'Sin acceso' }}<br><small>{{ item.reason || 'Sin motivo registrado' }}</small></p><small>Modificado por {{ item.actor }}</small></div><p v-if="!history.length" class="authorization-note">Sin cambios de acceso registrados.</p></template><div v-else><span>01/09/2026</span><p>Contratista → Residente</p><small>Vista preliminar local</small></div></div>
+    </template>
+    <p v-if="!access && message" role="status">{{ message }}</p>
   </article>
 </template>
 

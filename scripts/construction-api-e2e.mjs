@@ -98,6 +98,8 @@ try {
   if (await page.locator('.construction-photo img').count()) {
     await page.locator('.construction-photo img').first().waitFor({ state: 'visible' })
     await page.locator('.construction-photo').first().click()
+    await page.getByRole('dialog', { name: 'Fotografía del levantamiento' }).waitFor({ state: 'visible' })
+    await page.getByRole('button', { name: 'Cerrar fotografía' }).click()
   }
   assert(authorization, 'No authenticated API request was observed')
   const mapResult = await page.evaluate(async ({ apiUrl, authorization }) => {
@@ -122,7 +124,7 @@ try {
   await roleSelect.selectOption(changedRole)
   await page.getByRole('button', { name: /Guardar rol/ }).click()
   assert((await saved).ok(), 'Real access update failed')
-  await visible('Acceso Construction guardado')
+  await visible('Acceso a Levantamientos guardado')
   await page.reload({ waitUntil: 'domcontentloaded' })
   await visible('API_AUTHORIZED')
   assert.equal(await roleSelect.inputValue(), changedRole, 'Access update did not persist after refresh')
@@ -131,7 +133,7 @@ try {
   await roleSelect.selectOption(originalRole)
   await page.getByRole('button', { name: /Guardar rol/ }).click()
   assert((await restored).ok(), 'Original access role was not restored')
-  await visible('Acceso Construction guardado')
+  await visible('Acceso a Levantamientos guardado')
 
   await page.route(`**/admin/dashboard/construction/users/${user.userId}/access`, async (route) => {
     if (route.request().method() === 'PUT') return route.fulfill({ status: 500, contentType: 'application/problem+json', body: JSON.stringify({ title: 'Controlled E2E failure' }) })

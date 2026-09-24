@@ -1,13 +1,27 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from "vue";
+import { onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import { Search, SlidersHorizontal, UserRound, Eye, HardHat } from "@lucide/vue";
 import { dashboardService } from "@/services/dashboard";
 import { problemMessage } from "@/api/client";
 import type { DashboardUser, FilterOption, Page, UserFilters } from "@/api/types";
-import { constructionRoleLabels } from "@/features/construction/construction.types";
+import { constructionRoleLabels, type ConstructionUserAccess } from "@/features/construction/construction.types";
 import { mockConstructionAccessFor } from "@/features/construction/construction.mock";
+import { CONSTRUCTION_DATA_MODE } from '@/features/construction/construction.datasource';
+import { getConstructionAccess } from '@/features/construction/construction.access.service';
 import { userDate, userInitials } from "./user-format";
 
+const realMode = CONSTRUCTION_DATA_MODE === 'API_REAL';
+const accesses = ref<Record<string, ConstructionUserAccess | null>>({});
+const accessLoading = ref(false);
+let requestId = 0;
+function accessFor(userId: string, index: number) {
+  return realMode ? accesses.value[userId] : mockConstructionAccessFor(userId, index);
+}
+function roleFor(userId: string, index: number) {
+  const access = accessFor(userId, index);
+  if (!access) return accessLoading.value ? 'Cargando…' : 'No disponible';
+  return access.role ? constructionRoleLabels[access.role] : 'Sin acceso';
+}
 const page = ref<Page<DashboardUser>>();
 const crews = ref<FilterOption[]>([]);
 const loading = ref(false);
@@ -29,15 +43,35 @@ function requestFilters(): UserFilters {
   ) as unknown as UserFilters;
 }
 async function load() {
+  const id = ++requestId;
   loading.value = true;
   error.value = "";
   try {
-    page.value = await dashboardService.users(requestFilters());
+    const result = await dashboardService.users(requestFilters());
+    if (id !== requestId) return;
+    page.value = result;
+    accesses.value = {};
+    accessLoading.value = realMode;
+    if (realMode) void loadAccesses(result.items, id);
   } catch (cause) {
-    error.value = problemMessage(cause, "No fue posible cargar los usuarios.");
+    if (id === requestId) error.value = problemMessage(cause, "No fue posible cargar los usuarios.");
   } finally {
-    loading.value = false;
+    if (id === requestId) loading.value = false;
   }
+}
+async function loadAccesses(users: DashboardUser[], id: number) {
+  // Bound concurrency even when the user selects a 100-row page.
+  let next = 0;
+  await Promise.all(Array.from({ length: Math.min(4, users.length) }, async () => {
+    while (id === requestId && next < users.length) {
+      const user = users[next++];
+      if (!user) break;
+      let access: ConstructionUserAccess | null = null;
+      try { access = await getConstructionAccess(user.userId); } catch { /* Display unavailable, never a fabricated role. */ }
+      if (id === requestId) accesses.value[user.userId] = access;
+    }
+  }));
+  if (id === requestId) accessLoading.value = false;
 }
 function search() {
   clearTimeout(timer);
@@ -64,6 +98,7 @@ onMounted(async () => {
   await load();
 });
 watch(() => filters.page, load);
+onUnmounted(() => { clearTimeout(timer); ++requestId; });
 </script>
 
 <template>
@@ -72,7 +107,7 @@ watch(() => filters.page, load);
       <div><h1 class="page-title">Usuarios</h1><p class="page-subtitle">Técnicos de campo y su actividad operativa</p></div>
       <span v-if="page" class="muted desktop-only">{{ page.total.toLocaleString() }} usuarios</span>
     </div>
-    <div class="construction-preview"><HardHat :size="16"/><div><strong>Acceso DDR001 Levantamientos</strong><small>Rol Levantamientos y Empresa son una previsualización local. No se persisten cambios en esta fase.</small></div></div>
+    <div class="construction-preview"><HardHat :size="16"/><div><strong>Acceso DDR001 Levantamientos</strong><small>{{ realMode ? 'Empresa y rol consultados en el servidor. Administra el acceso desde la ficha del usuario.' : 'Rol Levantamientos y Empresa son una previsualización local. No se persisten cambios en esta fase.' }}</small></div></div>
     <div class="user-toolbar">
       <label class="search"><Search :size="18"/><span class="sr-only">Buscar usuario</span><input v-model.trim="filters.search" placeholder="Buscar nombre, correo, teléfono o número…" @input="search" /></label>
       <button class="btn" :aria-expanded="showFilters" @click="showFilters = !showFilters"><SlidersHorizontal :size="17"/>Filtros</button>
@@ -89,7 +124,7 @@ watch(() => filters.page, load);
       <div class="user-grid">
         <article v-for="(user, index) in page.items" :key="user.userId" class="card user-card">
           <header><span class="avatar" aria-hidden="true">{{ userInitials(user.fullName) }}</span><div><RouterLink :to="`/usuarios/${user.userId}`">{{ user.fullName }}</RouterLink><span class="state" :class="{ inactive: !user.isActive }">{{ user.isActive ? "Activo" : "Inactivo" }}</span></div></header>
-          <dl><div><dt>Cuadrilla</dt><dd>{{ user.crewName || "Sin asignar" }}</dd></div><div><dt>Revisiones</dt><dd>{{ user.inspectionCount.toLocaleString() }}</dd></div><div><dt>Última actividad</dt><dd>{{ userDate(user.lastActivityAt) }}</dd></div><div><dt>Sesiones activas</dt><dd>{{ user.activeSessionCount }}</dd></div><div class="construction-field"><dt>Empresa</dt><dd>{{ mockConstructionAccessFor(user.userId, index).companyName || "—" }}</dd></div><div class="construction-field"><dt>Rol Levantamientos</dt><dd>{{ mockConstructionAccessFor(user.userId, index).role ? constructionRoleLabels[mockConstructionAccessFor(user.userId, index).role!] : "Sin acceso" }}</dd></div></dl>
+          <dl><div><dt>Cuadrilla</dt><dd>{{ user.crewName || "Sin asignar" }}</dd></div><div><dt>Revisiones</dt><dd>{{ user.inspectionCount.toLocaleString() }}</dd></div><div><dt>Última actividad</dt><dd>{{ userDate(user.lastActivityAt) }}</dd></div><div><dt>Sesiones activas</dt><dd>{{ user.activeSessionCount }}</dd></div><div class="construction-field"><dt>Empresa</dt><dd>{{ accessFor(user.userId, index)?.companyName || (realMode && !accessFor(user.userId, index) ? (accessLoading ? "Cargando…" : "No disponible") : "—") }}</dd></div><div class="construction-field"><dt>Rol Levantamientos</dt><dd>{{ roleFor(user.userId, index) }}</dd></div></dl>
           <p class="contact">{{ user.email || user.phone || "Sin datos de contacto" }}</p>
           <RouterLink class="btn" :to="`/usuarios/${user.userId}`"><Eye :size="16"/>Ver detalle</RouterLink>
         </article>

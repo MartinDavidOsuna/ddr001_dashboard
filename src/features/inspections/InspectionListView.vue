@@ -7,9 +7,9 @@ import {
   MapPin,
   Signal,
   Camera,
+  BarChart3,
 } from "@lucide/vue";
 import AppStatus from "@/components/AppStatus.vue";
-import InspectionDashboardSection from "./InspectionDashboardSection.vue";
 import { dashboardService } from "@/services/dashboard";
 import { problemMessage } from "@/api/client";
 import { useAuthStore } from "@/stores/auth";
@@ -97,15 +97,20 @@ watch(() => filters.page, load);
     <div class="page-head">
       <div>
         <h1 class="page-title">Revisiones visuales</h1>
-        <p class="page-subtitle">Indicadores, actividad y seguimiento de revisiones visuales</p>
+        <p class="page-subtitle">Seguimiento de revisiones visuales</p>
         <RouterLink v-if="auth.user?.role === 'admin'" class="btn" to="/revisiones/archivo">Archivo de bajas RV</RouterLink>
       </div>
       <span v-if="page" class="muted desktop-only"
         >{{ page.total.toLocaleString() }} registros</span
       >
     </div>
-    <InspectionDashboardSection />
-    <h2 class="list-title">Listado de revisiones</h2>
+    <div class="list-heading">
+      <h2 class="list-title">Listado de revisiones</h2>
+      <div class="list-actions">
+        <RouterLink class="btn" to="/dashboard#estadisticas-revisiones"><BarChart3 :size="17" />Estadísticas</RouterLink>
+        <RouterLink class="btn" to="/mapa?view=reviews"><MapPin :size="17" />Mapa de revisiones</RouterLink>
+      </div>
+    </div>
     <div class="list-toolbar">
       <div class="search">
         <Search :size="18" /><label class="sr-only" for="search"
@@ -338,8 +343,11 @@ watch(() => filters.page, load);
 }
 .list-title {
   font-size: 1rem;
-  margin: 0 0 14px;
+  margin: 0;
 }
+.list-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.list-actions{display:flex;gap:8px;flex-wrap:wrap}
+.list-actions .btn{text-decoration:none}
 .list-toolbar {
   display: flex;
   gap: 9px;

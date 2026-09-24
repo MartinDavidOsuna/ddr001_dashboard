@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import ConstructionDashboardSection from './ConstructionDashboardSection.vue'
 
 describe('ConstructionDashboardSection', () => {
-  it('renders Construction KPIs and the three priority charts separately from RV', () => {
+  it('renders Construction KPIs and operational and productivity charts separately from RV', () => {
     const wrapper = mount(ConstructionDashboardSection, {
       global: { stubs: { EChart: { template: '<div class="chart-stub" />' }, RouterLink: { props: ['to'], template: '<a><slot /></a>' } } },
     })
@@ -14,6 +14,8 @@ describe('ConstructionDashboardSection', () => {
     expect(wrapper.text()).toContain('Estado de levantamientos')
     expect(wrapper.text()).toContain('Bases por etapa actual')
     expect(wrapper.text()).toContain('Levantamientos creados / terminados')
-    expect(wrapper.findAll('.chart-stub')).toHaveLength(3)
+    expect(wrapper.text()).toContain('Levantamientos por contratista')
+    expect(wrapper.text()).toContain('Avance por Empresa')
+    expect(wrapper.findAll('.chart-stub')).toHaveLength(5)
   })
 })
