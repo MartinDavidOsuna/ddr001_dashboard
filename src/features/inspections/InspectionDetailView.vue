@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
-import InspectionWithdrawal from "./InspectionWithdrawal.vue";
 import InspectionReview from './InspectionReview.vue';
-const auth = useAuthStore(), router = useRouter();
+const auth = useAuthStore();
 import {
   ArrowLeft,
   Camera,
@@ -208,9 +207,6 @@ onBeforeUnmount(() => {
           </div>
         </div>
         <div class="completion">
-          <InspectionWithdrawal v-if="auth.user?.role === 'admin' && data.inspectionType === 'RV' && data.rowVersion && !data.withdrawnAt"
-            :inspection-id="data.inspectionId" :row-version="data.rowVersion" :account-number="data.accountNumber"
-            :revision-number="data.revisionNumber" @withdrawn="router.replace('/revisiones/archivo')" />
           <div v-if="data.withdrawnAt" role="status">
             <strong>Revisión dada de baja · {{ formatDate(data.withdrawnAt) }}</strong>
             <p>{{ data.withdrawalReason }}</p>

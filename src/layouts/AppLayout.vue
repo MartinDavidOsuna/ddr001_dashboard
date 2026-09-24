@@ -20,6 +20,7 @@ import {
   Settings,
   Wrench,
   Activity,
+  Archive,
 } from "@lucide/vue";
 import { useAuthStore } from "@/stores/auth";
 const platformVersion = __PLATFORM_VERSION__;
@@ -46,11 +47,16 @@ const groups = [
   ["Cuadrillas", "/cuadrillas", UserRound],
   ["Jornadas", "/jornadas", CalendarDays],
   ["Dispositivos", "/dispositivos", Smartphone],
+  ["Archivo de bajas RV", "/revisiones/archivo", Archive],
   ] },
   { label: "Herramientas", items: [
   ["Exportaciones", "/exportaciones", Download],
   ] },
 ] as const;
+const visibleGroups = computed(() => groups.map(group => ({
+  ...group,
+  items: group.items.filter(([, to]) => to !== '/revisiones/archivo' || auth.user?.role === 'admin'),
+})));
 const items = groups.flatMap(group => [...group.items]);
 const groupIcons = [Settings, Wrench];
 const expandedGroup = ref<string | null>(null);
@@ -61,6 +67,7 @@ function closeSubmenu(event: PointerEvent) {
 onMounted(() => document.addEventListener("pointerdown", closeSubmenu));
 onBeforeUnmount(() => document.removeEventListener("pointerdown", closeSubmenu));
 const title = computed(() =>
+  route.name === "inspection-archive" ? "Archivo de bajas RV" :
   route.name === 'functional-diagnostic-detail' ? 'Detalle de diagnóstico' :
   route.name === "inspection-detail"
     ? "Detalle de revisión"
@@ -100,7 +107,7 @@ window.addEventListener("ddr001:unauthorized", () => router.replace("/login"));
           @mouseenter="expandedGroup = null" @click="open = false; expandedGroup = null">
           <component :is="Icon" :size="18" /><span v-if="!collapsed">{{ label }}</span>
         </RouterLink>
-        <section v-for="(group, index) in groups.slice(1)" :key="group.label" class="nav-group" :aria-label="group.label"
+        <section v-for="(group, index) in visibleGroups.slice(1)" :key="group.label" class="nav-group" :aria-label="group.label"
           @mouseenter="expandedGroup = group.label" @mouseleave="expandedGroup = null">
           <button class="nav-area" :class="{ 'area-active': group.items.some(([, to]) => route.path.startsWith(to)) }"
             :aria-label="group.label" :title="collapsed ? group.label : undefined"

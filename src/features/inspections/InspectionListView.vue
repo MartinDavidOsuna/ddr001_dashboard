@@ -13,8 +13,6 @@ import {
 import AppStatus from "@/components/AppStatus.vue";
 import { dashboardService } from "@/services/dashboard";
 import { problemMessage } from "@/api/client";
-import { useAuthStore } from "@/stores/auth";
-const auth = useAuthStore();
 import type { FilterOption, InspectionListItem, Page } from "@/api/types";
 const page = ref<Page<InspectionListItem>>(),
   loading = ref(false),
@@ -99,7 +97,6 @@ watch(() => filters.page, load);
       <div>
         <h1 class="page-title">Revisiones visuales</h1>
         <p class="page-subtitle">Seguimiento de revisiones visuales</p>
-        <RouterLink v-if="auth.user?.role === 'admin'" class="btn" to="/revisiones/archivo">Archivo de bajas RV</RouterLink>
       </div>
       <span v-if="page" class="muted desktop-only"
         >{{ page.total.toLocaleString() }} registros</span
