@@ -24,6 +24,7 @@ import {
 import { useAuthStore } from "@/stores/auth";
 const platformVersion = __PLATFORM_VERSION__;
 const aquafimLogo = `${import.meta.env.BASE_URL}branding/Aquafim-logo.png`;
+const conaguaLogo = `${import.meta.env.BASE_URL}branding/conagua-logo.png`;
 const route = useRoute(),
   router = useRouter(),
   auth = useAuthStore(),
@@ -88,8 +89,8 @@ window.addEventListener("ddr001:unauthorized", () => router.replace("/login"));
         <small v-if="!collapsed">Sistema de supervisión</small>
       </div>
       <div class="district" v-if="!collapsed">
-        <span>CNA<br />GUA</span><span>DDR</span
-        ><small>Distrito de Riego 001</small>
+        <img class="district-logo" :src="conaguaLogo" alt="CONAGUA" width="168" height="62" />
+        <small>DDR01 | Aguascalientes</small>
       </div>
       <nav aria-label="Navegación principal">
         <small v-if="!collapsed" class="nav-label">Módulos</small>
@@ -206,22 +207,25 @@ window.addEventListener("ddr001:unauthorized", () => router.replace("/login"));
   color: #8197b0;
 }
 .district {
-  height: 84px;
+  flex-shrink: 0;
   padding: 16px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   border-bottom: 1px solid #28405c;
 }
-.district span {
-  border: 1px solid #35516f;
-  border-radius: 4px;
-  padding: 5px;
-  font-size: 0.56rem;
-  text-align: center;
+.district-logo {
+  display: block;
+  width: 168px;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 .district small {
-  color: #7690ad;
+  color: #8197b0;
+  font-size: 0.68rem;
+  text-align: center;
 }
 .sidebar nav {
   padding: 18px 8px;
