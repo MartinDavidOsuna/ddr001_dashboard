@@ -24,6 +24,7 @@ import {
 import { useAuthStore } from "@/stores/auth";
 const platformVersion = __PLATFORM_VERSION__;
 const aquafimLogo = `${import.meta.env.BASE_URL}branding/Aquafim-logo.png`;
+const collapsedLogo = `${import.meta.env.BASE_URL}branding/ddr001-watermark.png`;
 const conaguaLogo = `${import.meta.env.BASE_URL}branding/conagua-logo.png`;
 const route = useRoute(),
   router = useRouter(),
@@ -85,7 +86,7 @@ window.addEventListener("ddr001:unauthorized", () => router.replace("/login"));
     />
     <aside ref="sidebar" class="sidebar" :class="{ open, 'submenu-open': expandedGroup }" @keydown.esc="expandedGroup = null">
       <div class="brand">
-        <img class="brand-logo" :src="aquafimLogo" alt="Aquafim" width="168" height="42" />
+        <img class="brand-logo" :src="collapsed ? collapsedLogo : aquafimLogo" alt="Aquafim" :width="collapsed ? 48 : 168" :height="collapsed ? 48 : 42" />
         <small v-if="!collapsed">Sistema de supervisión</small>
       </div>
       <div class="district" v-if="!collapsed">
@@ -121,6 +122,7 @@ window.addEventListener("ddr001:unauthorized", () => router.replace("/login"));
         </section>
       </nav>
       <footer class="sidebar-footer">
+        <RouterLink class="sidebar-version" to="/acerca-de" :aria-label="`Versión ${platformVersion}`">Versión {{ platformVersion }}</RouterLink>
         <button
           class="collapse desktop-only"
           :aria-label="collapsed ? 'Expandir menú' : 'Contraer menú'"
@@ -128,7 +130,6 @@ window.addEventListener("ddr001:unauthorized", () => router.replace("/login"));
         >
           <ChevronLeft :class="{ flip: collapsed }" :size="18" />
         </button>
-        <RouterLink class="sidebar-version" to="/acerca-de" :aria-label="`Versión ${platformVersion}`">v{{ platformVersion }}</RouterLink>
       </footer>
     </aside>
     <section class="workspace">
@@ -196,6 +197,10 @@ window.addEventListener("ddr001:unauthorized", () => router.replace("/login"));
   height: auto;
   object-fit: contain;
   display: block;
+}
+.collapsed .brand-logo {
+  width: 48px;
+  height: 48px;
 }
 .collapsed .brand {
   min-height: 64px;
@@ -317,6 +322,10 @@ window.addEventListener("ddr001:unauthorized", () => router.replace("/login"));
   background: transparent;
   font-size: 0.68rem;
   text-decoration: none;
+  opacity: 0.5;
+  text-align: center;
+  flex-wrap: wrap;
+  padding: 4px;
 }
 .sidebar-version:focus-visible {
   outline: 2px solid #8197b0;
