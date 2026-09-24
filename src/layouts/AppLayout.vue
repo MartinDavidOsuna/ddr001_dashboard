@@ -23,7 +23,7 @@ import {
 } from "@lucide/vue";
 import { useAuthStore } from "@/stores/auth";
 const platformVersion = __PLATFORM_VERSION__;
-const aquafimIcon = `${import.meta.env.BASE_URL}branding/aquafim-icon.png`;
+const aquafimLogo = `${import.meta.env.BASE_URL}branding/Aquafim-logo.png`;
 const route = useRoute(),
   router = useRouter(),
   auth = useAuthStore(),
@@ -84,10 +84,8 @@ window.addEventListener("ddr001:unauthorized", () => router.replace("/login"));
     />
     <aside ref="sidebar" class="sidebar" :class="{ open, 'submenu-open': expandedGroup }" @keydown.esc="expandedGroup = null">
       <div class="brand">
-        <img class="brand-mark" :src="aquafimIcon" alt="" width="36" height="36" />
-        <div v-if="!collapsed">
-          <strong>Aquafim</strong><small>Sistema de Supervisión · <RouterLink to="/acerca-de">v{{ platformVersion }}</RouterLink></small>
-        </div>
+        <img class="brand-logo" :src="aquafimLogo" alt="Aquafim" width="168" height="42" />
+        <small v-if="!collapsed">Sistema de supervisión</small>
       </div>
       <div class="district" v-if="!collapsed">
         <span>CNA<br />GUA</span><span>DDR</span
@@ -121,13 +119,16 @@ window.addEventListener("ddr001:unauthorized", () => router.replace("/login"));
           </div>
         </section>
       </nav>
-      <button
-        class="collapse desktop-only"
-        :aria-label="collapsed ? 'Expandir menú' : 'Contraer menú'"
-        @click="collapsed = !collapsed; expandedGroup = null"
-      >
-        <ChevronLeft :class="{ flip: collapsed }" :size="18" />
-      </button>
+      <footer class="sidebar-footer">
+        <button
+          class="collapse desktop-only"
+          :aria-label="collapsed ? 'Expandir menú' : 'Contraer menú'"
+          @click="collapsed = !collapsed; expandedGroup = null"
+        >
+          <ChevronLeft :class="{ flip: collapsed }" :size="18" />
+        </button>
+        <RouterLink class="sidebar-version" to="/acerca-de" :aria-label="`Versión ${platformVersion}`">v{{ platformVersion }}</RouterLink>
+      </footer>
     </aside>
     <section class="workspace">
       <header>
@@ -178,24 +179,26 @@ window.addEventListener("ddr001:unauthorized", () => router.replace("/login"));
   z-index: 30;
 }
 .brand {
-  height: 64px;
-  padding: 12px 16px;
+  min-height: 96px;
+  flex-shrink: 0;
+  padding: 14px 16px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 11px;
+  justify-content: center;
+  gap: 6px;
   border-bottom: 1px solid #28405c;
 }
-.brand-mark {
-  width: 36px;
-  height: 36px;
-  flex-shrink: 0;
+.brand-logo {
+  width: 168px;
+  max-width: 100%;
+  height: auto;
   object-fit: contain;
-  background: #fff;
   display: block;
-  border-radius: 6px;
 }
-.brand div:last-child {
-  display: grid;
+.collapsed .brand {
+  min-height: 64px;
+  padding: 12px 8px;
 }
 .brand small,
 .profile small {
@@ -296,8 +299,27 @@ window.addEventListener("ddr001:unauthorized", () => router.replace("/login"));
   background: var(--blue);
   color: #fff;
 }
-.collapse {
+.sidebar-footer {
   margin-top: auto;
+  flex-shrink: 0;
+}
+.sidebar .sidebar-version,
+.sidebar .sidebar-version.router-link-active {
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8197b0;
+  background: transparent;
+  font-size: 0.68rem;
+  text-decoration: none;
+}
+.sidebar-version:focus-visible {
+  outline: 2px solid #8197b0;
+  outline-offset: -3px;
+}
+.collapse {
+  width: 100%;
   border: 0;
   border-top: 1px solid #28405c;
   background: transparent;
