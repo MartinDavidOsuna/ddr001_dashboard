@@ -87,36 +87,50 @@ function formatDate(v?: string) {
     : "No disponible";
 }
 async function refreshAfterReview() {
-  try { data.value = await dashboardService.inspection(String(route.params.id)); }
+  try {
+    const updated = await dashboardService.inspection(String(route.params.id));
+    ++photoGeneration;
+    close();
+    for (const url of photoUrls.value.values()) URL.revokeObjectURL(url);
+    photoUrls.value = new Map();
+    photoErrors.value = new Set();
+    data.value = updated;
+    if (tab.value === 'photos') for (const photo of updated.photos) void loadPhoto(photo);
+  }
   catch (e) { error.value = problemMessage(e, 'La revisión se guardó, pero no se pudo actualizar la vista. Recarga la página.'); }
 }
+let photoGeneration = 0, fullPhotoGeneration = 0;
 function toggle(id: string) {
   const next = new Set(openSections.value);
   if(next.has(id))next.delete(id);else next.add(id);
   openSections.value = next;
 }
 async function loadPhoto(p: Photo) {
+  const generation = photoGeneration;
   if (photoUrls.value.has(p.photoId) || photoErrors.value.has(p.photoId))
     return;
   try {
-    photoUrls.value.set(
-      p.photoId,
-      await dashboardService.photo(p.thumbnailUrl),
-    );
+    const url = await dashboardService.photo(p.thumbnailUrl);
+    if (generation !== photoGeneration) URL.revokeObjectURL(url);
+    else photoUrls.value.set(p.photoId, url);
   } catch {
-    photoErrors.value.add(p.photoId);
+    if (generation === photoGeneration) photoErrors.value.add(p.photoId);
   }
 }
 async function openPhoto(index: number) {
   const p = photoCards.value[index]?.photo;
   if (!p) return;
+  const generation = ++fullPhotoGeneration;
+  if (fullUrl.value && fullUrl.value !== 'error') URL.revokeObjectURL(fullUrl.value);
   lightbox.value = index;
   zoomLevel.value = 1;
   fullUrl.value = "";
   try {
-    fullUrl.value = await dashboardService.photo(p.contentUrl);
+    const url = await dashboardService.photo(p.contentUrl);
+    if (generation !== fullPhotoGeneration) URL.revokeObjectURL(url);
+    else fullUrl.value = url;
   } catch {
-    fullUrl.value = "error";
+    if (generation === fullPhotoGeneration) fullUrl.value = "error";
   }
 }
 function move(delta: number) {
@@ -127,6 +141,7 @@ function move(delta: number) {
   openPhoto(next);
 }
 function close() {
+  ++fullPhotoGeneration;
   if (fullUrl.value && fullUrl.value !== "error")
     URL.revokeObjectURL(fullUrl.value);
   fullUrl.value = "";
@@ -165,6 +180,7 @@ onMounted(async () => {
   }
 });
 onBeforeUnmount(() => {
+  ++photoGeneration;
   window.removeEventListener("keydown", key);
   for (const u of photoUrls.value.values()) URL.revokeObjectURL(u);
   close();
