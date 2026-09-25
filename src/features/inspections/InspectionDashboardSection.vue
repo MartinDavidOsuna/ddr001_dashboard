@@ -23,7 +23,7 @@ const lineOption = computed<EChartsCoreOption>(() => ({
   tooltip: { trigger: 'axis' }, grid: { left: 38, right: 18, top: 20, bottom: 30 },
   xAxis: { type: 'category', data: data.value?.activity.map((item) => item.date.slice(5)) || [], axisLine: { lineStyle: { color: '#d7e0ea' } } },
   yAxis: { type: 'value', splitLine: { lineStyle: { color: '#edf1f5' } } },
-  series: [{ type: 'line', smooth: true, data: data.value?.activity.map((item) => item.count) || [], lineStyle: { color: '#1768f5', width: 3 }, itemStyle: { color: '#1768f5' }, areaStyle: { color: '#e9f1ff' } }],
+  series: [{ name: 'Revisiones iniciadas', type: 'line', smooth: true, data: data.value?.activity.map((item) => item.count) || [], lineStyle: { color: '#1768f5', width: 3 }, itemStyle: { color: '#1768f5' }, areaStyle: { color: '#e9f1ff' } }],
 }))
 const donutOption = computed<EChartsCoreOption>(() => ({
   tooltip: { trigger: 'item' }, legend: { bottom: 0 },
@@ -44,7 +44,7 @@ const donutOption = computed<EChartsCoreOption>(() => ({
       </div></section>
       <section><h2 class="section-label">REVISIONES</h2><div class="mini-grid"><article class="card"><small>Total</small><b>{{ data.totalInspections }}</b></article><article class="card"><small>Hoy</small><b>{{ data.inspectionsToday }}</b></article><article v-for="status in data.byStatus" :key="status.status" class="card"><small>{{ statusLabels[status.status] || status.status }}</small><b>{{ status.count }}</b></article></div></section>
       <div class="charts">
-        <article class="card chart-card"><header><b>Actividad de revisiones</b><small>Últimos 30 días</small></header><EChart :option="lineOption" aria-label="Actividad real de revisiones RV" /></article>
+        <article class="card chart-card"><header><b>Actividad de revisiones</b><small>Últimos 30 días</small></header><EChart :option="lineOption" aria-label="Revisiones RV por fecha de inicio" /></article>
         <article class="card chart-card"><header><b>Estado de revisiones</b><small>Distribución real</small></header><EChart :option="donutOption" aria-label="Estado real de revisiones RV" /></article>
         <article class="card tech"><header><b>Revisiones por técnico</b><small>Acumulado</small></header><ol><li v-for="item in data.byTechnician" :key="item.userId"><span>{{ item.name }}</span><i :style="{ width: `${Math.max(5, item.count / (data.byTechnician[0]?.count || 1) * 100)}%` }" /><b>{{ item.count }}</b></li></ol></article>
         <article class="card photos"><Camera /><div><small>FOTOGRAFÍAS VERIFICADAS</small><strong>{{ data.verifiedPhotos.toLocaleString() }}</strong></div></article>
