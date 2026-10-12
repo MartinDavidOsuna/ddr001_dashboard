@@ -30,6 +30,8 @@ Credenciales de ejemplo no permitieron login real. Con autorización expresa del
 
 Scripts de regresión se actualizaron para las denominaciones Bases y la nueva sección administrativa. El script de Bases antes bloqueaba módulos Vite cuyo path contenía `/construction/`; ahora sólo intercepta rutas administrativas HTTP. Eso permite comprobar las vistas reales en el navegador dev, conservando aislamiento de mocks y bloqueo del host productivo.
 
+El workflow existente `construction-ui-validation.yml` incorpora `npm run e2e:cabinets-ui` junto a las regresiones. Las lecturas TEST reales siguen siendo explícitas y locales; CI no recibe tokens ni credenciales TEST. Los resultados de CI remoto deben consultarse en el PR y no se presentan como ya ejecutados en este informe.
+
 ## Browser y visual
 
 **Microsoft Edge / Chromium headless** comprobado realmente. Nuevos Hidrantes: **1440×1000, 1024×1000, 768×1000, 390×844** tanto mock como API real. Los otros scripts usan sus tres anchos existentes 1440/768/390 y altura 1000/1024/844 según script.
