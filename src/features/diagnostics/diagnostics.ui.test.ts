@@ -66,6 +66,50 @@ beforeEach(() => {
   );
 });
 describe("diagnostics UI", () => {
+  it("renders the new technical columns and mobile labels using the API summary", async () => {
+    vi.mocked(diagnosticsApi.cases).mockResolvedValueOnce(
+      paged([
+        {
+          ...(fixture.caseItem as CaseItem),
+          durationSeconds: 3912,
+          measurementSummary: {
+            q1: { minimumErrorPct: -2, maximumErrorPct: 1, averageFlowLps: 2 },
+            q2: {
+              minimumErrorPct: 4,
+              maximumErrorPct: 4,
+              averageFlowLps: null,
+            },
+            meanErrorPct: 0.75,
+          },
+        },
+      ]),
+    );
+    const w = mount(DiagnosticListView, { global });
+    await flushPromises();
+    const table = w.get(".diag-case-table");
+    expect(table.text()).toContain("Q1 — Error / Flujo");
+    expect(table.get('[data-label="Q1 — Error / Flujo"]').text()).toBe(
+      "-2.00% a +1.00% / 2.00 L/s",
+    );
+    expect(table.get('[data-label="Q2 — Error / Flujo"]').text()).toBe(
+      "+4.00% a +4.00% / —",
+    );
+    expect(table.get('[data-label="Error promedio Q1/Q2"]').text()).toBe(
+      "+0.75%",
+    );
+    expect(table.get('[data-label="Duración"]').text()).toBe("65:12");
+    expect(table.text()).not.toContain("Estado / veredicto");
+    expect(table.text()).not.toContain("muestras");
+    w.unmount();
+  });
+  it("renders historical cases without the optional summary", async () => {
+    const w = mount(DiagnosticListView, { global });
+    await flushPromises();
+    expect(w.get('[data-label="Q1 — Error / Flujo"]').text()).toBe("— / —");
+    expect(w.get('[data-label="Q2 — Error / Flujo"]').text()).toBe("— / —");
+    expect(w.get('[data-label="Error promedio Q1/Q2"]').text()).toBe("—");
+    w.unmount();
+  });
   it("loads real-only by default, renders cases and server-side filters", async () => {
     const w = mount(DiagnosticListView, { global });
     await flushPromises();

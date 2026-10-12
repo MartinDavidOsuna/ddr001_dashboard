@@ -3,7 +3,12 @@ import { computed, nextTick, onMounted, reactive, ref } from "vue";
 import { Activity } from "@lucide/vue";
 import { diagnosticsApi } from "./diagnostics.api.datasource";
 import { useCursor } from "./diagnostics.cursor";
-import { date, duration, label, utcDateRange } from "./diagnostics.format";
+import { date, label, utcDateRange } from "./diagnostics.format";
+import {
+  elapsedTime,
+  errorFlow,
+  errorPercent,
+} from "./diagnostics.measurements";
 import type { CaseQuery, SummaryQuery } from "./diagnostics.types";
 import DiagnosticBadge from "./DiagnosticBadge.vue";
 import DiagnosticDashboardSection from "./DiagnosticDashboardSection.vue";
@@ -264,10 +269,10 @@ onMounted(list.load);
                 <th>Medidor</th>
                 <th>Técnico / correo</th>
                 <th>Creación / cierre</th>
-                <th>Estado / veredicto</th>
+                <th>Q1 — Error / Flujo</th>
                 <th>Banco / dispositivo</th>
-                <th>Fuentes</th>
-                <th>Q / muestras / evidencias</th>
+                <th>Q2 — Error / Flujo</th>
+                <th>Error promedio Q1/Q2</th>
                 <th>Integridad</th>
                 <th>Revisión</th>
                 <th>Duración</th>
@@ -276,7 +281,7 @@ onMounted(list.load);
             </thead>
             <tbody>
               <tr v-for="row in list.data.value.items" :key="row.caseId">
-                <td>
+                <td data-label="Medidor">
                   <RouterLink :to="`/diagnosticos/${row.caseId}`">{{
                     row.meterId
                   }}</RouterLink
@@ -285,37 +290,38 @@ onMounted(list.load);
                     value="SIMULATION"
                   />
                 </td>
-                <td>{{ row.technicianName }}<br />{{ row.technicianEmail }}</td>
-                <td>{{ date(row.createdAt) }}<br />{{ date(row.closedAt) }}</td>
-                <td>
-                  <DiagnosticBadge :value="row.status" /><DiagnosticBadge
-                    :value="row.overallVerdict"
-                  />
+                <td data-label="Técnico / correo">
+                  {{ row.technicianName }}<br />{{ row.technicianEmail }}
                 </td>
-                <td>
+                <td data-label="Creación / cierre">
+                  {{ date(row.createdAt) }}<br />{{ date(row.closedAt) }}
+                </td>
+                <td data-label="Q1 — Error / Flujo">
+                  {{ errorFlow(row.measurementSummary?.q1) }}
+                </td>
+                <td data-label="Banco / dispositivo">
                   {{ row.testBenchId }}<br />{{
                     row.deviceModel || "No disponible"
                   }}
                 </td>
-                <td>
-                  <DiagnosticBadge
-                    v-for="source in row.measurementSources"
-                    :key="source"
-                    :value="source"
-                  />
+                <td data-label="Q2 — Error / Flujo">
+                  {{ errorFlow(row.measurementSummary?.q2) }}
                 </td>
-                <td>
-                  {{ row.flowPointCount }} Q · {{ row.sampleCount }} muestras ·
-                  {{ row.evidenceCount }} evidencias
+                <td data-label="Error promedio Q1/Q2">
+                  {{ errorPercent(row.measurementSummary?.meanErrorPct) }}
                 </td>
-                <td><DiagnosticBadge :value="row.integrityStatus" /></td>
-                <td>
+                <td data-label="Integridad">
+                  <DiagnosticBadge :value="row.integrityStatus" />
+                </td>
+                <td data-label="Revisión">
                   <DiagnosticBadge :value="row.reviewStatus" /><br />{{
                     row.reviewClassification
                   }}
                 </td>
-                <td>{{ duration(row.durationSeconds) }}</td>
-                <td>{{ date(row.syncReceivedAt) }}</td>
+                <td data-label="Duración">
+                  {{ elapsedTime(row.durationSeconds) }}
+                </td>
+                <td data-label="Recepción">{{ date(row.syncReceivedAt) }}</td>
               </tr>
             </tbody>
           </table>
