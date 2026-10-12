@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onBeforeUnmount, ref } from "vue";
+import { computed, nextTick, onMounted, onBeforeUnmount, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import {
   BarChart3,
@@ -22,6 +22,7 @@ import {
   Activity,
   Archive,
 } from "@lucide/vue";
+import { canReadCabinets } from "@/features/cabinets/cabinets.format";
 import { useAuthStore } from "@/stores/auth";
 const platformVersion = __PLATFORM_VERSION__;
 const aquafimLogo = `${import.meta.env.BASE_URL}branding/Aquafim-logo.png`;
@@ -57,6 +58,18 @@ const visibleGroups = computed(() => groups.map(group => ({
   ...group,
   items: group.items.filter(([, to]) => to !== '/revisiones/archivo' || auth.user?.role === 'admin'),
 })));
+const surveyLinks = computed(() => [
+  ["Bases", "/levantamientos/bases", HardHat],
+  ...(canReadCabinets(auth.user?.role) ? [["Nuevos Hidrantes", "/levantamientos/nuevos-hidrantes", Droplets]] : []),
+] as Array<[string, string, typeof HardHat]>);
+function expandSurveys() {
+  expandedGroup.value = "Levantamientos";
+  void nextTick(() => sidebar.value?.querySelector<HTMLElement>("#nav-surveys a")?.focus());
+}
+function closeNavigation() {
+  sidebar.value?.querySelector<HTMLElement>('.nav-area[aria-expanded="true"]')?.focus();
+  expandedGroup.value = null;
+}
 const items = groups.flatMap(group => [...group.items]);
 const groupIcons = [Settings, Wrench];
 const expandedGroup = ref<string | null>(null);
@@ -67,6 +80,10 @@ function closeSubmenu(event: PointerEvent) {
 onMounted(() => document.addEventListener("pointerdown", closeSubmenu));
 onBeforeUnmount(() => document.removeEventListener("pointerdown", closeSubmenu));
 const title = computed(() =>
+  route.name === "cabinets" ? "Levantamientos / Nuevos Hidrantes" :
+  route.name === "cabinet-detail" ? "Expediente de nuevo hidrante" :
+  route.name === "cabinets-forbidden" ? "Nuevos Hidrantes" :
+  route.name === "construction-surveys" ? "Levantamientos / Bases" :
   route.name === "inspection-archive" ? "Archivo de bajas RV" :
   route.name === 'functional-diagnostic-detail' ? 'Detalle de diagnóstico' :
   route.name === "inspection-detail"
@@ -74,7 +91,7 @@ const title = computed(() =>
     : route.name === "hydrant-detail"
       ? "Expediente de hidrante"
       : route.name === "construction-survey-detail"
-        ? "Expediente de levantamiento"
+        ? "Expediente de base"
         : items.find((x) => route.path.startsWith(x[1]))?.[0] || "DDR001",
 );
 async function logout() {
@@ -91,7 +108,7 @@ window.addEventListener("ddr001:unauthorized", () => router.replace("/login"));
       aria-label="Cerrar menú"
       @click="open = false"
     />
-    <aside ref="sidebar" class="sidebar" :class="{ open, 'submenu-open': expandedGroup }" @keydown.esc="expandedGroup = null">
+    <aside ref="sidebar" class="sidebar" :class="{ open, 'submenu-open': expandedGroup }" @keydown.esc="closeNavigation">
       <div class="brand">
         <img class="brand-logo" :src="collapsed ? collapsedLogo : aquafimLogo" alt="Aquafim" :width="collapsed ? 48 : 168" :height="collapsed ? 48 : 42" />
         <small v-if="!collapsed">Sistema de supervisión</small>
@@ -102,11 +119,15 @@ window.addEventListener("ddr001:unauthorized", () => router.replace("/login"));
       </div>
       <nav aria-label="Navegación principal">
         <small v-if="!collapsed" class="nav-label">Módulos</small>
-        <RouterLink v-for="[label, to, Icon] in groups[0].items" :key="to" :to="to"
-          :aria-label="label" :title="collapsed ? label : undefined"
-          @mouseenter="expandedGroup = null" @click="open = false; expandedGroup = null">
-          <component :is="Icon" :size="18" /><span v-if="!collapsed">{{ label }}</span>
-        </RouterLink>
+        <template v-for="[label, to, Icon] in groups[0].items" :key="to">
+          <section v-if="to === '/levantamientos'" class="nav-group" aria-label="Levantamientos">
+            <button class="nav-area" :class="{ 'area-active': route.path.startsWith('/levantamientos') }" aria-label="Levantamientos" :title="collapsed ? 'Levantamientos' : undefined" :aria-expanded="expandedGroup === 'Levantamientos'" aria-controls="nav-surveys" @click="expandedGroup = expandedGroup === 'Levantamientos' ? null : 'Levantamientos'" @keydown.down.prevent="expandSurveys">
+              <HardHat :size="18" /><span v-if="!collapsed">Levantamientos</span><ChevronRight v-if="!collapsed" class="area-chevron" :size="16" />
+            </button>
+            <div v-if="expandedGroup === 'Levantamientos'" id="nav-surveys" class="nav-flyout"><div class="nav-children"><strong class="flyout-title">Levantamientos</strong><RouterLink v-for="[name, href, SubIcon] in surveyLinks" :key="href" :to="href" :aria-label="name" @click="open = false; expandedGroup = null"><component :is="SubIcon" :size="18" /><span>{{ name }}</span></RouterLink></div></div>
+          </section>
+          <RouterLink v-else :to="to" :aria-label="label" :title="collapsed ? label : undefined" @mouseenter="expandedGroup = null" @click="open = false; expandedGroup = null"><component :is="Icon" :size="18" /><span v-if="!collapsed">{{ label }}</span></RouterLink>
+        </template>
         <section v-for="(group, index) in visibleGroups.slice(1)" :key="group.label" class="nav-group" :aria-label="group.label"
           @mouseenter="expandedGroup = group.label" @mouseleave="expandedGroup = null">
           <button class="nav-area" :class="{ 'area-active': group.items.some(([, to]) => route.path.startsWith(to)) }"

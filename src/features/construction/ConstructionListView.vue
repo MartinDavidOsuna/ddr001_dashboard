@@ -45,7 +45,7 @@ async function load(requestedPage = page.value) {
       total.value = items.length
     }
   } catch (cause) {
-    if (id === requestId) error.value = problemMessage(cause, 'No fue posible cargar los levantamientos.')
+    if (id === requestId) error.value = problemMessage(cause, 'No fue posible cargar las bases.')
   } finally {
     if (id === requestId) loading.value = false
   }
@@ -99,14 +99,14 @@ function syncLabel(survey: ConstructionSurvey) {
   <section class="content construction-page">
     <div class="page-head">
       <div>
-        <div class="eyebrow"><HardHat :size="15" /> LEVANTAMIENTOS / NUEVAS BASES</div>
-        <h1 class="page-title">Levantamientos</h1>
+        <div class="eyebrow"><HardHat :size="15" /> LEVANTAMIENTOS / BASES</div>
+        <h1 class="page-title">Levantamientos / Bases</h1>
         <p class="page-subtitle">Seguimiento de construcción de bases para nuevos hidrantes</p>
       </div>
     </div>
 
     <article class="card list-card">
-      <div class="section-head list-head"><div><strong>Listado de levantamientos</strong><small>{{ filtered.length }} de {{ apiMode ? total : surveys.length }} registros</small></div><nav class="list-actions" aria-label="Acciones de levantamientos"><RouterLink class="btn" to="/dashboard#estadisticas-levantamientos"><BarChart3 :size="17" />Estadísticas</RouterLink><RouterLink class="btn" to="/mapa?view=construction"><MapPin :size="17" />Mapa de bases</RouterLink></nav></div>
+      <div class="section-head list-head"><div><strong>Listado de bases</strong><small>{{ filtered.length }} de {{ apiMode ? total : surveys.length }} registros</small></div><nav class="list-actions" aria-label="Acciones de Bases"><RouterLink class="btn" to="/dashboard#estadisticas-levantamientos"><BarChart3 :size="17" />Estadísticas</RouterLink><RouterLink class="btn" to="/mapa?view=construction"><MapPin :size="17" />Mapa de bases</RouterLink></nav></div>
       <div v-if="metricsError" class="empty-box" role="alert">{{ metricsError }} <button class="btn" @click="loadMetrics">Reintentar opciones</button></div>
       <div class="filters">
         <div class="field search-field"><label for="construction-search">Búsqueda</label><input id="construction-search" v-model="filters.search" placeholder="Identificador, cuenta, contratista o Empresa" /></div>
@@ -119,8 +119,8 @@ function syncLabel(survey: ConstructionSurvey) {
       </div>
 
       <div v-if="error" class="empty-box">{{ error }} <button class="btn" @click="load(page)">Reintentar</button></div>
-      <div v-else-if="loading" class="empty-box"><RefreshCw class="spin" /> Cargando levantamientos…</div>
-      <div v-else-if="!filtered.length" class="empty-box">No hay levantamientos que coincidan con los filtros.</div>
+      <div v-else-if="loading" class="empty-box"><RefreshCw class="spin" /> Cargando bases…</div>
+      <div v-else-if="!filtered.length" class="empty-box">No hay bases que coincidan con los filtros.</div>
       <div v-else>
         <div class="table-wrap desktop-table">
           <table>
@@ -134,13 +134,13 @@ function syncLabel(survey: ConstructionSurvey) {
                 <td>{{ survey.contractorName }}</td><td>{{ survey.companyName || '—' }}</td>
                 <td>{{ formatDate(survey.createdAt) }}</td><td>{{ formatDate(survey.updatedAt) }}</td>
                 <td><Camera :size="15" /> {{ survey.photoCount ?? survey.photos.length }}</td><td>{{ survey.canonicalLocation ? 'Disponible' : 'Faltante' }}</td><td>{{ syncLabel(survey) }}</td>
-                <td><RouterLink class="detail-link" :to="`/levantamientos/${survey.id}`" aria-label="Abrir expediente"><ChevronRight :size="18" /></RouterLink></td>
+                <td><RouterLink class="detail-link" :to="`/levantamientos/bases/${survey.id}`" aria-label="Abrir expediente"><ChevronRight :size="18" /></RouterLink></td>
               </tr>
             </tbody>
           </table>
         </div>
         <div class="mobile-cards">
-          <RouterLink v-for="survey in filtered" :key="survey.id" :to="`/levantamientos/${survey.id}`" class="survey-card">
+          <RouterLink v-for="survey in filtered" :key="survey.id" :to="`/levantamientos/bases/${survey.id}`" class="survey-card">
             <div><strong>{{ survey.displayIdentifier }}</strong><span :class="statusClass(survey.status)">{{ constructionStatusLabels[survey.status] }}</span></div>
             <small>{{ survey.accountNumber || 'Sin número de cuenta' }} · {{ stageLabel(survey) }}</small>
             <dl><div><dt>Contratista</dt><dd>{{ survey.contractorName }}</dd></div><div><dt>Empresa</dt><dd>{{ survey.companyName || '—' }}</dd></div><div><dt>Fotos</dt><dd>{{ survey.photoCount ?? survey.photos.length }}</dd></div><div><dt>Sync</dt><dd>{{ syncLabel(survey) }}</dd></div></dl>

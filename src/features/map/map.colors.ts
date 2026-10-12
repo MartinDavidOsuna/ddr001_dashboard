@@ -1,5 +1,11 @@
 import type { Domain, MapItem } from "./map.types";
 export const statusColors = {
+  cabinet_draft: { label: "Borrador", color: "#64748b" },
+  cabinet_registered: { label: "Registrado", color: "#2563eb" },
+  cabinet_incomplete: { label: "Incompleto", color: "#b45309" },
+  cabinet_validated: { label: "Validado", color: "#15803d" },
+  cabinet_installed: { label: "Instalado", color: "#0891b2" },
+  cabinet_deliverable: { label: "Hidrante entregable", color: "#7c3aed" },
   inactive: { label: "Ausente", color: "#7c3aed" },
   pending: { label: "Pendiente", color: "#a16207" },
   completed: { label: "Completado", color: "#15803d" },

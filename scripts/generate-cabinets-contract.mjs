@@ -1,0 +1,119 @@
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { resolve } from "node:path";
+import YAML from "yaml";
+import { isDeepStrictEqual } from "node:util";
+import { execFileSync } from "node:child_process";
+
+const apiRoot = process.argv[2];
+if (!apiRoot)
+  throw new Error(
+    "Usage: node scripts/generate-cabinets-contract.mjs <API checkout>",
+  );
+const document = YAML.parse(
+  readFileSync(resolve(apiRoot, "docs/openapi.yaml"), "utf8"),
+);
+const selected = {};
+function collect(name) {
+  if (selected[name]) return;
+  const schema = document.components.schemas[name];
+  if (!schema) throw new Error(`Missing schema ${name}`);
+  selected[name] = schema;
+  function walk(value) {
+    if (!value || typeof value !== "object") return;
+    if (value.$ref) collect(value.$ref.split("/").at(-1));
+    Object.values(value).forEach(walk);
+  }
+  walk(schema);
+}
+Object.keys(document.components.schemas)
+  .filter((name) => name.startsWith("CabinetAdmin"))
+  .forEach(collect);
+if (process.argv.includes("--check")) {
+  const pinned = JSON.parse(
+    readFileSync("src/features/cabinets/cabinets.schemas.json", "utf8"),
+  );
+  if (!isDeepStrictEqual(pinned, selected))
+    throw Error(
+      "Cabinets OpenAPI drift: re-audit types/adapters before regenerating",
+    );
+  const head = execFileSync("git", ["rev-parse", "HEAD"], {
+    cwd: apiRoot,
+    encoding: "utf8",
+  }).trim();
+  const paths = Object.entries(document.paths).filter(([path]) =>
+    path.startsWith("/admin/dashboard/construction/cabinets"),
+  );
+  if (
+    paths.length !== 7 ||
+    paths.some(
+      ([, operations]) =>
+        !operations.get ||
+        Object.keys(operations).some((k) =>
+          ["post", "put", "patch", "delete"].includes(k),
+        ),
+    )
+  )
+    throw Error("Administrative GET route contract drift");
+  console.log(
+    JSON.stringify({
+      status: "PASS",
+      schemas: Object.keys(selected).length,
+      getEndpoints: paths.length,
+      apiHead: head,
+    }),
+  );
+  process.exit(0);
+}
+function type(schema) {
+  let value;
+  if (schema.$ref) value = schema.$ref.split("/").at(-1);
+  else if (schema.enum)
+    value = schema.enum.map((item) => JSON.stringify(item)).join(" | ");
+  else if (schema.allOf)
+    value = schema.allOf
+      .map(type)
+      .map((t) => `(${t})`)
+      .join(" & ");
+  else if (schema.oneOf || schema.anyOf)
+    value = (schema.oneOf || schema.anyOf)
+      .map(type)
+      .map((t) => `(${t})`)
+      .join(" | ");
+  else if (schema.type === "array") value = `Array<${type(schema.items)}>`;
+  else if (schema.type === "object" || schema.properties) {
+    const fields = Object.entries(schema.properties || {}).map(
+      ([key, child]) =>
+        `${JSON.stringify(key)}${schema.required?.includes(key) ? "" : "?"}: ${type(child)};`,
+    );
+    value = fields.length
+      ? `{ ${fields.join(" ")} }`
+      : schema.additionalProperties &&
+          typeof schema.additionalProperties === "object"
+        ? `Record<string, ${type(schema.additionalProperties)}>`
+        : "object";
+  } else
+    value =
+      schema.type === "integer" || schema.type === "number"
+        ? "number"
+        : schema.type === "boolean"
+          ? "boolean"
+          : schema.type === "string"
+            ? "string"
+            : "unknown";
+  return schema.nullable ? `(${value}) | null` : value;
+}
+const out = resolve("src/features/cabinets");
+mkdirSync(out, { recursive: true });
+writeFileSync(
+  resolve(out, "cabinets.generated.ts"),
+  "// Generated from ddr001_api PR #16, fbae6771c8457d623f652427ada9ac853f381f1f.\n" +
+    Object.entries(selected)
+      .map(([name, schema]) => `export type ${name} = ${type(schema)};`)
+      .join("\n") +
+    "\n",
+);
+writeFileSync(
+  resolve(out, "cabinets.schemas.json"),
+  JSON.stringify(selected, null, 2) + "\n",
+);
+console.log(`Generated ${Object.keys(selected).length} schemas`);

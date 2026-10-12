@@ -1,0 +1,2537 @@
+{
+  "CabinetAdminRow": {
+    "type": "object",
+    "properties": {
+      "cabinetId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "uid": {
+        "type": "string"
+      },
+      "formattedUid": {
+        "type": "string"
+      },
+      "model": {
+        "type": "string",
+        "enum": [
+          "A1",
+          "A2",
+          "A3",
+          "A4"
+        ]
+      },
+      "automated": {
+        "type": "boolean"
+      },
+      "displayModel": {
+        "type": "string"
+      },
+      "status": {
+        "type": "string",
+        "enum": [
+          "draft",
+          "registered",
+          "incomplete",
+          "validated",
+          "installed",
+          "deliverable"
+        ]
+      },
+      "version": {
+        "type": "integer"
+      },
+      "base": {
+        "type": "object",
+        "properties": {
+          "surveyId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "displayIdentifier": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "accountNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "location": {
+            "type": "object",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CabinetGps"
+              }
+            ]
+          }
+        },
+        "required": [
+          "surveyId",
+          "displayIdentifier",
+          "status",
+          "accountNumber",
+          "location"
+        ],
+        "nullable": true
+      },
+      "installationAccountNumber": {
+        "type": "string",
+        "nullable": true
+      },
+      "accountDiscrepancy": {
+        "type": "boolean"
+      },
+      "crew": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "linked_base"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "source"
+        ],
+        "nullable": true
+      },
+      "registeredBy": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "createdAt": {
+        "type": "string",
+        "format": "date-time",
+        "nullable": true
+      },
+      "registeredAt": {
+        "type": "string",
+        "format": "date-time",
+        "nullable": true
+      },
+      "validatedAt": {
+        "type": "string",
+        "format": "date-time",
+        "nullable": true
+      },
+      "installedAt": {
+        "type": "string",
+        "format": "date-time",
+        "nullable": true
+      },
+      "deliverableAt": {
+        "type": "string",
+        "format": "date-time",
+        "nullable": true
+      },
+      "reviewedAt": {
+        "type": "string",
+        "format": "date-time",
+        "nullable": true
+      },
+      "location": {
+        "type": "object",
+        "nullable": true,
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CabinetGps"
+          }
+        ]
+      },
+      "installationValid": {
+        "type": "boolean"
+      },
+      "approvalValid": {
+        "type": "boolean"
+      },
+      "approvalInvalidated": {
+        "type": "boolean"
+      },
+      "reviewCorrection": {
+        "type": "boolean"
+      },
+      "finalReviewState": {
+        "type": "string",
+        "enum": [
+          "approved",
+          "correction_required",
+          "approval_invalidated",
+          "affected_data_pending",
+          "mandatory_tests_pending",
+          "pending_review",
+          "not_installed"
+        ]
+      },
+      "distanceToBaseMeters": {
+        "type": "number",
+        "nullable": true
+      },
+      "mandatoryTests": {
+        "type": "integer"
+      },
+      "blockingCount": {
+        "type": "integer"
+      },
+      "photos": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer"
+          },
+          "relationConfirmed": {
+            "type": "integer"
+          },
+          "storageConfirmedAtLastCheck": {
+            "type": "integer"
+          },
+          "problemsAtLastCheck": {
+            "type": "integer"
+          },
+          "unknown": {
+            "type": "integer"
+          },
+          "missingAtLastCheck": {
+            "type": "integer"
+          },
+          "oldestCheckAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": [
+          "total",
+          "relationConfirmed",
+          "storageConfirmedAtLastCheck",
+          "problemsAtLastCheck",
+          "unknown",
+          "missingAtLastCheck",
+          "oldestCheckAt"
+        ]
+      }
+    },
+    "required": [
+      "cabinetId",
+      "uid",
+      "formattedUid",
+      "model",
+      "automated",
+      "displayModel",
+      "status",
+      "version",
+      "base",
+      "installationAccountNumber",
+      "accountDiscrepancy",
+      "crew",
+      "registeredBy",
+      "createdAt",
+      "registeredAt",
+      "validatedAt",
+      "installedAt",
+      "deliverableAt",
+      "reviewedAt",
+      "location",
+      "installationValid",
+      "approvalValid",
+      "approvalInvalidated",
+      "reviewCorrection",
+      "finalReviewState",
+      "distanceToBaseMeters",
+      "mandatoryTests",
+      "blockingCount",
+      "photos"
+    ]
+  },
+  "CabinetGps": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "latitude",
+      "longitude",
+      "accuracy"
+    ],
+    "properties": {
+      "latitude": {
+        "type": "number",
+        "minimum": -90,
+        "maximum": 90
+      },
+      "longitude": {
+        "type": "number",
+        "minimum": -180,
+        "maximum": 180
+      },
+      "accuracy": {
+        "type": "number",
+        "exclusiveMinimum": true,
+        "minimum": 0,
+        "maximum": 100
+      },
+      "altitude": {
+        "type": "number",
+        "minimum": -500,
+        "maximum": 10000
+      }
+    }
+  },
+  "CabinetAdminHistory": {
+    "type": "object",
+    "properties": {
+      "operationId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "type": {
+        "type": "string"
+      },
+      "actor": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "field_user"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "type"
+        ]
+      },
+      "capturedAt": {
+        "type": "string",
+        "format": "date-time",
+        "nullable": true
+      },
+      "receivedAt": {
+        "type": "string",
+        "format": "date-time",
+        "nullable": true
+      },
+      "previousVersion": {
+        "type": "integer"
+      },
+      "resultVersion": {
+        "type": "integer"
+      },
+      "status": {
+        "type": "string",
+        "enum": [
+          "draft",
+          "registered",
+          "incomplete",
+          "validated",
+          "installed",
+          "deliverable"
+        ]
+      },
+      "approvalInvalidated": {
+        "type": "boolean"
+      },
+      "command": {
+        "$ref": "#/components/schemas/CabinetCommand"
+      },
+      "cabinet": {
+        "$ref": "#/components/schemas/CabinetSnapshot"
+      }
+    },
+    "required": [
+      "operationId",
+      "type",
+      "actor",
+      "capturedAt",
+      "receivedAt",
+      "previousVersion",
+      "resultVersion",
+      "status",
+      "approvalInvalidated",
+      "command",
+      "cabinet"
+    ]
+  },
+  "CabinetCommand": {
+    "oneOf": [
+      {
+        "$ref": "#/components/schemas/CabinetRegister"
+      },
+      {
+        "$ref": "#/components/schemas/CabinetRegistrationClose"
+      },
+      {
+        "$ref": "#/components/schemas/CabinetPartsSave"
+      },
+      {
+        "$ref": "#/components/schemas/CabinetPartsValidate"
+      },
+      {
+        "$ref": "#/components/schemas/CabinetInstallationSave"
+      },
+      {
+        "$ref": "#/components/schemas/CabinetInstallationClose"
+      },
+      {
+        "$ref": "#/components/schemas/CabinetIdentityCorrect"
+      },
+      {
+        "$ref": "#/components/schemas/CabinetFinalReview"
+      }
+    ],
+    "discriminator": {
+      "propertyName": "type",
+      "mapping": {
+        "register": "#/components/schemas/CabinetRegister",
+        "registration_close": "#/components/schemas/CabinetRegistrationClose",
+        "parts_save": "#/components/schemas/CabinetPartsSave",
+        "parts_validate": "#/components/schemas/CabinetPartsValidate",
+        "installation_save": "#/components/schemas/CabinetInstallationSave",
+        "installation_close": "#/components/schemas/CabinetInstallationClose",
+        "identity_correct": "#/components/schemas/CabinetIdentityCorrect",
+        "final_review": "#/components/schemas/CabinetFinalReview"
+      }
+    }
+  },
+  "CabinetRegister": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "operationId",
+      "expectedVersion",
+      "capturedAt",
+      "type",
+      "uid",
+      "model",
+      "automated",
+      "catalogVersion"
+    ],
+    "properties": {
+      "operationId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "expectedVersion": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "capturedAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "type": {
+        "type": "string",
+        "enum": [
+          "register"
+        ]
+      },
+      "uid": {
+        "type": "string",
+        "maxLength": 200,
+        "example": "https://id.aquafim.com/ddr001/AQ26000017"
+      },
+      "model": {
+        "type": "string",
+        "enum": [
+          "A1",
+          "A2",
+          "A3",
+          "A4"
+        ]
+      },
+      "automated": {
+        "type": "boolean"
+      },
+      "catalogVersion": {
+        "type": "string",
+        "enum": [
+          "ddr001-cabinets-20261005-v1"
+        ]
+      }
+    }
+  },
+  "CabinetRegistrationClose": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "operationId",
+      "expectedVersion",
+      "capturedAt",
+      "type",
+      "evidence"
+    ],
+    "properties": {
+      "operationId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "expectedVersion": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "capturedAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "type": {
+        "type": "string",
+        "enum": [
+          "registration_close"
+        ]
+      },
+      "evidence": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/CabinetEvidence"
+        },
+        "minItems": 1,
+        "maxItems": 100
+      }
+    }
+  },
+  "CabinetEvidence": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "photoId",
+      "confirmed"
+    ],
+    "properties": {
+      "photoId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "confirmed": {
+        "type": "boolean",
+        "enum": [
+          true
+        ]
+      },
+      "legible": {
+        "type": "boolean"
+      }
+    }
+  },
+  "CabinetPartsSave": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "operationId",
+      "expectedVersion",
+      "capturedAt",
+      "type",
+      "parts"
+    ],
+    "properties": {
+      "operationId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "expectedVersion": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "capturedAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "type": {
+        "type": "string",
+        "enum": [
+          "parts_save"
+        ]
+      },
+      "parts": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/CabinetPartCapture"
+        },
+        "minItems": 0,
+        "maxItems": 60
+      },
+      "reason": {
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 2000
+      }
+    }
+  },
+  "CabinetPartCapture": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "code",
+      "present",
+      "evidence"
+    ],
+    "properties": {
+      "code": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      },
+      "present": {
+        "type": "boolean",
+        "nullable": true
+      },
+      "serial": {
+        "type": "string",
+        "nullable": true,
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "serialException": {
+        "type": "string",
+        "enum": [
+          "illegible",
+          "unavailable"
+        ],
+        "nullable": true
+      },
+      "reason": {
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 2000
+      },
+      "observations": {
+        "type": "string",
+        "maxLength": 2000
+      },
+      "evidence": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/CabinetEvidence"
+        },
+        "minItems": 0,
+        "maxItems": 100
+      }
+    }
+  },
+  "CabinetPartsValidate": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "operationId",
+      "expectedVersion",
+      "capturedAt",
+      "type"
+    ],
+    "properties": {
+      "operationId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "expectedVersion": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "capturedAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "type": {
+        "type": "string",
+        "enum": [
+          "parts_validate"
+        ]
+      }
+    }
+  },
+  "CabinetInstallationSave": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "operationId",
+      "expectedVersion",
+      "capturedAt",
+      "type",
+      "installation"
+    ],
+    "properties": {
+      "operationId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "expectedVersion": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "capturedAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "type": {
+        "type": "string",
+        "enum": [
+          "installation_save"
+        ]
+      },
+      "installation": {
+        "$ref": "#/components/schemas/CabinetInstallation"
+      },
+      "reason": {
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 2000
+      }
+    }
+  },
+  "CabinetInstallation": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "baseId",
+      "gps",
+      "answers",
+      "evidence"
+    ],
+    "properties": {
+      "baseId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "accountNumber": {
+        "type": "string",
+        "nullable": true,
+        "minLength": 1,
+        "maxLength": 50
+      },
+      "accountResolution": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "decision",
+          "reason"
+        ],
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "use_base",
+              "use_cabinet",
+              "no_account"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 2000
+          }
+        }
+      },
+      "gps": {
+        "$ref": "#/components/schemas/CabinetGps"
+      },
+      "answers": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/CabinetAnswer"
+        },
+        "minItems": 0,
+        "maxItems": 78
+      },
+      "evidence": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/CabinetEvidence"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "description": "CI079–CI084 evidence relations; these points are never boolean answers."
+      },
+      "observations": {
+        "type": "string",
+        "maxLength": 2000
+      }
+    }
+  },
+  "CabinetAnswer": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "code",
+      "answer"
+    ],
+    "properties": {
+      "code": {
+        "type": "string",
+        "pattern": "^CI[0-9]{3}$"
+      },
+      "answer": {
+        "type": "string",
+        "enum": [
+          "yes",
+          "no",
+          "not_checked",
+          "not_applicable"
+        ]
+      },
+      "reason": {
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 2000
+      },
+      "pendingReason": {
+        "type": "string",
+        "enum": [
+          "no_water",
+          "no_pressure",
+          "no_power",
+          "no_solar_conditions"
+        ]
+      },
+      "assessment": {
+        "type": "string",
+        "enum": [
+          "minor",
+          "blocking"
+        ]
+      },
+      "impact": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "safety",
+          "protection",
+          "function"
+        ],
+        "properties": {
+          "safety": {
+            "type": "boolean"
+          },
+          "protection": {
+            "type": "boolean"
+          },
+          "function": {
+            "type": "boolean"
+          }
+        }
+      },
+      "evidence": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/CabinetEvidence"
+        },
+        "minItems": 0,
+        "maxItems": 100
+      },
+      "serialComponents": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "minItems": 0,
+        "maxItems": 50
+      }
+    }
+  },
+  "CabinetInstallationClose": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "operationId",
+      "expectedVersion",
+      "capturedAt",
+      "type"
+    ],
+    "properties": {
+      "operationId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "expectedVersion": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "capturedAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "type": {
+        "type": "string",
+        "enum": [
+          "installation_close"
+        ]
+      }
+    }
+  },
+  "CabinetIdentityCorrect": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "operationId",
+      "expectedVersion",
+      "capturedAt",
+      "type",
+      "model",
+      "automated",
+      "reason"
+    ],
+    "properties": {
+      "operationId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "expectedVersion": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "capturedAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "type": {
+        "type": "string",
+        "enum": [
+          "identity_correct"
+        ]
+      },
+      "model": {
+        "type": "string",
+        "enum": [
+          "A1",
+          "A2",
+          "A3",
+          "A4"
+        ]
+      },
+      "automated": {
+        "type": "boolean"
+      },
+      "reason": {
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 2000
+      }
+    }
+  },
+  "CabinetFinalReview": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "operationId",
+      "expectedVersion",
+      "capturedAt",
+      "type",
+      "fieldChecked",
+      "dossierConsulted",
+      "installationOperationId",
+      "verdict",
+      "reason",
+      "evidence",
+      "evidenceConfirmed"
+    ],
+    "properties": {
+      "operationId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "expectedVersion": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "capturedAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "type": {
+        "type": "string",
+        "enum": [
+          "final_review"
+        ]
+      },
+      "fieldChecked": {
+        "type": "boolean",
+        "enum": [
+          true
+        ]
+      },
+      "dossierConsulted": {
+        "type": "boolean",
+        "enum": [
+          true
+        ]
+      },
+      "installationOperationId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "verdict": {
+        "type": "string",
+        "enum": [
+          "approve",
+          "correction_required"
+        ]
+      },
+      "reason": {
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 2000
+      },
+      "evidence": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/CabinetEvidence"
+        },
+        "minItems": 1,
+        "maxItems": 100
+      },
+      "evidenceConfirmed": {
+        "type": "boolean",
+        "enum": [
+          true
+        ]
+      },
+      "resolvesReview": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "operationId",
+          "reason"
+        ],
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 2000
+          }
+        }
+      }
+    }
+  },
+  "CabinetSnapshot": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "cabinetId",
+      "uid",
+      "model",
+      "automated",
+      "catalogVersion",
+      "closurePolicyVersion",
+      "partDefinitions",
+      "version",
+      "status",
+      "registrationEvidence",
+      "parts",
+      "partsValidated",
+      "installation",
+      "installationOperationId",
+      "installationValid",
+      "approval",
+      "reviewCorrection",
+      "pending",
+      "knownFailures"
+    ],
+    "properties": {
+      "cabinetId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "uid": {
+        "type": "string",
+        "pattern": "^AQ[0-9]{8}$"
+      },
+      "model": {
+        "type": "string",
+        "enum": [
+          "A1",
+          "A2",
+          "A3",
+          "A4"
+        ]
+      },
+      "automated": {
+        "type": "boolean"
+      },
+      "catalogVersion": {
+        "type": "string"
+      },
+      "closurePolicyVersion": {
+        "type": "string"
+      },
+      "partDefinitions": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/CabinetPhysicalPart"
+        },
+        "minItems": 0,
+        "maxItems": 60
+      },
+      "version": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "status": {
+        "type": "string",
+        "enum": [
+          "draft",
+          "registered",
+          "incomplete",
+          "validated",
+          "installed",
+          "deliverable"
+        ]
+      },
+      "registrationEvidence": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/CabinetEvidence"
+        },
+        "minItems": 0,
+        "maxItems": 100
+      },
+      "parts": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/CabinetPartCapture"
+        },
+        "minItems": 0,
+        "maxItems": 60
+      },
+      "partsValidated": {
+        "type": "boolean"
+      },
+      "installation": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CabinetInstallation"
+          }
+        ],
+        "nullable": true
+      },
+      "installationOperationId": {
+        "type": "string",
+        "format": "uuid",
+        "nullable": true
+      },
+      "installationValid": {
+        "type": "boolean"
+      },
+      "approval": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "operationId",
+          "version"
+        ],
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "nullable": true
+      },
+      "reviewCorrection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "operationId",
+          "reason"
+        ],
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 2000
+          }
+        },
+        "nullable": true
+      },
+      "pending": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/CabinetPending"
+        },
+        "minItems": 0,
+        "maxItems": 200
+      },
+      "knownFailures": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "minItems": 0,
+        "maxItems": 84
+      }
+    }
+  },
+  "CabinetPhysicalPart": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "code",
+      "key",
+      "description",
+      "position",
+      "serial",
+      "automatedOnly",
+      "source"
+    ],
+    "properties": {
+      "code": {
+        "type": "string"
+      },
+      "key": {
+        "type": "string",
+        "nullable": true
+      },
+      "description": {
+        "type": "string"
+      },
+      "position": {
+        "type": "string"
+      },
+      "serial": {
+        "type": "string",
+        "enum": [
+          "required",
+          "optional",
+          "none"
+        ]
+      },
+      "automatedOnly": {
+        "type": "boolean"
+      },
+      "source": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "file",
+          "sheet",
+          "row",
+          "quantity",
+          "version",
+          "key",
+          "description"
+        ],
+        "properties": {
+          "file": {
+            "type": "string"
+          },
+          "sheet": {
+            "type": "string",
+            "nullable": true
+          },
+          "row": {
+            "type": "integer",
+            "nullable": true
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "version": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "CabinetPending": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "code",
+      "subject",
+      "classification",
+      "reason"
+    ],
+    "properties": {
+      "code": {
+        "type": "string"
+      },
+      "subject": {
+        "type": "string"
+      },
+      "classification": {
+        "type": "string",
+        "enum": [
+          "blocking",
+          "minor",
+          "mandatory_test"
+        ]
+      },
+      "reason": {
+        "type": "string"
+      }
+    }
+  },
+  "CabinetAdminIntegrity": {
+    "type": "object",
+    "properties": {
+      "photoId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "status": {
+        "type": "string",
+        "enum": [
+          "confirmed",
+          "missing_original",
+          "missing_thumbnail",
+          "hash_mismatch",
+          "missing_mapping",
+          "mapping_conflict",
+          "deleted",
+          "not_verified",
+          "not_found"
+        ]
+      },
+      "checkedAt": {
+        "type": "string",
+        "format": "date-time",
+        "nullable": true
+      },
+      "originalPresent": {
+        "type": "boolean"
+      },
+      "thumbnailPresent": {
+        "type": "boolean"
+      },
+      "storageVerified": {
+        "type": "boolean"
+      },
+      "retryable": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "photoId",
+      "status",
+      "checkedAt",
+      "originalPresent",
+      "thumbnailPresent",
+      "storageVerified",
+      "retryable"
+    ]
+  },
+  "CabinetAdminPhoto": {
+    "type": "object",
+    "properties": {
+      "photoId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "context": {
+        "type": "string"
+      },
+      "capturedAt": {
+        "type": "string",
+        "format": "date-time",
+        "nullable": true
+      },
+      "receivedAt": {
+        "type": "string",
+        "format": "date-time",
+        "nullable": true
+      },
+      "actor": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "metadata": {
+        "type": "object",
+        "properties": {
+          "capturedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "number"
+          },
+          "longitude": {
+            "type": "number"
+          },
+          "accuracy": {
+            "type": "number"
+          },
+          "altitude": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "capturedAt",
+          "latitude",
+          "longitude",
+          "accuracy"
+        ]
+      },
+      "integrity": {
+        "$ref": "#/components/schemas/CabinetAdminIntegrity"
+      },
+      "relations": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "operationId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "photoId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "subject": {
+              "type": "string"
+            },
+            "confirmed": {
+              "type": "boolean"
+            },
+            "legible": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "operationId",
+            "photoId",
+            "subject",
+            "confirmed",
+            "legible"
+          ]
+        }
+      },
+      "thumbnailUrl": {
+        "type": "string"
+      },
+      "contentUrl": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "photoId",
+      "context",
+      "capturedAt",
+      "receivedAt",
+      "actor",
+      "metadata",
+      "integrity",
+      "relations",
+      "thumbnailUrl",
+      "contentUrl"
+    ]
+  },
+  "CabinetAdminSummary": {
+    "type": "object",
+    "properties": {
+      "total": {
+        "type": "integer"
+      },
+      "draft": {
+        "type": "integer"
+      },
+      "registered": {
+        "type": "integer"
+      },
+      "incomplete": {
+        "type": "integer"
+      },
+      "validated": {
+        "type": "integer"
+      },
+      "installed": {
+        "type": "integer"
+      },
+      "deliverable": {
+        "type": "integer"
+      },
+      "standard": {
+        "type": "integer"
+      },
+      "automated": {
+        "type": "integer"
+      },
+      "registeredMilestone": {
+        "type": "integer"
+      },
+      "installedMilestone": {
+        "type": "integer"
+      },
+      "pendingFinalReview": {
+        "type": "integer"
+      },
+      "correctionRequired": {
+        "type": "integer"
+      },
+      "testsPending": {
+        "type": "integer"
+      },
+      "invalidatedApprovals": {
+        "type": "integer"
+      },
+      "installedWithoutAccount": {
+        "type": "integer"
+      },
+      "photoCount": {
+        "type": "integer"
+      },
+      "relationConfirmedEvidenceCount": {
+        "type": "integer"
+      },
+      "storageConfirmedAtLastCheck": {
+        "type": "integer"
+      },
+      "problemsAtLastCheck": {
+        "type": "integer"
+      },
+      "integrityUnknownCount": {
+        "type": "integer"
+      },
+      "missingAtLastCheck": {
+        "type": "integer"
+      },
+      "oldestCheckAt": {
+        "type": "string",
+        "format": "date-time",
+        "nullable": true
+      },
+      "target": {
+        "type": "integer"
+      },
+      "targets": {
+        "type": "object",
+        "properties": {
+          "A1": {
+            "type": "integer"
+          },
+          "A2": {
+            "type": "integer"
+          },
+          "A3": {
+            "type": "integer"
+          },
+          "A4": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "A1",
+          "A2",
+          "A3",
+          "A4"
+        ]
+      },
+      "registeredPercent": {
+        "type": "number"
+      },
+      "installedPercent": {
+        "type": "number"
+      },
+      "deliverablePercent": {
+        "type": "number"
+      },
+      "integrityBasis": {
+        "type": "string"
+      },
+      "timeBasis": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "total",
+      "draft",
+      "registered",
+      "incomplete",
+      "validated",
+      "installed",
+      "deliverable",
+      "standard",
+      "automated",
+      "registeredMilestone",
+      "installedMilestone",
+      "pendingFinalReview",
+      "correctionRequired",
+      "testsPending",
+      "invalidatedApprovals",
+      "installedWithoutAccount",
+      "photoCount",
+      "relationConfirmedEvidenceCount",
+      "storageConfirmedAtLastCheck",
+      "problemsAtLastCheck",
+      "integrityUnknownCount",
+      "missingAtLastCheck",
+      "oldestCheckAt",
+      "target",
+      "targets",
+      "registeredPercent",
+      "installedPercent",
+      "deliverablePercent",
+      "integrityBasis",
+      "timeBasis"
+    ]
+  },
+  "CabinetAdminList": {
+    "type": "object",
+    "properties": {
+      "items": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/CabinetAdminRow"
+        }
+      },
+      "page": {
+        "type": "integer"
+      },
+      "pageSize": {
+        "type": "integer"
+      },
+      "total": {
+        "type": "integer"
+      },
+      "totalPages": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "items",
+      "page",
+      "pageSize",
+      "total",
+      "totalPages"
+    ]
+  },
+  "CabinetAdminMap": {
+    "type": "object",
+    "properties": {
+      "items": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/CabinetAdminRow"
+        }
+      },
+      "limit": {
+        "type": "integer"
+      },
+      "truncated": {
+        "type": "boolean"
+      },
+      "layer": {
+        "type": "string",
+        "enum": [
+          "construction_cabinets"
+        ]
+      }
+    },
+    "required": [
+      "items",
+      "limit",
+      "truncated",
+      "layer"
+    ]
+  },
+  "CabinetAdminMetrics": {
+    "type": "object",
+    "properties": {
+      "models": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "total": {
+              "type": "integer"
+            },
+            "draft": {
+              "type": "integer"
+            },
+            "registered": {
+              "type": "integer"
+            },
+            "incomplete": {
+              "type": "integer"
+            },
+            "validated": {
+              "type": "integer"
+            },
+            "installed": {
+              "type": "integer"
+            },
+            "deliverable": {
+              "type": "integer"
+            },
+            "standard": {
+              "type": "integer"
+            },
+            "automated": {
+              "type": "integer"
+            },
+            "registeredMilestone": {
+              "type": "integer"
+            },
+            "installedMilestone": {
+              "type": "integer"
+            },
+            "model": {
+              "type": "string"
+            },
+            "target": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "total",
+            "draft",
+            "registered",
+            "incomplete",
+            "validated",
+            "installed",
+            "deliverable",
+            "standard",
+            "automated",
+            "registeredMilestone",
+            "installedMilestone",
+            "model",
+            "target"
+          ]
+        }
+      },
+      "states": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string"
+            },
+            "total": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "status",
+            "total"
+          ]
+        }
+      },
+      "variants": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "automated": {
+              "type": "boolean"
+            },
+            "status": {
+              "type": "string"
+            },
+            "total": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "automated",
+            "status",
+            "total"
+          ]
+        }
+      },
+      "companies": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "total": {
+              "type": "integer"
+            },
+            "draft": {
+              "type": "integer"
+            },
+            "registered": {
+              "type": "integer"
+            },
+            "incomplete": {
+              "type": "integer"
+            },
+            "validated": {
+              "type": "integer"
+            },
+            "installed": {
+              "type": "integer"
+            },
+            "deliverable": {
+              "type": "integer"
+            },
+            "standard": {
+              "type": "integer"
+            },
+            "automated": {
+              "type": "integer"
+            },
+            "registeredMilestone": {
+              "type": "integer"
+            },
+            "installedMilestone": {
+              "type": "integer"
+            },
+            "crewId": {
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
+            "crewName": {
+              "type": "string",
+              "nullable": true
+            }
+          },
+          "required": [
+            "total",
+            "draft",
+            "registered",
+            "incomplete",
+            "validated",
+            "installed",
+            "deliverable",
+            "standard",
+            "automated",
+            "registeredMilestone",
+            "installedMilestone",
+            "crewId",
+            "crewName"
+          ]
+        }
+      },
+      "incomplete": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "model": {
+              "type": "string"
+            },
+            "automated": {
+              "type": "boolean"
+            },
+            "total": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "model",
+            "automated",
+            "total"
+          ]
+        }
+      },
+      "activity": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "date": {
+              "type": "string",
+              "format": "date"
+            },
+            "registered": {
+              "type": "integer"
+            },
+            "validated": {
+              "type": "integer"
+            },
+            "installations": {
+              "type": "integer"
+            },
+            "finalApprovals": {
+              "type": "integer"
+            },
+            "invalidations": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "date",
+            "registered",
+            "validated",
+            "installations",
+            "finalApprovals",
+            "invalidations"
+          ]
+        }
+      },
+      "cycle": {
+        "type": "object",
+        "properties": {
+          "registrationToValidationSeconds": {
+            "type": "number",
+            "nullable": true
+          },
+          "validationToInstallationSeconds": {
+            "type": "number",
+            "nullable": true
+          },
+          "installationToApprovalSeconds": {
+            "type": "number",
+            "nullable": true
+          },
+          "validationPairs": {
+            "type": "integer"
+          },
+          "installationPairs": {
+            "type": "integer"
+          },
+          "approvalPairs": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "registrationToValidationSeconds",
+          "validationToInstallationSeconds",
+          "installationToApprovalSeconds",
+          "validationPairs",
+          "installationPairs",
+          "approvalPairs"
+        ]
+      },
+      "timeBasis": {
+        "type": "string"
+      },
+      "activityCounts": {
+        "type": "string"
+      },
+      "companyBasis": {
+        "type": "string"
+      },
+      "cycleBasis": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "models",
+      "states",
+      "variants",
+      "companies",
+      "incomplete",
+      "activity",
+      "cycle",
+      "timeBasis",
+      "activityCounts",
+      "companyBasis",
+      "cycleBasis"
+    ]
+  },
+  "CabinetAdminDossier": {
+    "type": "object",
+    "properties": {
+      "identification": {
+        "type": "object",
+        "properties": {
+          "cabinetId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "uid": {
+            "type": "string"
+          },
+          "formattedUid": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "automated": {
+            "type": "boolean"
+          },
+          "displayModel": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "registered",
+              "incomplete",
+              "validated",
+              "installed",
+              "deliverable"
+            ]
+          },
+          "version": {
+            "type": "integer"
+          },
+          "catalogVersion": {
+            "type": "string"
+          },
+          "policyVersion": {
+            "type": "string"
+          },
+          "crew": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              },
+              "source": {
+                "type": "string",
+                "enum": [
+                  "linked_base"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "source"
+            ],
+            "nullable": true
+          },
+          "registeredBy": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ]
+          },
+          "registeredAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "validatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "installedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "deliverableAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": [
+          "cabinetId",
+          "uid",
+          "formattedUid",
+          "model",
+          "automated",
+          "displayModel",
+          "status",
+          "version",
+          "catalogVersion",
+          "policyVersion",
+          "crew",
+          "registeredBy",
+          "registeredAt",
+          "validatedAt",
+          "installedAt",
+          "deliverableAt"
+        ]
+      },
+      "base": {
+        "type": "object",
+        "properties": {
+          "surveyId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "displayIdentifier": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "accountNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "location": {
+            "type": "object",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CabinetGps"
+              }
+            ]
+          },
+          "installationAccountNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "accountDiscrepancy": {
+            "type": "boolean"
+          },
+          "distanceToInstallationMeters": {
+            "type": "number",
+            "nullable": true
+          },
+          "dossierUrl": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "surveyId",
+          "displayIdentifier",
+          "status",
+          "accountNumber",
+          "location",
+          "installationAccountNumber",
+          "accountDiscrepancy",
+          "distanceToInstallationMeters",
+          "dossierUrl"
+        ],
+        "nullable": true
+      },
+      "pieces": {
+        "type": "object",
+        "properties": {
+          "catalogVersion": {
+            "type": "string"
+          },
+          "validated": {
+            "type": "boolean"
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "position": {
+                  "type": "string"
+                },
+                "partCodes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "position",
+                "partCodes"
+              ]
+            }
+          },
+          "instances": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/CabinetPhysicalPart"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "capture": {
+                      "type": "object",
+                      "nullable": true,
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/CabinetPartCapture"
+                        }
+                      ]
+                    },
+                    "serialState": {
+                      "type": "string"
+                    },
+                    "lastCapture": {
+                      "type": "object",
+                      "properties": {
+                        "operationId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "actorId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "capturedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true
+                        },
+                        "receivedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true
+                        }
+                      },
+                      "required": [
+                        "operationId",
+                        "actorId",
+                        "capturedAt",
+                        "receivedAt"
+                      ],
+                      "nullable": true
+                    },
+                    "pending": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CabinetPending"
+                      }
+                    },
+                    "evidenceRequired": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "capture",
+                    "serialState",
+                    "lastCapture",
+                    "pending",
+                    "evidenceRequired"
+                  ]
+                }
+              ]
+            }
+          },
+          "attempts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CabinetAdminHistory"
+            }
+          }
+        },
+        "required": [
+          "catalogVersion",
+          "validated",
+          "groups",
+          "instances",
+          "attempts"
+        ]
+      },
+      "installation": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CabinetInstallation"
+              }
+            ]
+          },
+          "valid": {
+            "type": "boolean"
+          },
+          "closureOperationId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "policyVersion": {
+            "type": "string"
+          },
+          "checklist": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "group": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "kind": {
+                  "type": "string"
+                },
+                "automatedOnly": {
+                  "type": "boolean"
+                },
+                "applicability": {
+                  "type": "string",
+                  "enum": [
+                    "not_applicable_catalog",
+                    "recorded_exception",
+                    "applicable"
+                  ]
+                },
+                "answer": {
+                  "type": "object",
+                  "nullable": true,
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/CabinetAnswer"
+                    }
+                  ]
+                },
+                "evidence": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CabinetEvidence"
+                  }
+                },
+                "pending": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CabinetPending"
+                  }
+                },
+                "capturedBy": {
+                  "type": "object",
+                  "properties": {
+                    "actorId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "operationId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "capturedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": true
+                    },
+                    "receivedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "actorId",
+                    "operationId",
+                    "capturedAt",
+                    "receivedAt"
+                  ],
+                  "nullable": true
+                }
+              },
+              "required": [
+                "code",
+                "group",
+                "label",
+                "kind",
+                "automatedOnly",
+                "applicability",
+                "answer",
+                "evidence",
+                "pending",
+                "capturedBy"
+              ]
+            }
+          },
+          "captures": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CabinetAdminHistory"
+            }
+          }
+        },
+        "required": [
+          "data",
+          "valid",
+          "closureOperationId",
+          "policyVersion",
+          "checklist",
+          "captures"
+        ]
+      },
+      "finalReview": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "approved",
+              "correction_required",
+              "approval_invalidated",
+              "affected_data_pending",
+              "mandatory_tests_pending",
+              "pending_review",
+              "not_installed"
+            ]
+          },
+          "approval": {
+            "type": "object",
+            "properties": {
+              "operationId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "version": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "operationId",
+              "version"
+            ],
+            "nullable": true
+          },
+          "correction": {
+            "type": "object",
+            "properties": {
+              "operationId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "operationId",
+              "reason"
+            ],
+            "nullable": true
+          },
+          "pending": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CabinetPending"
+            }
+          },
+          "attempts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CabinetAdminHistory"
+            }
+          },
+          "invalidations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CabinetAdminHistory"
+            }
+          }
+        },
+        "required": [
+          "state",
+          "approval",
+          "correction",
+          "pending",
+          "attempts",
+          "invalidations"
+        ]
+      },
+      "catalog": {
+        "type": "object",
+        "description": "Frozen persisted catalog definition including policy.questions; never replaced by the current catalog."
+      },
+      "photos": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/CabinetAdminPhoto"
+        }
+      },
+      "history": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/CabinetAdminHistory"
+        }
+      },
+      "evidencePolicy": {
+        "type": "string"
+      },
+      "synchronization": {
+        "type": "object",
+        "properties": {
+          "serverVersion": {
+            "type": "integer"
+          },
+          "receivedOperations": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "serverVersion",
+          "receivedOperations"
+        ]
+      }
+    },
+    "required": [
+      "identification",
+      "base",
+      "pieces",
+      "installation",
+      "finalReview",
+      "catalog",
+      "photos",
+      "history",
+      "evidencePolicy",
+      "synchronization"
+    ]
+  }
+}
