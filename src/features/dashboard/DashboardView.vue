@@ -2,6 +2,9 @@
 import { nextTick, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import InspectionDashboardSection from '@/features/inspections/InspectionDashboardSection.vue'
+import { useAuthStore } from "@/stores/auth"
+import { canReadCabinets } from "@/features/cabinets/cabinets.format"
+import CabinetDashboardSection from "@/features/cabinets/CabinetDashboardSection.vue"
 import ConstructionDashboardSection from '@/features/construction/ConstructionDashboardSection.vue'
 import DiagnosticDashboardSection from '@/features/diagnostics/DiagnosticDashboardSection.vue'
 import type { SummaryQuery } from '@/features/diagnostics/diagnostics.types'
@@ -10,6 +13,7 @@ import '@/features/diagnostics/diagnostics.css'
 
 const diagnosticFilters: SummaryQuery = { simulation: 'exclude' }
 const route = useRoute()
+const auth = useAuthStore()
 const reviewsReady = ref(false)
 const constructionReady = ref(false)
 let focusedHash = ''
@@ -35,6 +39,7 @@ watch(() => [route.hash, reviewsReady.value, constructionReady.value], async () 
     <section id="estadisticas-levantamientos" class="statistics-section" tabindex="-1" aria-label="Estadísticas de levantamientos">
       <ConstructionDashboardSection @ready="constructionReady = true" />
     </section>
+    <CabinetDashboardSection v-if="canReadCabinets(auth.user?.role)" compact />
     <section class="diagnostics dashboard-diagnostics" aria-labelledby="dashboard-diagnostics-title">
       <div class="diag-head">
         <div>

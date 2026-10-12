@@ -2,7 +2,11 @@ import { api } from "@/api/client";
 import { date, label } from "@/features/diagnostics/diagnostics.format";
 import { apiParams } from "./map.filters";
 import type { Bounds, Domain, Filters, MapItem, MapPage } from "./map.types";
+import { cabinetsApi } from '@/features/cabinets/cabinets.api';
+import type { CabinetAdminRow } from '@/features/cabinets/cabinets.generated';
+import { displayModel, label as cabinetLabel } from '@/features/cabinets/cabinets.format';
 export const mapEndpoints: Record<Domain, string> = {
+  cabinets: "/admin/dashboard/construction/cabinets/map",
   hydrants: "/admin/dashboard/map/hydrants",
   construction: "/admin/dashboard/construction/map",
   diagnostics: "/admin/dashboard/functional-diagnostics/map",
@@ -24,10 +28,12 @@ const states: Record<string, string> = {
   validated: "Validada",
   draft: "Borrador",
 };
-export function mapStatus(v: unknown) {
+export function mapStatus(v: unknown, domain?: Domain) {
+  if (domain === 'cabinets') return cabinetLabel(typeof v === 'string' ? v : null);
   return states[String(v)] || label(v);
 }
 export function adaptMapItem(d: Domain, r: Row): MapItem | null {
+  if (d === 'cabinets') return adaptCabinetMapItem(r as unknown as CabinetAdminRow);
   if (r.latitude == null || r.longitude == null) return null;
   const latitude = Number(r.latitude),
     longitude = Number(r.longitude);
@@ -142,12 +148,27 @@ export function adaptMapItem(d: Domain, r: Row): MapItem | null {
       : {}),
   };
 }
+export function adaptCabinetMapItem(row: CabinetAdminRow): MapItem | null {
+  const gps = row.location;
+  if (!row.installationValid || !gps || !['installed', 'deliverable'].includes(row.status) ||
+      !Number.isFinite(gps.latitude) || !Number.isFinite(gps.longitude) || Math.abs(gps.latitude) > 90 || Math.abs(gps.longitude) > 180) return null;
+  return { key: `cabinets:${row.cabinetId}`, id: row.cabinetId, domain: 'cabinets',
+    title: row.formattedUid, status: mapStatus(row.status, 'cabinets'), statusCode: `cabinet_${row.status}`,
+    latitude: gps.latitude, longitude: gps.longitude, href: `/levantamientos/nuevos-hidrantes/${encodeURIComponent(row.cabinetId)}`,
+    simulation: false, details: [['UID', row.formattedUid], ['Modelo', displayModel(row)], ['Estado', cabinetLabel(row.status)],
+      ['Cuenta', text(row.installationAccountNumber)], ['Base', text(row.base?.displayIdentifier)],
+      ['Empresa', row.crew?.name || 'Sin empresa / Sin asignación'], ['Precisión GPS (m)', text(gps.accuracy)], ['Instalación', date(row.installedAt)]] };
+}
 export async function loadMapLayer(
   domain: Domain,
   filters: Filters,
   bbox?: Bounds,
   signal?: AbortSignal,
 ): Promise<MapPage> {
+  if (domain === 'cabinets') {
+    const body = await cabinetsApi.map(apiParams(domain, filters, bbox), signal);
+    return { ...body, items: body.items.map(adaptCabinetMapItem).filter((r): r is MapItem => r !== null) };
+  }
   const response = await api.get(mapEndpoints[domain], {
     params: apiParams(domain, filters, bbox),
     signal,

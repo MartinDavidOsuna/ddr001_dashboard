@@ -29,11 +29,12 @@ describe('Construction navigation', () => {
     expect(paths).toContain('/levantamientos/:surveyId')
   })
 
-  it('shows Levantamientos in the primary menu with the correct link', async () => {
+  it('shows Levantamientos as a group and preserves Bases for viewer', async () => {
     const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/:pathMatch(.*)*', component: Empty }] })
     await router.push('/dashboard')
     const wrapper = mount(AppLayout, { global: { plugins: [createPinia(), router], stubs: { RouterView: Empty } } })
-    const link = wrapper.findAll('a').find((item) => item.text().includes('Levantamientos'))
-    expect(link?.attributes('href')).toBe('/levantamientos')
+    await wrapper.get('button[aria-label="Levantamientos"]').trigger('click')
+    expect(wrapper.get('a[href="/levantamientos/bases"]').text()).toBe('Bases')
+    wrapper.unmount()
   })
 })

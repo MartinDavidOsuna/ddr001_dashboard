@@ -11,9 +11,11 @@ import {
 } from "./map.filters";
 import { adaptMapItem, loadMapLayer, mapEndpoints } from "./map.api.datasource";
 import { api } from "@/api/client";
+import cabinetFixture from "../../../tests/fixtures/cabinets.json";
 import { useMapLayers } from "./map.state";
 import MapView from "./MapView.vue";
 import type { Domain, Filters, MapItem } from "./map.types";
+vi.mock("@/stores/auth", () => ({ useAuthStore: () => ({ user: { role: "viewer" } }) }));
 vi.mock("@/api/client", () => ({ api: { get: vi.fn() } }));
 vi.mock("./MapCanvas.vue", () => ({
   default: defineComponent({
@@ -29,6 +31,7 @@ vi.mock("./MapCanvas.vue", () => ({
   }),
 }));
 const raw = {
+  cabinets: cabinetFixture.row,
   hydrants: {
     hydrantId: "h1",
     accountNumber: "RV-100",
@@ -95,7 +98,7 @@ describe("map contracts and semantic adaptation", () => {
     expect(readMapQuery({ view: "wrong", junk: "x" })).toEqual({
       view: "hydrants",
       filters: { d_simulation: "exclude" },
-      layers: ["hydrants", "construction", "diagnostics"],
+      layers: ["hydrants", "construction", "diagnostics", "cabinets"],
     });
     expect(
       readMapQuery({ view: "all", layers: "diagnostics", d_simulation: "only" })

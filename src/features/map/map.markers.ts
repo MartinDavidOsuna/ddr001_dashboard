@@ -6,6 +6,7 @@ const paths = {
   hydrants: "M12 3c-3 5-7 8-7 12a7 7 0 0 0 14 0c0-4-4-7-7-12Z",
   construction: "M3 18h18M5 18v-5a7 7 0 0 1 14 0v5M9 5v7M15 5v7",
   diagnostics: "M2 12h5l3-8 4 16 3-8h5",
+  cabinets: "M5 3h14v18H5zM9 7h6M9 12h6M12 16v2",
 };
 export function markerIcon(item: MapItem, selected = false) {
   return L.divIcon({

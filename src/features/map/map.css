@@ -208,6 +208,7 @@
 .map-symbol.diagnostics {
   color: #67429b;
 }
+.map-symbol.cabinets { color: #087f83; }
 .global-pin {
   border: 0 !important;
   background: transparent !important;
@@ -238,6 +239,7 @@
   color: #67429b;
   border-radius: 50% 50% 4px 4px;
 }
+.global-pin.cabinets > span { border-color: #087f83; color: #087f83; border-radius: 3px; }
 .global-pin.selected > span {
   outline: 4px solid #102c49;
   outline-offset: 3px;

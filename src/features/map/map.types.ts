@@ -1,4 +1,4 @@
-export const domains = ["hydrants", "construction", "diagnostics"] as const;
+export const domains = ["hydrants", "construction", "diagnostics", "cabinets"] as const;
 export type Domain = (typeof domains)[number];
 export type MapView = Domain | "reviews" | "all";
 export type Bounds = {
@@ -41,8 +41,8 @@ export const domainInfo = {
     icon: "droplet",
   },
   construction: {
-    name: "Levantamientos",
-    singular: "Levantamiento",
+    name: "Bases",
+    singular: "Base",
     symbol: "◆",
     icon: "hardhat",
   },
@@ -51,5 +51,11 @@ export const domainInfo = {
     singular: "Diagnóstico",
     symbol: "▲",
     icon: "activity",
+  },
+  cabinets: {
+    name: "Nuevos Hidrantes",
+    singular: "Nuevo hidrante",
+    symbol: "■",
+    icon: "droplet",
   },
 } as const;

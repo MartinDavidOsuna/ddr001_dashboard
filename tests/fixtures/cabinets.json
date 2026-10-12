@@ -1,0 +1,4183 @@
+{
+  "row": {
+    "cabinetId": "00000000-0000-4000-8000-000000000001",
+    "uid": "AQ26000017",
+    "formattedUid": "AQ26-00001-7",
+    "model": "A3",
+    "automated": true,
+    "displayModel": "A3-A",
+    "status": "installed",
+    "version": 5,
+    "base": {
+      "surveyId": "00000000-0000-4000-8000-000000000001",
+      "displayIdentifier": "BASE-TEST-001",
+      "status": "accepted",
+      "accountNumber": "00123",
+      "location": {
+        "latitude": 22,
+        "longitude": -102,
+        "accuracy": 5
+      }
+    },
+    "installationAccountNumber": "00456",
+    "accountDiscrepancy": true,
+    "crew": {
+      "id": "00000000-0000-4000-8000-000000000001",
+      "name": "Empresa TEST",
+      "source": "linked_base"
+    },
+    "registeredBy": {
+      "id": "00000000-0000-4000-8000-000000000001",
+      "name": "Residente TEST"
+    },
+    "createdAt": null,
+    "registeredAt": "2026-10-05T12:00:00Z",
+    "validatedAt": "2026-10-05T12:00:00Z",
+    "installedAt": "2026-10-05T12:00:00Z",
+    "deliverableAt": null,
+    "reviewedAt": null,
+    "location": {
+      "latitude": 22,
+      "longitude": -102,
+      "accuracy": 5
+    },
+    "installationValid": true,
+    "approvalValid": false,
+    "approvalInvalidated": false,
+    "reviewCorrection": false,
+    "finalReviewState": "pending_review",
+    "distanceToBaseMeters": null,
+    "mandatoryTests": 0,
+    "blockingCount": 0,
+    "photos": {
+      "total": 0,
+      "relationConfirmed": 0,
+      "storageConfirmedAtLastCheck": 0,
+      "problemsAtLastCheck": 0,
+      "unknown": 0,
+      "missingAtLastCheck": 0,
+      "oldestCheckAt": null
+    }
+  },
+  "summary": {
+    "total": 8,
+    "draft": 0,
+    "registered": 0,
+    "incomplete": 2,
+    "validated": 0,
+    "installed": 1,
+    "deliverable": 1,
+    "standard": 4,
+    "automated": 4,
+    "registeredMilestone": 7,
+    "installedMilestone": 2,
+    "pendingFinalReview": 0,
+    "correctionRequired": 0,
+    "testsPending": 0,
+    "invalidatedApprovals": 0,
+    "installedWithoutAccount": 0,
+    "photoCount": 0,
+    "relationConfirmedEvidenceCount": 0,
+    "storageConfirmedAtLastCheck": 0,
+    "problemsAtLastCheck": 0,
+    "integrityUnknownCount": 0,
+    "missingAtLastCheck": 0,
+    "oldestCheckAt": null,
+    "target": 460,
+    "targets": {
+      "A1": 41,
+      "A2": 105,
+      "A3": 290,
+      "A4": 24
+    },
+    "registeredPercent": 1.5,
+    "installedPercent": 0.4,
+    "deliverablePercent": 0.2,
+    "integrityBasis": "TEST",
+    "timeBasis": "TEST"
+  },
+  "metrics": {
+    "models": [
+      {
+        "total": 2,
+        "draft": 0,
+        "registered": 1,
+        "incomplete": 1,
+        "validated": 0,
+        "installed": 0,
+        "deliverable": 0,
+        "standard": 1,
+        "automated": 1,
+        "registeredMilestone": 2,
+        "installedMilestone": 0,
+        "model": "A1",
+        "target": 41
+      },
+      {
+        "total": 2,
+        "draft": 0,
+        "registered": 1,
+        "incomplete": 1,
+        "validated": 0,
+        "installed": 0,
+        "deliverable": 0,
+        "standard": 1,
+        "automated": 1,
+        "registeredMilestone": 2,
+        "installedMilestone": 0,
+        "model": "A2",
+        "target": 105
+      },
+      {
+        "total": 2,
+        "draft": 0,
+        "registered": 1,
+        "incomplete": 1,
+        "validated": 0,
+        "installed": 0,
+        "deliverable": 0,
+        "standard": 1,
+        "automated": 1,
+        "registeredMilestone": 2,
+        "installedMilestone": 0,
+        "model": "A3",
+        "target": 290
+      },
+      {
+        "total": 2,
+        "draft": 0,
+        "registered": 1,
+        "incomplete": 1,
+        "validated": 0,
+        "installed": 0,
+        "deliverable": 0,
+        "standard": 1,
+        "automated": 1,
+        "registeredMilestone": 2,
+        "installedMilestone": 0,
+        "model": "A4",
+        "target": 24
+      }
+    ],
+    "states": [
+      {
+        "status": "draft",
+        "total": 1
+      },
+      {
+        "status": "registered",
+        "total": 1
+      },
+      {
+        "status": "incomplete",
+        "total": 2
+      },
+      {
+        "status": "validated",
+        "total": 1
+      },
+      {
+        "status": "installed",
+        "total": 1
+      },
+      {
+        "status": "deliverable",
+        "total": 1
+      }
+    ],
+    "variants": [
+      {
+        "automated": false,
+        "status": "draft",
+        "total": 1
+      },
+      {
+        "automated": true,
+        "status": "draft",
+        "total": 1
+      },
+      {
+        "automated": false,
+        "status": "registered",
+        "total": 1
+      },
+      {
+        "automated": true,
+        "status": "registered",
+        "total": 1
+      },
+      {
+        "automated": false,
+        "status": "incomplete",
+        "total": 1
+      },
+      {
+        "automated": true,
+        "status": "incomplete",
+        "total": 1
+      },
+      {
+        "automated": false,
+        "status": "validated",
+        "total": 1
+      },
+      {
+        "automated": true,
+        "status": "validated",
+        "total": 1
+      },
+      {
+        "automated": false,
+        "status": "installed",
+        "total": 1
+      },
+      {
+        "automated": true,
+        "status": "installed",
+        "total": 1
+      },
+      {
+        "automated": false,
+        "status": "deliverable",
+        "total": 1
+      },
+      {
+        "automated": true,
+        "status": "deliverable",
+        "total": 1
+      }
+    ],
+    "companies": [
+      {
+        "total": 2,
+        "draft": 0,
+        "registered": 1,
+        "incomplete": 1,
+        "validated": 0,
+        "installed": 0,
+        "deliverable": 0,
+        "standard": 1,
+        "automated": 1,
+        "registeredMilestone": 2,
+        "installedMilestone": 0,
+        "model": "A1",
+        "target": 41,
+        "crewId": "00000000-0000-4000-8000-000000000001",
+        "crewName": "Empresa TEST"
+      },
+      {
+        "total": 2,
+        "draft": 0,
+        "registered": 1,
+        "incomplete": 1,
+        "validated": 0,
+        "installed": 0,
+        "deliverable": 0,
+        "standard": 1,
+        "automated": 1,
+        "registeredMilestone": 2,
+        "installedMilestone": 0,
+        "model": "A2",
+        "target": 105,
+        "crewId": null,
+        "crewName": null
+      }
+    ],
+    "incomplete": [
+      {
+        "model": "A3",
+        "automated": true,
+        "total": 2
+      }
+    ],
+    "activity": [
+      {
+        "date": "2026-10-05",
+        "registered": 2,
+        "validated": 1,
+        "installations": 1,
+        "finalApprovals": 1,
+        "invalidations": 1
+      }
+    ],
+    "cycle": {
+      "registrationToValidationSeconds": 3600,
+      "validationToInstallationSeconds": null,
+      "installationToApprovalSeconds": 90000,
+      "validationPairs": 1,
+      "installationPairs": 0,
+      "approvalPairs": 1
+    },
+    "timeBasis": "TEST",
+    "activityCounts": "TEST",
+    "companyBasis": "TEST",
+    "cycleBasis": "TEST"
+  },
+  "dossier": {
+    "identification": {
+      "cabinetId": "00000000-0000-4000-8000-000000000001",
+      "uid": "AQ26000017",
+      "formattedUid": "AQ26-00001-7",
+      "model": "A3",
+      "automated": true,
+      "displayModel": "A3-A",
+      "status": "installed",
+      "version": 5,
+      "base": {
+        "surveyId": "00000000-0000-4000-8000-000000000001",
+        "displayIdentifier": "BASE-TEST-001",
+        "status": "accepted",
+        "accountNumber": "00123",
+        "location": {
+          "latitude": 22,
+          "longitude": -102,
+          "accuracy": 5
+        }
+      },
+      "installationAccountNumber": "00456",
+      "accountDiscrepancy": true,
+      "crew": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "name": "Empresa TEST",
+        "source": "linked_base"
+      },
+      "registeredBy": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "name": "Residente TEST"
+      },
+      "createdAt": null,
+      "registeredAt": "2026-10-05T12:00:00Z",
+      "validatedAt": "2026-10-05T12:00:00Z",
+      "installedAt": "2026-10-05T12:00:00Z",
+      "deliverableAt": null,
+      "reviewedAt": null,
+      "location": {
+        "latitude": 22,
+        "longitude": -102,
+        "accuracy": 5
+      },
+      "installationValid": true,
+      "approvalValid": false,
+      "approvalInvalidated": false,
+      "reviewCorrection": false,
+      "finalReviewState": "pending_review",
+      "distanceToBaseMeters": null,
+      "mandatoryTests": 0,
+      "blockingCount": 0,
+      "photos": {
+        "total": 0,
+        "relationConfirmed": 0,
+        "storageConfirmedAtLastCheck": 0,
+        "problemsAtLastCheck": 0,
+        "unknown": 0,
+        "missingAtLastCheck": 0,
+        "oldestCheckAt": null
+      },
+      "catalogVersion": "ddr001-cabinets-20261005-v1",
+      "policyVersion": "ddr001-installation-v1"
+    },
+    "base": {
+      "surveyId": "00000000-0000-4000-8000-000000000001",
+      "displayIdentifier": "BASE-TEST-001",
+      "status": "accepted",
+      "accountNumber": "00123",
+      "location": {
+        "latitude": 22,
+        "longitude": -102,
+        "accuracy": 5
+      },
+      "installationAccountNumber": "00456",
+      "accountDiscrepancy": true,
+      "distanceToInstallationMeters": 42.5,
+      "dossierUrl": "/api/v1/admin/dashboard/construction/surveys/00000000-0000-4000-8000-000000000001"
+    },
+    "pieces": {
+      "catalogVersion": "TEST",
+      "validated": false,
+      "groups": [
+        {
+          "position": "principal.1",
+          "partCodes": [
+            "A3.r1.u1",
+            "A3.r2.u1",
+            "A3.r3.u1",
+            "A3.r4.u1",
+            "A3.r5.u1",
+            "A3.r6.u1"
+          ]
+        }
+      ],
+      "instances": [
+        {
+          "code": "A3.r1.u1",
+          "key": null,
+          "description": "Medidor electromagnético",
+          "position": "principal.1",
+          "serial": "required",
+          "automatedOnly": false,
+          "source": {
+            "file": "TEST",
+            "sheet": null,
+            "row": null,
+            "quantity": 1,
+            "version": "TEST",
+            "key": null,
+            "description": "TEST"
+          },
+          "capture": {
+            "code": "A3.r1.u1",
+            "present": true,
+            "serial": "000ABC007",
+            "evidence": [
+              {
+                "photoId": "00000000-0000-4000-8000-000000000001",
+                "confirmed": true
+              }
+            ],
+            "observations": "Captura TEST"
+          },
+          "serialState": "captured",
+          "lastCapture": {
+            "operationId": "00000000-0000-4000-8000-000000000001",
+            "actorId": "00000000-0000-4000-8000-000000000001",
+            "capturedAt": "2026-10-05T12:00:00Z",
+            "receivedAt": "2026-10-05T12:00:00Z"
+          },
+          "pending": [],
+          "evidenceRequired": false
+        },
+        {
+          "code": "A3.r2.u1",
+          "key": null,
+          "description": "Pieza TEST 2",
+          "position": "principal.1",
+          "serial": "required",
+          "automatedOnly": false,
+          "source": {
+            "file": "TEST",
+            "sheet": null,
+            "row": null,
+            "quantity": 1,
+            "version": "TEST",
+            "key": null,
+            "description": "TEST"
+          },
+          "capture": {
+            "code": "A3.r2.u1",
+            "present": true,
+            "serial": null,
+            "evidence": [
+              {
+                "photoId": "00000000-0000-4000-8000-000000000001",
+                "confirmed": true
+              }
+            ],
+            "observations": "Captura TEST"
+          },
+          "serialState": "pending",
+          "lastCapture": null,
+          "pending": [],
+          "evidenceRequired": false
+        },
+        {
+          "code": "A3.r3.u1",
+          "key": null,
+          "description": "Pieza TEST 3",
+          "position": "principal.1",
+          "serial": "required",
+          "automatedOnly": false,
+          "source": {
+            "file": "TEST",
+            "sheet": null,
+            "row": null,
+            "quantity": 1,
+            "version": "TEST",
+            "key": null,
+            "description": "TEST"
+          },
+          "capture": {
+            "code": "A3.r3.u1",
+            "present": true,
+            "serial": null,
+            "evidence": [
+              {
+                "photoId": "00000000-0000-4000-8000-000000000001",
+                "confirmed": true
+              }
+            ],
+            "observations": "Captura TEST"
+          },
+          "serialState": "illegible",
+          "lastCapture": null,
+          "pending": [],
+          "evidenceRequired": false
+        },
+        {
+          "code": "A3.r4.u1",
+          "key": null,
+          "description": "Pieza TEST 4",
+          "position": "principal.1",
+          "serial": "required",
+          "automatedOnly": false,
+          "source": {
+            "file": "TEST",
+            "sheet": null,
+            "row": null,
+            "quantity": 1,
+            "version": "TEST",
+            "key": null,
+            "description": "TEST"
+          },
+          "capture": {
+            "code": "A3.r4.u1",
+            "present": true,
+            "serial": null,
+            "evidence": [
+              {
+                "photoId": "00000000-0000-4000-8000-000000000001",
+                "confirmed": true
+              }
+            ],
+            "observations": "Captura TEST"
+          },
+          "serialState": "unavailable",
+          "lastCapture": null,
+          "pending": [],
+          "evidenceRequired": false
+        },
+        {
+          "code": "A3.r5.u1",
+          "key": null,
+          "description": "Pieza TEST 5",
+          "position": "principal.1",
+          "serial": "optional",
+          "automatedOnly": false,
+          "source": {
+            "file": "TEST",
+            "sheet": null,
+            "row": null,
+            "quantity": 1,
+            "version": "TEST",
+            "key": null,
+            "description": "TEST"
+          },
+          "capture": null,
+          "serialState": "optional_not_captured",
+          "lastCapture": null,
+          "pending": [],
+          "evidenceRequired": false
+        },
+        {
+          "code": "A3.r6.u1",
+          "key": null,
+          "description": "Pieza TEST 6",
+          "position": "principal.1",
+          "serial": "none",
+          "automatedOnly": false,
+          "source": {
+            "file": "TEST",
+            "sheet": null,
+            "row": null,
+            "quantity": 1,
+            "version": "TEST",
+            "key": null,
+            "description": "TEST"
+          },
+          "capture": {
+            "code": "A3.r6.u1",
+            "present": true,
+            "serial": null,
+            "evidence": [
+              {
+                "photoId": "00000000-0000-4000-8000-000000000001",
+                "confirmed": true
+              }
+            ],
+            "observations": "Captura TEST"
+          },
+          "serialState": "not_applicable",
+          "lastCapture": null,
+          "pending": [],
+          "evidenceRequired": false
+        }
+      ],
+      "attempts": [
+        {
+          "operationId": "00000000-0000-4000-8000-000000000001",
+          "type": "parts_validate",
+          "actor": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "name": "Residente TEST",
+            "type": "field_user"
+          },
+          "capturedAt": "2026-10-05T12:00:00Z",
+          "receivedAt": "2026-10-05T12:00:00Z",
+          "previousVersion": 1,
+          "resultVersion": 2,
+          "status": "incomplete",
+          "approvalInvalidated": false,
+          "command": {
+            "operationId": "00000000-0000-4000-8000-000000000001",
+            "expectedVersion": 1,
+            "capturedAt": "2026-10-05T12:00:00Z",
+            "type": "parts_validate"
+          },
+          "cabinet": {
+            "cabinetId": "00000000-0000-4000-8000-000000000001",
+            "uid": "AQ26000017",
+            "model": "A3",
+            "automated": true,
+            "catalogVersion": "ddr001-cabinets-20261005-v1",
+            "closurePolicyVersion": "ddr001-installation-v1",
+            "partDefinitions": [
+              {
+                "code": "A3.r1.u1",
+                "key": null,
+                "description": "Medidor electromagnético",
+                "position": "principal.1",
+                "serial": "required",
+                "automatedOnly": false,
+                "source": {
+                  "file": "TEST",
+                  "sheet": null,
+                  "row": null,
+                  "quantity": 1,
+                  "version": "TEST",
+                  "key": null,
+                  "description": "TEST"
+                },
+                "capture": {
+                  "code": "A3.r1.u1",
+                  "present": true,
+                  "serial": "000ABC007",
+                  "evidence": [
+                    {
+                      "photoId": "00000000-0000-4000-8000-000000000001",
+                      "confirmed": true
+                    }
+                  ],
+                  "observations": "Captura TEST"
+                },
+                "serialState": "captured",
+                "lastCapture": {
+                  "operationId": "00000000-0000-4000-8000-000000000001",
+                  "actorId": "00000000-0000-4000-8000-000000000001",
+                  "capturedAt": "2026-10-05T12:00:00Z",
+                  "receivedAt": "2026-10-05T12:00:00Z"
+                },
+                "pending": [],
+                "evidenceRequired": false
+              },
+              {
+                "code": "A3.r2.u1",
+                "key": null,
+                "description": "Pieza TEST 2",
+                "position": "principal.1",
+                "serial": "required",
+                "automatedOnly": false,
+                "source": {
+                  "file": "TEST",
+                  "sheet": null,
+                  "row": null,
+                  "quantity": 1,
+                  "version": "TEST",
+                  "key": null,
+                  "description": "TEST"
+                },
+                "capture": {
+                  "code": "A3.r2.u1",
+                  "present": true,
+                  "serial": null,
+                  "evidence": [
+                    {
+                      "photoId": "00000000-0000-4000-8000-000000000001",
+                      "confirmed": true
+                    }
+                  ],
+                  "observations": "Captura TEST"
+                },
+                "serialState": "pending",
+                "lastCapture": null,
+                "pending": [],
+                "evidenceRequired": false
+              },
+              {
+                "code": "A3.r3.u1",
+                "key": null,
+                "description": "Pieza TEST 3",
+                "position": "principal.1",
+                "serial": "required",
+                "automatedOnly": false,
+                "source": {
+                  "file": "TEST",
+                  "sheet": null,
+                  "row": null,
+                  "quantity": 1,
+                  "version": "TEST",
+                  "key": null,
+                  "description": "TEST"
+                },
+                "capture": {
+                  "code": "A3.r3.u1",
+                  "present": true,
+                  "serial": null,
+                  "evidence": [
+                    {
+                      "photoId": "00000000-0000-4000-8000-000000000001",
+                      "confirmed": true
+                    }
+                  ],
+                  "observations": "Captura TEST"
+                },
+                "serialState": "illegible",
+                "lastCapture": null,
+                "pending": [],
+                "evidenceRequired": false
+              },
+              {
+                "code": "A3.r4.u1",
+                "key": null,
+                "description": "Pieza TEST 4",
+                "position": "principal.1",
+                "serial": "required",
+                "automatedOnly": false,
+                "source": {
+                  "file": "TEST",
+                  "sheet": null,
+                  "row": null,
+                  "quantity": 1,
+                  "version": "TEST",
+                  "key": null,
+                  "description": "TEST"
+                },
+                "capture": {
+                  "code": "A3.r4.u1",
+                  "present": true,
+                  "serial": null,
+                  "evidence": [
+                    {
+                      "photoId": "00000000-0000-4000-8000-000000000001",
+                      "confirmed": true
+                    }
+                  ],
+                  "observations": "Captura TEST"
+                },
+                "serialState": "unavailable",
+                "lastCapture": null,
+                "pending": [],
+                "evidenceRequired": false
+              },
+              {
+                "code": "A3.r5.u1",
+                "key": null,
+                "description": "Pieza TEST 5",
+                "position": "principal.1",
+                "serial": "optional",
+                "automatedOnly": false,
+                "source": {
+                  "file": "TEST",
+                  "sheet": null,
+                  "row": null,
+                  "quantity": 1,
+                  "version": "TEST",
+                  "key": null,
+                  "description": "TEST"
+                },
+                "capture": null,
+                "serialState": "optional_not_captured",
+                "lastCapture": null,
+                "pending": [],
+                "evidenceRequired": false
+              },
+              {
+                "code": "A3.r6.u1",
+                "key": null,
+                "description": "Pieza TEST 6",
+                "position": "principal.1",
+                "serial": "none",
+                "automatedOnly": false,
+                "source": {
+                  "file": "TEST",
+                  "sheet": null,
+                  "row": null,
+                  "quantity": 1,
+                  "version": "TEST",
+                  "key": null,
+                  "description": "TEST"
+                },
+                "capture": {
+                  "code": "A3.r6.u1",
+                  "present": true,
+                  "serial": null,
+                  "evidence": [
+                    {
+                      "photoId": "00000000-0000-4000-8000-000000000001",
+                      "confirmed": true
+                    }
+                  ],
+                  "observations": "Captura TEST"
+                },
+                "serialState": "not_applicable",
+                "lastCapture": null,
+                "pending": [],
+                "evidenceRequired": false
+              }
+            ],
+            "version": 2,
+            "status": "incomplete",
+            "registrationEvidence": [],
+            "parts": [
+              {
+                "code": "A3.r1.u1",
+                "present": true,
+                "serial": "000ABC007",
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              {
+                "code": "A3.r2.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              {
+                "code": "A3.r3.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              {
+                "code": "A3.r4.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              {
+                "code": "A3.r6.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              }
+            ],
+            "partsValidated": false,
+            "installation": {
+              "baseId": "00000000-0000-4000-8000-000000000001",
+              "accountNumber": "00456",
+              "accountResolution": {
+                "decision": "use_cabinet",
+                "reason": "Resolución TEST preservada"
+              },
+              "gps": {
+                "latitude": 22,
+                "longitude": -102,
+                "accuracy": 5
+              },
+              "answers": [
+                {
+                  "code": "CI001",
+                  "answer": "yes",
+                  "reason": "Razón TEST",
+                  "evidence": []
+                },
+                {
+                  "code": "CI002",
+                  "answer": "no",
+                  "reason": "Razón TEST",
+                  "evidence": []
+                },
+                {
+                  "code": "CI003",
+                  "answer": "not_checked",
+                  "reason": "Razón TEST",
+                  "evidence": []
+                },
+                {
+                  "code": "CI004",
+                  "answer": "not_applicable",
+                  "reason": "Razón TEST",
+                  "evidence": []
+                }
+              ],
+              "evidence": {},
+              "observations": "Instalación guardada TEST"
+            },
+            "installationOperationId": null,
+            "installationValid": true,
+            "approval": null,
+            "reviewCorrection": null,
+            "pending": [
+              {
+                "code": "TEST_PENDING",
+                "subject": "CI003",
+                "classification": "mandatory_test",
+                "reason": "Sin presión"
+              }
+            ],
+            "knownFailures": [],
+            "formattedUid": "AQ26-00001-7",
+            "displayModel": "A3-A",
+            "base": {
+              "surveyId": "00000000-0000-4000-8000-000000000001",
+              "displayIdentifier": "BASE-TEST-001",
+              "status": "accepted",
+              "accountNumber": "00123",
+              "location": {
+                "latitude": 22,
+                "longitude": -102,
+                "accuracy": 5
+              }
+            },
+            "installationAccountNumber": "00456",
+            "accountDiscrepancy": true,
+            "crew": {
+              "id": "00000000-0000-4000-8000-000000000001",
+              "name": "Empresa TEST",
+              "source": "linked_base"
+            },
+            "registeredBy": {
+              "id": "00000000-0000-4000-8000-000000000001",
+              "name": "Residente TEST"
+            },
+            "createdAt": null,
+            "registeredAt": "2026-10-05T12:00:00Z",
+            "validatedAt": "2026-10-05T12:00:00Z",
+            "installedAt": "2026-10-05T12:00:00Z",
+            "deliverableAt": null,
+            "reviewedAt": null,
+            "location": {
+              "latitude": 22,
+              "longitude": -102,
+              "accuracy": 5
+            },
+            "approvalValid": false,
+            "approvalInvalidated": false,
+            "finalReviewState": "pending_review",
+            "distanceToBaseMeters": null,
+            "mandatoryTests": 0,
+            "blockingCount": 0,
+            "photos": {
+              "total": 0,
+              "relationConfirmed": 0,
+              "storageConfirmedAtLastCheck": 0,
+              "problemsAtLastCheck": 0,
+              "unknown": 0,
+              "missingAtLastCheck": 0,
+              "oldestCheckAt": null
+            }
+          }
+        },
+        {
+          "operationId": "00000000-0000-4000-8000-000000000002",
+          "type": "parts_validate",
+          "actor": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "name": "Residente TEST",
+            "type": "field_user"
+          },
+          "capturedAt": "2026-10-05T12:00:00Z",
+          "receivedAt": "2026-10-05T12:00:00Z",
+          "previousVersion": 1,
+          "resultVersion": 3,
+          "status": "validated",
+          "approvalInvalidated": false,
+          "command": {
+            "operationId": "00000000-0000-4000-8000-000000000001",
+            "expectedVersion": 1,
+            "capturedAt": "2026-10-05T12:00:00Z",
+            "type": "parts_validate"
+          },
+          "cabinet": {
+            "cabinetId": "00000000-0000-4000-8000-000000000001",
+            "uid": "AQ26000017",
+            "model": "A3",
+            "automated": true,
+            "catalogVersion": "ddr001-cabinets-20261005-v1",
+            "closurePolicyVersion": "ddr001-installation-v1",
+            "partDefinitions": [
+              {
+                "code": "A3.r1.u1",
+                "key": null,
+                "description": "Medidor electromagnético",
+                "position": "principal.1",
+                "serial": "required",
+                "automatedOnly": false,
+                "source": {
+                  "file": "TEST",
+                  "sheet": null,
+                  "row": null,
+                  "quantity": 1,
+                  "version": "TEST",
+                  "key": null,
+                  "description": "TEST"
+                },
+                "capture": {
+                  "code": "A3.r1.u1",
+                  "present": true,
+                  "serial": "000ABC007",
+                  "evidence": [
+                    {
+                      "photoId": "00000000-0000-4000-8000-000000000001",
+                      "confirmed": true
+                    }
+                  ],
+                  "observations": "Captura TEST"
+                },
+                "serialState": "captured",
+                "lastCapture": {
+                  "operationId": "00000000-0000-4000-8000-000000000001",
+                  "actorId": "00000000-0000-4000-8000-000000000001",
+                  "capturedAt": "2026-10-05T12:00:00Z",
+                  "receivedAt": "2026-10-05T12:00:00Z"
+                },
+                "pending": [],
+                "evidenceRequired": false
+              },
+              {
+                "code": "A3.r2.u1",
+                "key": null,
+                "description": "Pieza TEST 2",
+                "position": "principal.1",
+                "serial": "required",
+                "automatedOnly": false,
+                "source": {
+                  "file": "TEST",
+                  "sheet": null,
+                  "row": null,
+                  "quantity": 1,
+                  "version": "TEST",
+                  "key": null,
+                  "description": "TEST"
+                },
+                "capture": {
+                  "code": "A3.r2.u1",
+                  "present": true,
+                  "serial": null,
+                  "evidence": [
+                    {
+                      "photoId": "00000000-0000-4000-8000-000000000001",
+                      "confirmed": true
+                    }
+                  ],
+                  "observations": "Captura TEST"
+                },
+                "serialState": "pending",
+                "lastCapture": null,
+                "pending": [],
+                "evidenceRequired": false
+              },
+              {
+                "code": "A3.r3.u1",
+                "key": null,
+                "description": "Pieza TEST 3",
+                "position": "principal.1",
+                "serial": "required",
+                "automatedOnly": false,
+                "source": {
+                  "file": "TEST",
+                  "sheet": null,
+                  "row": null,
+                  "quantity": 1,
+                  "version": "TEST",
+                  "key": null,
+                  "description": "TEST"
+                },
+                "capture": {
+                  "code": "A3.r3.u1",
+                  "present": true,
+                  "serial": null,
+                  "evidence": [
+                    {
+                      "photoId": "00000000-0000-4000-8000-000000000001",
+                      "confirmed": true
+                    }
+                  ],
+                  "observations": "Captura TEST"
+                },
+                "serialState": "illegible",
+                "lastCapture": null,
+                "pending": [],
+                "evidenceRequired": false
+              },
+              {
+                "code": "A3.r4.u1",
+                "key": null,
+                "description": "Pieza TEST 4",
+                "position": "principal.1",
+                "serial": "required",
+                "automatedOnly": false,
+                "source": {
+                  "file": "TEST",
+                  "sheet": null,
+                  "row": null,
+                  "quantity": 1,
+                  "version": "TEST",
+                  "key": null,
+                  "description": "TEST"
+                },
+                "capture": {
+                  "code": "A3.r4.u1",
+                  "present": true,
+                  "serial": null,
+                  "evidence": [
+                    {
+                      "photoId": "00000000-0000-4000-8000-000000000001",
+                      "confirmed": true
+                    }
+                  ],
+                  "observations": "Captura TEST"
+                },
+                "serialState": "unavailable",
+                "lastCapture": null,
+                "pending": [],
+                "evidenceRequired": false
+              },
+              {
+                "code": "A3.r5.u1",
+                "key": null,
+                "description": "Pieza TEST 5",
+                "position": "principal.1",
+                "serial": "optional",
+                "automatedOnly": false,
+                "source": {
+                  "file": "TEST",
+                  "sheet": null,
+                  "row": null,
+                  "quantity": 1,
+                  "version": "TEST",
+                  "key": null,
+                  "description": "TEST"
+                },
+                "capture": null,
+                "serialState": "optional_not_captured",
+                "lastCapture": null,
+                "pending": [],
+                "evidenceRequired": false
+              },
+              {
+                "code": "A3.r6.u1",
+                "key": null,
+                "description": "Pieza TEST 6",
+                "position": "principal.1",
+                "serial": "none",
+                "automatedOnly": false,
+                "source": {
+                  "file": "TEST",
+                  "sheet": null,
+                  "row": null,
+                  "quantity": 1,
+                  "version": "TEST",
+                  "key": null,
+                  "description": "TEST"
+                },
+                "capture": {
+                  "code": "A3.r6.u1",
+                  "present": true,
+                  "serial": null,
+                  "evidence": [
+                    {
+                      "photoId": "00000000-0000-4000-8000-000000000001",
+                      "confirmed": true
+                    }
+                  ],
+                  "observations": "Captura TEST"
+                },
+                "serialState": "not_applicable",
+                "lastCapture": null,
+                "pending": [],
+                "evidenceRequired": false
+              }
+            ],
+            "version": 3,
+            "status": "validated",
+            "registrationEvidence": [],
+            "parts": [
+              {
+                "code": "A3.r1.u1",
+                "present": true,
+                "serial": "000ABC007",
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              {
+                "code": "A3.r2.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              {
+                "code": "A3.r3.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              {
+                "code": "A3.r4.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              {
+                "code": "A3.r6.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              }
+            ],
+            "partsValidated": false,
+            "installation": {
+              "baseId": "00000000-0000-4000-8000-000000000001",
+              "accountNumber": "00456",
+              "accountResolution": {
+                "decision": "use_cabinet",
+                "reason": "Resolución TEST preservada"
+              },
+              "gps": {
+                "latitude": 22,
+                "longitude": -102,
+                "accuracy": 5
+              },
+              "answers": [
+                {
+                  "code": "CI001",
+                  "answer": "yes",
+                  "reason": "Razón TEST",
+                  "evidence": []
+                },
+                {
+                  "code": "CI002",
+                  "answer": "no",
+                  "reason": "Razón TEST",
+                  "evidence": []
+                },
+                {
+                  "code": "CI003",
+                  "answer": "not_checked",
+                  "reason": "Razón TEST",
+                  "evidence": []
+                },
+                {
+                  "code": "CI004",
+                  "answer": "not_applicable",
+                  "reason": "Razón TEST",
+                  "evidence": []
+                }
+              ],
+              "evidence": {},
+              "observations": "Instalación guardada TEST"
+            },
+            "installationOperationId": null,
+            "installationValid": true,
+            "approval": null,
+            "reviewCorrection": null,
+            "pending": [
+              {
+                "code": "TEST_PENDING",
+                "subject": "CI003",
+                "classification": "mandatory_test",
+                "reason": "Sin presión"
+              }
+            ],
+            "knownFailures": [],
+            "formattedUid": "AQ26-00001-7",
+            "displayModel": "A3-A",
+            "base": {
+              "surveyId": "00000000-0000-4000-8000-000000000001",
+              "displayIdentifier": "BASE-TEST-001",
+              "status": "accepted",
+              "accountNumber": "00123",
+              "location": {
+                "latitude": 22,
+                "longitude": -102,
+                "accuracy": 5
+              }
+            },
+            "installationAccountNumber": "00456",
+            "accountDiscrepancy": true,
+            "crew": {
+              "id": "00000000-0000-4000-8000-000000000001",
+              "name": "Empresa TEST",
+              "source": "linked_base"
+            },
+            "registeredBy": {
+              "id": "00000000-0000-4000-8000-000000000001",
+              "name": "Residente TEST"
+            },
+            "createdAt": null,
+            "registeredAt": "2026-10-05T12:00:00Z",
+            "validatedAt": "2026-10-05T12:00:00Z",
+            "installedAt": "2026-10-05T12:00:00Z",
+            "deliverableAt": null,
+            "reviewedAt": null,
+            "location": {
+              "latitude": 22,
+              "longitude": -102,
+              "accuracy": 5
+            },
+            "approvalValid": false,
+            "approvalInvalidated": false,
+            "finalReviewState": "pending_review",
+            "distanceToBaseMeters": null,
+            "mandatoryTests": 0,
+            "blockingCount": 0,
+            "photos": {
+              "total": 0,
+              "relationConfirmed": 0,
+              "storageConfirmedAtLastCheck": 0,
+              "problemsAtLastCheck": 0,
+              "unknown": 0,
+              "missingAtLastCheck": 0,
+              "oldestCheckAt": null
+            }
+          }
+        }
+      ]
+    },
+    "installation": {
+      "data": {
+        "baseId": "00000000-0000-4000-8000-000000000001",
+        "accountNumber": "00456",
+        "accountResolution": {
+          "decision": "use_cabinet",
+          "reason": "Resolución TEST preservada"
+        },
+        "gps": {
+          "latitude": 22,
+          "longitude": -102,
+          "accuracy": 5
+        },
+        "answers": [
+          {
+            "code": "CI001",
+            "answer": "yes",
+            "reason": "Razón TEST",
+            "evidence": []
+          },
+          {
+            "code": "CI002",
+            "answer": "no",
+            "reason": "Razón TEST",
+            "evidence": []
+          },
+          {
+            "code": "CI003",
+            "answer": "not_checked",
+            "reason": "Razón TEST",
+            "evidence": []
+          },
+          {
+            "code": "CI004",
+            "answer": "not_applicable",
+            "reason": "Razón TEST",
+            "evidence": []
+          }
+        ],
+        "evidence": {},
+        "observations": "Instalación guardada TEST"
+      },
+      "valid": true,
+      "closureOperationId": "00000000-0000-4000-8000-000000000001",
+      "policyVersion": "ddr001-installation-v1",
+      "checklist": [
+        {
+          "code": "CI001",
+          "group": "anchoring",
+          "label": "Pregunta histórica TEST 1",
+          "kind": "check",
+          "automatedOnly": false,
+          "applicability": "applicable",
+          "answer": {
+            "code": "CI001",
+            "answer": "yes",
+            "reason": "Razón TEST",
+            "evidence": []
+          },
+          "evidence": [],
+          "pending": [],
+          "capturedBy": null
+        },
+        {
+          "code": "CI002",
+          "group": "anchoring",
+          "label": "Pregunta histórica TEST 2",
+          "kind": "check",
+          "automatedOnly": false,
+          "applicability": "applicable",
+          "answer": {
+            "code": "CI002",
+            "answer": "no",
+            "reason": "Razón TEST",
+            "evidence": []
+          },
+          "evidence": [],
+          "pending": [],
+          "capturedBy": null
+        },
+        {
+          "code": "CI003",
+          "group": "function",
+          "label": "Pregunta histórica TEST 3",
+          "kind": "check",
+          "automatedOnly": false,
+          "applicability": "applicable",
+          "answer": {
+            "code": "CI003",
+            "answer": "not_checked",
+            "reason": "Razón TEST",
+            "evidence": []
+          },
+          "evidence": [],
+          "pending": [
+            {
+              "code": "TEST_PENDING",
+              "subject": "CI003",
+              "classification": "mandatory_test",
+              "reason": "Sin presión"
+            }
+          ],
+          "capturedBy": null
+        },
+        {
+          "code": "CI004",
+          "group": "function",
+          "label": "Pregunta histórica TEST 4",
+          "kind": "check",
+          "automatedOnly": false,
+          "applicability": "applicable",
+          "answer": {
+            "code": "CI004",
+            "answer": "not_applicable",
+            "reason": "Razón TEST",
+            "evidence": []
+          },
+          "evidence": [],
+          "pending": [],
+          "capturedBy": null
+        }
+      ],
+      "captures": []
+    },
+    "finalReview": {
+      "state": "approval_invalidated",
+      "approval": null,
+      "correction": null,
+      "pending": [
+        {
+          "code": "TEST_PENDING",
+          "subject": "CI003",
+          "classification": "mandatory_test",
+          "reason": "Sin presión"
+        }
+      ],
+      "attempts": [
+        {
+          "operationId": "00000000-0000-4000-8000-000000000003",
+          "type": "final_review",
+          "actor": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "name": "Residente TEST",
+            "type": "field_user"
+          },
+          "capturedAt": "2026-10-05T12:00:00Z",
+          "receivedAt": "2026-10-05T12:00:00Z",
+          "previousVersion": 4,
+          "resultVersion": 5,
+          "status": "deliverable",
+          "approvalInvalidated": false,
+          "command": {
+            "operationId": "00000000-0000-4000-8000-000000000003",
+            "expectedVersion": 4,
+            "capturedAt": "2026-10-05T12:00:00Z",
+            "type": "final_review",
+            "fieldChecked": true,
+            "dossierConsulted": true,
+            "installationOperationId": "00000000-0000-4000-8000-000000000001",
+            "verdict": "approve",
+            "reason": "Aprobación anterior TEST",
+            "evidence": [
+              {
+                "photoId": "00000000-0000-4000-8000-000000000001",
+                "confirmed": true
+              }
+            ],
+            "evidenceConfirmed": true
+          },
+          "cabinet": {
+            "cabinetId": "00000000-0000-4000-8000-000000000001",
+            "uid": "AQ26000017",
+            "model": "A3",
+            "automated": true,
+            "catalogVersion": "ddr001-cabinets-20261005-v1",
+            "closurePolicyVersion": "ddr001-installation-v1",
+            "partDefinitions": [
+              {
+                "code": "A3.r1.u1",
+                "key": null,
+                "description": "Medidor electromagnético",
+                "position": "principal.1",
+                "serial": "required",
+                "automatedOnly": false,
+                "source": {
+                  "file": "TEST",
+                  "sheet": null,
+                  "row": null,
+                  "quantity": 1,
+                  "version": "TEST",
+                  "key": null,
+                  "description": "TEST"
+                },
+                "capture": {
+                  "code": "A3.r1.u1",
+                  "present": true,
+                  "serial": "000ABC007",
+                  "evidence": [
+                    {
+                      "photoId": "00000000-0000-4000-8000-000000000001",
+                      "confirmed": true
+                    }
+                  ],
+                  "observations": "Captura TEST"
+                },
+                "serialState": "captured",
+                "lastCapture": {
+                  "operationId": "00000000-0000-4000-8000-000000000001",
+                  "actorId": "00000000-0000-4000-8000-000000000001",
+                  "capturedAt": "2026-10-05T12:00:00Z",
+                  "receivedAt": "2026-10-05T12:00:00Z"
+                },
+                "pending": [],
+                "evidenceRequired": false
+              },
+              {
+                "code": "A3.r2.u1",
+                "key": null,
+                "description": "Pieza TEST 2",
+                "position": "principal.1",
+                "serial": "required",
+                "automatedOnly": false,
+                "source": {
+                  "file": "TEST",
+                  "sheet": null,
+                  "row": null,
+                  "quantity": 1,
+                  "version": "TEST",
+                  "key": null,
+                  "description": "TEST"
+                },
+                "capture": {
+                  "code": "A3.r2.u1",
+                  "present": true,
+                  "serial": null,
+                  "evidence": [
+                    {
+                      "photoId": "00000000-0000-4000-8000-000000000001",
+                      "confirmed": true
+                    }
+                  ],
+                  "observations": "Captura TEST"
+                },
+                "serialState": "pending",
+                "lastCapture": null,
+                "pending": [],
+                "evidenceRequired": false
+              },
+              {
+                "code": "A3.r3.u1",
+                "key": null,
+                "description": "Pieza TEST 3",
+                "position": "principal.1",
+                "serial": "required",
+                "automatedOnly": false,
+                "source": {
+                  "file": "TEST",
+                  "sheet": null,
+                  "row": null,
+                  "quantity": 1,
+                  "version": "TEST",
+                  "key": null,
+                  "description": "TEST"
+                },
+                "capture": {
+                  "code": "A3.r3.u1",
+                  "present": true,
+                  "serial": null,
+                  "evidence": [
+                    {
+                      "photoId": "00000000-0000-4000-8000-000000000001",
+                      "confirmed": true
+                    }
+                  ],
+                  "observations": "Captura TEST"
+                },
+                "serialState": "illegible",
+                "lastCapture": null,
+                "pending": [],
+                "evidenceRequired": false
+              },
+              {
+                "code": "A3.r4.u1",
+                "key": null,
+                "description": "Pieza TEST 4",
+                "position": "principal.1",
+                "serial": "required",
+                "automatedOnly": false,
+                "source": {
+                  "file": "TEST",
+                  "sheet": null,
+                  "row": null,
+                  "quantity": 1,
+                  "version": "TEST",
+                  "key": null,
+                  "description": "TEST"
+                },
+                "capture": {
+                  "code": "A3.r4.u1",
+                  "present": true,
+                  "serial": null,
+                  "evidence": [
+                    {
+                      "photoId": "00000000-0000-4000-8000-000000000001",
+                      "confirmed": true
+                    }
+                  ],
+                  "observations": "Captura TEST"
+                },
+                "serialState": "unavailable",
+                "lastCapture": null,
+                "pending": [],
+                "evidenceRequired": false
+              },
+              {
+                "code": "A3.r5.u1",
+                "key": null,
+                "description": "Pieza TEST 5",
+                "position": "principal.1",
+                "serial": "optional",
+                "automatedOnly": false,
+                "source": {
+                  "file": "TEST",
+                  "sheet": null,
+                  "row": null,
+                  "quantity": 1,
+                  "version": "TEST",
+                  "key": null,
+                  "description": "TEST"
+                },
+                "capture": null,
+                "serialState": "optional_not_captured",
+                "lastCapture": null,
+                "pending": [],
+                "evidenceRequired": false
+              },
+              {
+                "code": "A3.r6.u1",
+                "key": null,
+                "description": "Pieza TEST 6",
+                "position": "principal.1",
+                "serial": "none",
+                "automatedOnly": false,
+                "source": {
+                  "file": "TEST",
+                  "sheet": null,
+                  "row": null,
+                  "quantity": 1,
+                  "version": "TEST",
+                  "key": null,
+                  "description": "TEST"
+                },
+                "capture": {
+                  "code": "A3.r6.u1",
+                  "present": true,
+                  "serial": null,
+                  "evidence": [
+                    {
+                      "photoId": "00000000-0000-4000-8000-000000000001",
+                      "confirmed": true
+                    }
+                  ],
+                  "observations": "Captura TEST"
+                },
+                "serialState": "not_applicable",
+                "lastCapture": null,
+                "pending": [],
+                "evidenceRequired": false
+              }
+            ],
+            "version": 5,
+            "status": "deliverable",
+            "registrationEvidence": [],
+            "parts": [
+              {
+                "code": "A3.r1.u1",
+                "present": true,
+                "serial": "000ABC007",
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              {
+                "code": "A3.r2.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              {
+                "code": "A3.r3.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              {
+                "code": "A3.r4.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              {
+                "code": "A3.r6.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              }
+            ],
+            "partsValidated": false,
+            "installation": {
+              "baseId": "00000000-0000-4000-8000-000000000001",
+              "accountNumber": "00456",
+              "accountResolution": {
+                "decision": "use_cabinet",
+                "reason": "Resolución TEST preservada"
+              },
+              "gps": {
+                "latitude": 22,
+                "longitude": -102,
+                "accuracy": 5
+              },
+              "answers": [
+                {
+                  "code": "CI001",
+                  "answer": "yes",
+                  "reason": "Razón TEST",
+                  "evidence": []
+                },
+                {
+                  "code": "CI002",
+                  "answer": "no",
+                  "reason": "Razón TEST",
+                  "evidence": []
+                },
+                {
+                  "code": "CI003",
+                  "answer": "not_checked",
+                  "reason": "Razón TEST",
+                  "evidence": []
+                },
+                {
+                  "code": "CI004",
+                  "answer": "not_applicable",
+                  "reason": "Razón TEST",
+                  "evidence": []
+                }
+              ],
+              "evidence": {},
+              "observations": "Instalación guardada TEST"
+            },
+            "installationOperationId": null,
+            "installationValid": true,
+            "approval": {
+              "operationId": "00000000-0000-4000-8000-000000000003",
+              "version": 5
+            },
+            "reviewCorrection": null,
+            "pending": [],
+            "knownFailures": [],
+            "formattedUid": "AQ26-00001-7",
+            "displayModel": "A3-A",
+            "base": {
+              "surveyId": "00000000-0000-4000-8000-000000000001",
+              "displayIdentifier": "BASE-TEST-001",
+              "status": "accepted",
+              "accountNumber": "00123",
+              "location": {
+                "latitude": 22,
+                "longitude": -102,
+                "accuracy": 5
+              }
+            },
+            "installationAccountNumber": "00456",
+            "accountDiscrepancy": true,
+            "crew": {
+              "id": "00000000-0000-4000-8000-000000000001",
+              "name": "Empresa TEST",
+              "source": "linked_base"
+            },
+            "registeredBy": {
+              "id": "00000000-0000-4000-8000-000000000001",
+              "name": "Residente TEST"
+            },
+            "createdAt": null,
+            "registeredAt": "2026-10-05T12:00:00Z",
+            "validatedAt": "2026-10-05T12:00:00Z",
+            "installedAt": "2026-10-05T12:00:00Z",
+            "deliverableAt": null,
+            "reviewedAt": null,
+            "location": {
+              "latitude": 22,
+              "longitude": -102,
+              "accuracy": 5
+            },
+            "approvalValid": false,
+            "approvalInvalidated": false,
+            "finalReviewState": "pending_review",
+            "distanceToBaseMeters": null,
+            "mandatoryTests": 0,
+            "blockingCount": 0,
+            "photos": {
+              "total": 0,
+              "relationConfirmed": 0,
+              "storageConfirmedAtLastCheck": 0,
+              "problemsAtLastCheck": 0,
+              "unknown": 0,
+              "missingAtLastCheck": 0,
+              "oldestCheckAt": null
+            }
+          }
+        }
+      ],
+      "invalidations": [
+        {
+          "operationId": "00000000-0000-4000-8000-000000000004",
+          "type": "identity_correct",
+          "actor": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "name": "Residente TEST",
+            "type": "field_user"
+          },
+          "capturedAt": "2026-10-05T12:00:00Z",
+          "receivedAt": "2026-10-05T12:00:00Z",
+          "previousVersion": 5,
+          "resultVersion": 6,
+          "status": "incomplete",
+          "approvalInvalidated": true,
+          "command": {
+            "operationId": "00000000-0000-4000-8000-000000000004",
+            "expectedVersion": 4,
+            "capturedAt": "2026-10-05T12:00:00Z",
+            "type": "identity_correct",
+            "model": "A3",
+            "automated": true,
+            "reason": "Cambio de datos afectados TEST"
+          },
+          "cabinet": {
+            "cabinetId": "00000000-0000-4000-8000-000000000001",
+            "uid": "AQ26000017",
+            "model": "A3",
+            "automated": true,
+            "catalogVersion": "ddr001-cabinets-20261005-v1",
+            "closurePolicyVersion": "ddr001-installation-v1",
+            "partDefinitions": [
+              {
+                "code": "A3.r1.u1",
+                "key": null,
+                "description": "Medidor electromagnético",
+                "position": "principal.1",
+                "serial": "required",
+                "automatedOnly": false,
+                "source": {
+                  "file": "TEST",
+                  "sheet": null,
+                  "row": null,
+                  "quantity": 1,
+                  "version": "TEST",
+                  "key": null,
+                  "description": "TEST"
+                },
+                "capture": {
+                  "code": "A3.r1.u1",
+                  "present": true,
+                  "serial": "000ABC007",
+                  "evidence": [
+                    {
+                      "photoId": "00000000-0000-4000-8000-000000000001",
+                      "confirmed": true
+                    }
+                  ],
+                  "observations": "Captura TEST"
+                },
+                "serialState": "captured",
+                "lastCapture": {
+                  "operationId": "00000000-0000-4000-8000-000000000001",
+                  "actorId": "00000000-0000-4000-8000-000000000001",
+                  "capturedAt": "2026-10-05T12:00:00Z",
+                  "receivedAt": "2026-10-05T12:00:00Z"
+                },
+                "pending": [],
+                "evidenceRequired": false
+              },
+              {
+                "code": "A3.r2.u1",
+                "key": null,
+                "description": "Pieza TEST 2",
+                "position": "principal.1",
+                "serial": "required",
+                "automatedOnly": false,
+                "source": {
+                  "file": "TEST",
+                  "sheet": null,
+                  "row": null,
+                  "quantity": 1,
+                  "version": "TEST",
+                  "key": null,
+                  "description": "TEST"
+                },
+                "capture": {
+                  "code": "A3.r2.u1",
+                  "present": true,
+                  "serial": null,
+                  "evidence": [
+                    {
+                      "photoId": "00000000-0000-4000-8000-000000000001",
+                      "confirmed": true
+                    }
+                  ],
+                  "observations": "Captura TEST"
+                },
+                "serialState": "pending",
+                "lastCapture": null,
+                "pending": [],
+                "evidenceRequired": false
+              },
+              {
+                "code": "A3.r3.u1",
+                "key": null,
+                "description": "Pieza TEST 3",
+                "position": "principal.1",
+                "serial": "required",
+                "automatedOnly": false,
+                "source": {
+                  "file": "TEST",
+                  "sheet": null,
+                  "row": null,
+                  "quantity": 1,
+                  "version": "TEST",
+                  "key": null,
+                  "description": "TEST"
+                },
+                "capture": {
+                  "code": "A3.r3.u1",
+                  "present": true,
+                  "serial": null,
+                  "evidence": [
+                    {
+                      "photoId": "00000000-0000-4000-8000-000000000001",
+                      "confirmed": true
+                    }
+                  ],
+                  "observations": "Captura TEST"
+                },
+                "serialState": "illegible",
+                "lastCapture": null,
+                "pending": [],
+                "evidenceRequired": false
+              },
+              {
+                "code": "A3.r4.u1",
+                "key": null,
+                "description": "Pieza TEST 4",
+                "position": "principal.1",
+                "serial": "required",
+                "automatedOnly": false,
+                "source": {
+                  "file": "TEST",
+                  "sheet": null,
+                  "row": null,
+                  "quantity": 1,
+                  "version": "TEST",
+                  "key": null,
+                  "description": "TEST"
+                },
+                "capture": {
+                  "code": "A3.r4.u1",
+                  "present": true,
+                  "serial": null,
+                  "evidence": [
+                    {
+                      "photoId": "00000000-0000-4000-8000-000000000001",
+                      "confirmed": true
+                    }
+                  ],
+                  "observations": "Captura TEST"
+                },
+                "serialState": "unavailable",
+                "lastCapture": null,
+                "pending": [],
+                "evidenceRequired": false
+              },
+              {
+                "code": "A3.r5.u1",
+                "key": null,
+                "description": "Pieza TEST 5",
+                "position": "principal.1",
+                "serial": "optional",
+                "automatedOnly": false,
+                "source": {
+                  "file": "TEST",
+                  "sheet": null,
+                  "row": null,
+                  "quantity": 1,
+                  "version": "TEST",
+                  "key": null,
+                  "description": "TEST"
+                },
+                "capture": null,
+                "serialState": "optional_not_captured",
+                "lastCapture": null,
+                "pending": [],
+                "evidenceRequired": false
+              },
+              {
+                "code": "A3.r6.u1",
+                "key": null,
+                "description": "Pieza TEST 6",
+                "position": "principal.1",
+                "serial": "none",
+                "automatedOnly": false,
+                "source": {
+                  "file": "TEST",
+                  "sheet": null,
+                  "row": null,
+                  "quantity": 1,
+                  "version": "TEST",
+                  "key": null,
+                  "description": "TEST"
+                },
+                "capture": {
+                  "code": "A3.r6.u1",
+                  "present": true,
+                  "serial": null,
+                  "evidence": [
+                    {
+                      "photoId": "00000000-0000-4000-8000-000000000001",
+                      "confirmed": true
+                    }
+                  ],
+                  "observations": "Captura TEST"
+                },
+                "serialState": "not_applicable",
+                "lastCapture": null,
+                "pending": [],
+                "evidenceRequired": false
+              }
+            ],
+            "version": 6,
+            "status": "incomplete",
+            "registrationEvidence": [],
+            "parts": [
+              {
+                "code": "A3.r1.u1",
+                "present": true,
+                "serial": "000ABC007",
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              {
+                "code": "A3.r2.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              {
+                "code": "A3.r3.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              {
+                "code": "A3.r4.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              {
+                "code": "A3.r6.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              }
+            ],
+            "partsValidated": false,
+            "installation": {
+              "baseId": "00000000-0000-4000-8000-000000000001",
+              "accountNumber": "00456",
+              "accountResolution": {
+                "decision": "use_cabinet",
+                "reason": "Resolución TEST preservada"
+              },
+              "gps": {
+                "latitude": 22,
+                "longitude": -102,
+                "accuracy": 5
+              },
+              "answers": [
+                {
+                  "code": "CI001",
+                  "answer": "yes",
+                  "reason": "Razón TEST",
+                  "evidence": []
+                },
+                {
+                  "code": "CI002",
+                  "answer": "no",
+                  "reason": "Razón TEST",
+                  "evidence": []
+                },
+                {
+                  "code": "CI003",
+                  "answer": "not_checked",
+                  "reason": "Razón TEST",
+                  "evidence": []
+                },
+                {
+                  "code": "CI004",
+                  "answer": "not_applicable",
+                  "reason": "Razón TEST",
+                  "evidence": []
+                }
+              ],
+              "evidence": {},
+              "observations": "Instalación guardada TEST"
+            },
+            "installationOperationId": null,
+            "installationValid": true,
+            "approval": null,
+            "reviewCorrection": null,
+            "pending": [
+              {
+                "code": "TEST_PENDING",
+                "subject": "CI003",
+                "classification": "mandatory_test",
+                "reason": "Sin presión"
+              }
+            ],
+            "knownFailures": [],
+            "formattedUid": "AQ26-00001-7",
+            "displayModel": "A3-A",
+            "base": {
+              "surveyId": "00000000-0000-4000-8000-000000000001",
+              "displayIdentifier": "BASE-TEST-001",
+              "status": "accepted",
+              "accountNumber": "00123",
+              "location": {
+                "latitude": 22,
+                "longitude": -102,
+                "accuracy": 5
+              }
+            },
+            "installationAccountNumber": "00456",
+            "accountDiscrepancy": true,
+            "crew": {
+              "id": "00000000-0000-4000-8000-000000000001",
+              "name": "Empresa TEST",
+              "source": "linked_base"
+            },
+            "registeredBy": {
+              "id": "00000000-0000-4000-8000-000000000001",
+              "name": "Residente TEST"
+            },
+            "createdAt": null,
+            "registeredAt": "2026-10-05T12:00:00Z",
+            "validatedAt": "2026-10-05T12:00:00Z",
+            "installedAt": "2026-10-05T12:00:00Z",
+            "deliverableAt": null,
+            "reviewedAt": null,
+            "location": {
+              "latitude": 22,
+              "longitude": -102,
+              "accuracy": 5
+            },
+            "approvalValid": false,
+            "approvalInvalidated": false,
+            "finalReviewState": "pending_review",
+            "distanceToBaseMeters": null,
+            "mandatoryTests": 0,
+            "blockingCount": 0,
+            "photos": {
+              "total": 0,
+              "relationConfirmed": 0,
+              "storageConfirmedAtLastCheck": 0,
+              "problemsAtLastCheck": 0,
+              "unknown": 0,
+              "missingAtLastCheck": 0,
+              "oldestCheckAt": null
+            }
+          }
+        }
+      ]
+    },
+    "catalog": {
+      "catalogVersion": "ddr001-cabinets-20261005-v1",
+      "model": "A3",
+      "automated": true,
+      "policy": {
+        "closurePolicyVersion": "ddr001-installation-v1",
+        "questions": [
+          {
+            "code": "CI001",
+            "group": "anchoring",
+            "label": "Pregunta histórica TEST 1",
+            "kind": "check",
+            "automatedOnly": false
+          },
+          {
+            "code": "CI002",
+            "group": "anchoring",
+            "label": "Pregunta histórica TEST 2",
+            "kind": "check",
+            "automatedOnly": false
+          },
+          {
+            "code": "CI003",
+            "group": "function",
+            "label": "Pregunta histórica TEST 3",
+            "kind": "check",
+            "automatedOnly": false
+          },
+          {
+            "code": "CI004",
+            "group": "function",
+            "label": "Pregunta histórica TEST 4",
+            "kind": "check",
+            "automatedOnly": false
+          }
+        ]
+      }
+    },
+    "photos": [
+      {
+        "photoId": "00000000-0000-4000-8000-000000000001",
+        "context": "parts",
+        "capturedAt": "2026-10-05T12:00:00Z",
+        "receivedAt": "2026-10-05T12:00:00Z",
+        "actor": {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "name": "Residente TEST"
+        },
+        "metadata": {
+          "latitude": 22,
+          "longitude": -102,
+          "accuracy": 5,
+          "capturedAt": "2026-10-05T12:00:00Z"
+        },
+        "integrity": {
+          "photoId": "00000000-0000-4000-8000-000000000001",
+          "status": "confirmed",
+          "checkedAt": "2026-10-05T12:00:00Z",
+          "originalPresent": true,
+          "thumbnailPresent": true,
+          "storageVerified": true,
+          "retryable": false
+        },
+        "relations": [
+          {
+            "operationId": "00000000-0000-4000-8000-000000000001",
+            "photoId": "00000000-0000-4000-8000-000000000001",
+            "subject": "A3.r1.u1",
+            "confirmed": true,
+            "legible": false
+          },
+          {
+            "operationId": "00000000-0000-4000-8000-000000000001",
+            "photoId": "00000000-0000-4000-8000-000000000001",
+            "subject": "A3.r2.u1",
+            "confirmed": true,
+            "legible": false
+          }
+        ],
+        "thumbnailUrl": "/api/v1/admin/dashboard/construction/cabinets/00000000-0000-4000-8000-000000000001/photos/00000000-0000-4000-8000-000000000001/thumbnail",
+        "contentUrl": "/api/v1/admin/dashboard/construction/cabinets/00000000-0000-4000-8000-000000000001/photos/00000000-0000-4000-8000-000000000001/content"
+      }
+    ],
+    "history": [
+      {
+        "operationId": "00000000-0000-4000-8000-000000000001",
+        "type": "parts_validate",
+        "actor": {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "name": "Residente TEST",
+          "type": "field_user"
+        },
+        "capturedAt": "2026-10-05T12:00:00Z",
+        "receivedAt": "2026-10-05T12:00:00Z",
+        "previousVersion": 1,
+        "resultVersion": 2,
+        "status": "incomplete",
+        "approvalInvalidated": false,
+        "command": {
+          "operationId": "00000000-0000-4000-8000-000000000001",
+          "expectedVersion": 1,
+          "capturedAt": "2026-10-05T12:00:00Z",
+          "type": "parts_validate"
+        },
+        "cabinet": {
+          "cabinetId": "00000000-0000-4000-8000-000000000001",
+          "uid": "AQ26000017",
+          "model": "A3",
+          "automated": true,
+          "catalogVersion": "ddr001-cabinets-20261005-v1",
+          "closurePolicyVersion": "ddr001-installation-v1",
+          "partDefinitions": [
+            {
+              "code": "A3.r1.u1",
+              "key": null,
+              "description": "Medidor electromagnético",
+              "position": "principal.1",
+              "serial": "required",
+              "automatedOnly": false,
+              "source": {
+                "file": "TEST",
+                "sheet": null,
+                "row": null,
+                "quantity": 1,
+                "version": "TEST",
+                "key": null,
+                "description": "TEST"
+              },
+              "capture": {
+                "code": "A3.r1.u1",
+                "present": true,
+                "serial": "000ABC007",
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              "serialState": "captured",
+              "lastCapture": {
+                "operationId": "00000000-0000-4000-8000-000000000001",
+                "actorId": "00000000-0000-4000-8000-000000000001",
+                "capturedAt": "2026-10-05T12:00:00Z",
+                "receivedAt": "2026-10-05T12:00:00Z"
+              },
+              "pending": [],
+              "evidenceRequired": false
+            },
+            {
+              "code": "A3.r2.u1",
+              "key": null,
+              "description": "Pieza TEST 2",
+              "position": "principal.1",
+              "serial": "required",
+              "automatedOnly": false,
+              "source": {
+                "file": "TEST",
+                "sheet": null,
+                "row": null,
+                "quantity": 1,
+                "version": "TEST",
+                "key": null,
+                "description": "TEST"
+              },
+              "capture": {
+                "code": "A3.r2.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              "serialState": "pending",
+              "lastCapture": null,
+              "pending": [],
+              "evidenceRequired": false
+            },
+            {
+              "code": "A3.r3.u1",
+              "key": null,
+              "description": "Pieza TEST 3",
+              "position": "principal.1",
+              "serial": "required",
+              "automatedOnly": false,
+              "source": {
+                "file": "TEST",
+                "sheet": null,
+                "row": null,
+                "quantity": 1,
+                "version": "TEST",
+                "key": null,
+                "description": "TEST"
+              },
+              "capture": {
+                "code": "A3.r3.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              "serialState": "illegible",
+              "lastCapture": null,
+              "pending": [],
+              "evidenceRequired": false
+            },
+            {
+              "code": "A3.r4.u1",
+              "key": null,
+              "description": "Pieza TEST 4",
+              "position": "principal.1",
+              "serial": "required",
+              "automatedOnly": false,
+              "source": {
+                "file": "TEST",
+                "sheet": null,
+                "row": null,
+                "quantity": 1,
+                "version": "TEST",
+                "key": null,
+                "description": "TEST"
+              },
+              "capture": {
+                "code": "A3.r4.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              "serialState": "unavailable",
+              "lastCapture": null,
+              "pending": [],
+              "evidenceRequired": false
+            },
+            {
+              "code": "A3.r5.u1",
+              "key": null,
+              "description": "Pieza TEST 5",
+              "position": "principal.1",
+              "serial": "optional",
+              "automatedOnly": false,
+              "source": {
+                "file": "TEST",
+                "sheet": null,
+                "row": null,
+                "quantity": 1,
+                "version": "TEST",
+                "key": null,
+                "description": "TEST"
+              },
+              "capture": null,
+              "serialState": "optional_not_captured",
+              "lastCapture": null,
+              "pending": [],
+              "evidenceRequired": false
+            },
+            {
+              "code": "A3.r6.u1",
+              "key": null,
+              "description": "Pieza TEST 6",
+              "position": "principal.1",
+              "serial": "none",
+              "automatedOnly": false,
+              "source": {
+                "file": "TEST",
+                "sheet": null,
+                "row": null,
+                "quantity": 1,
+                "version": "TEST",
+                "key": null,
+                "description": "TEST"
+              },
+              "capture": {
+                "code": "A3.r6.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              "serialState": "not_applicable",
+              "lastCapture": null,
+              "pending": [],
+              "evidenceRequired": false
+            }
+          ],
+          "version": 2,
+          "status": "incomplete",
+          "registrationEvidence": [],
+          "parts": [
+            {
+              "code": "A3.r1.u1",
+              "present": true,
+              "serial": "000ABC007",
+              "evidence": [
+                {
+                  "photoId": "00000000-0000-4000-8000-000000000001",
+                  "confirmed": true
+                }
+              ],
+              "observations": "Captura TEST"
+            },
+            {
+              "code": "A3.r2.u1",
+              "present": true,
+              "serial": null,
+              "evidence": [
+                {
+                  "photoId": "00000000-0000-4000-8000-000000000001",
+                  "confirmed": true
+                }
+              ],
+              "observations": "Captura TEST"
+            },
+            {
+              "code": "A3.r3.u1",
+              "present": true,
+              "serial": null,
+              "evidence": [
+                {
+                  "photoId": "00000000-0000-4000-8000-000000000001",
+                  "confirmed": true
+                }
+              ],
+              "observations": "Captura TEST"
+            },
+            {
+              "code": "A3.r4.u1",
+              "present": true,
+              "serial": null,
+              "evidence": [
+                {
+                  "photoId": "00000000-0000-4000-8000-000000000001",
+                  "confirmed": true
+                }
+              ],
+              "observations": "Captura TEST"
+            },
+            {
+              "code": "A3.r6.u1",
+              "present": true,
+              "serial": null,
+              "evidence": [
+                {
+                  "photoId": "00000000-0000-4000-8000-000000000001",
+                  "confirmed": true
+                }
+              ],
+              "observations": "Captura TEST"
+            }
+          ],
+          "partsValidated": false,
+          "installation": {
+            "baseId": "00000000-0000-4000-8000-000000000001",
+            "accountNumber": "00456",
+            "accountResolution": {
+              "decision": "use_cabinet",
+              "reason": "Resolución TEST preservada"
+            },
+            "gps": {
+              "latitude": 22,
+              "longitude": -102,
+              "accuracy": 5
+            },
+            "answers": [
+              {
+                "code": "CI001",
+                "answer": "yes",
+                "reason": "Razón TEST",
+                "evidence": []
+              },
+              {
+                "code": "CI002",
+                "answer": "no",
+                "reason": "Razón TEST",
+                "evidence": []
+              },
+              {
+                "code": "CI003",
+                "answer": "not_checked",
+                "reason": "Razón TEST",
+                "evidence": []
+              },
+              {
+                "code": "CI004",
+                "answer": "not_applicable",
+                "reason": "Razón TEST",
+                "evidence": []
+              }
+            ],
+            "evidence": {},
+            "observations": "Instalación guardada TEST"
+          },
+          "installationOperationId": null,
+          "installationValid": true,
+          "approval": null,
+          "reviewCorrection": null,
+          "pending": [
+            {
+              "code": "TEST_PENDING",
+              "subject": "CI003",
+              "classification": "mandatory_test",
+              "reason": "Sin presión"
+            }
+          ],
+          "knownFailures": [],
+          "formattedUid": "AQ26-00001-7",
+          "displayModel": "A3-A",
+          "base": {
+            "surveyId": "00000000-0000-4000-8000-000000000001",
+            "displayIdentifier": "BASE-TEST-001",
+            "status": "accepted",
+            "accountNumber": "00123",
+            "location": {
+              "latitude": 22,
+              "longitude": -102,
+              "accuracy": 5
+            }
+          },
+          "installationAccountNumber": "00456",
+          "accountDiscrepancy": true,
+          "crew": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "name": "Empresa TEST",
+            "source": "linked_base"
+          },
+          "registeredBy": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "name": "Residente TEST"
+          },
+          "createdAt": null,
+          "registeredAt": "2026-10-05T12:00:00Z",
+          "validatedAt": "2026-10-05T12:00:00Z",
+          "installedAt": "2026-10-05T12:00:00Z",
+          "deliverableAt": null,
+          "reviewedAt": null,
+          "location": {
+            "latitude": 22,
+            "longitude": -102,
+            "accuracy": 5
+          },
+          "approvalValid": false,
+          "approvalInvalidated": false,
+          "finalReviewState": "pending_review",
+          "distanceToBaseMeters": null,
+          "mandatoryTests": 0,
+          "blockingCount": 0,
+          "photos": {
+            "total": 0,
+            "relationConfirmed": 0,
+            "storageConfirmedAtLastCheck": 0,
+            "problemsAtLastCheck": 0,
+            "unknown": 0,
+            "missingAtLastCheck": 0,
+            "oldestCheckAt": null
+          }
+        }
+      },
+      {
+        "operationId": "00000000-0000-4000-8000-000000000002",
+        "type": "parts_validate",
+        "actor": {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "name": "Residente TEST",
+          "type": "field_user"
+        },
+        "capturedAt": "2026-10-05T12:00:00Z",
+        "receivedAt": "2026-10-05T12:00:00Z",
+        "previousVersion": 1,
+        "resultVersion": 3,
+        "status": "validated",
+        "approvalInvalidated": false,
+        "command": {
+          "operationId": "00000000-0000-4000-8000-000000000001",
+          "expectedVersion": 1,
+          "capturedAt": "2026-10-05T12:00:00Z",
+          "type": "parts_validate"
+        },
+        "cabinet": {
+          "cabinetId": "00000000-0000-4000-8000-000000000001",
+          "uid": "AQ26000017",
+          "model": "A3",
+          "automated": true,
+          "catalogVersion": "ddr001-cabinets-20261005-v1",
+          "closurePolicyVersion": "ddr001-installation-v1",
+          "partDefinitions": [
+            {
+              "code": "A3.r1.u1",
+              "key": null,
+              "description": "Medidor electromagnético",
+              "position": "principal.1",
+              "serial": "required",
+              "automatedOnly": false,
+              "source": {
+                "file": "TEST",
+                "sheet": null,
+                "row": null,
+                "quantity": 1,
+                "version": "TEST",
+                "key": null,
+                "description": "TEST"
+              },
+              "capture": {
+                "code": "A3.r1.u1",
+                "present": true,
+                "serial": "000ABC007",
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              "serialState": "captured",
+              "lastCapture": {
+                "operationId": "00000000-0000-4000-8000-000000000001",
+                "actorId": "00000000-0000-4000-8000-000000000001",
+                "capturedAt": "2026-10-05T12:00:00Z",
+                "receivedAt": "2026-10-05T12:00:00Z"
+              },
+              "pending": [],
+              "evidenceRequired": false
+            },
+            {
+              "code": "A3.r2.u1",
+              "key": null,
+              "description": "Pieza TEST 2",
+              "position": "principal.1",
+              "serial": "required",
+              "automatedOnly": false,
+              "source": {
+                "file": "TEST",
+                "sheet": null,
+                "row": null,
+                "quantity": 1,
+                "version": "TEST",
+                "key": null,
+                "description": "TEST"
+              },
+              "capture": {
+                "code": "A3.r2.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              "serialState": "pending",
+              "lastCapture": null,
+              "pending": [],
+              "evidenceRequired": false
+            },
+            {
+              "code": "A3.r3.u1",
+              "key": null,
+              "description": "Pieza TEST 3",
+              "position": "principal.1",
+              "serial": "required",
+              "automatedOnly": false,
+              "source": {
+                "file": "TEST",
+                "sheet": null,
+                "row": null,
+                "quantity": 1,
+                "version": "TEST",
+                "key": null,
+                "description": "TEST"
+              },
+              "capture": {
+                "code": "A3.r3.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              "serialState": "illegible",
+              "lastCapture": null,
+              "pending": [],
+              "evidenceRequired": false
+            },
+            {
+              "code": "A3.r4.u1",
+              "key": null,
+              "description": "Pieza TEST 4",
+              "position": "principal.1",
+              "serial": "required",
+              "automatedOnly": false,
+              "source": {
+                "file": "TEST",
+                "sheet": null,
+                "row": null,
+                "quantity": 1,
+                "version": "TEST",
+                "key": null,
+                "description": "TEST"
+              },
+              "capture": {
+                "code": "A3.r4.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              "serialState": "unavailable",
+              "lastCapture": null,
+              "pending": [],
+              "evidenceRequired": false
+            },
+            {
+              "code": "A3.r5.u1",
+              "key": null,
+              "description": "Pieza TEST 5",
+              "position": "principal.1",
+              "serial": "optional",
+              "automatedOnly": false,
+              "source": {
+                "file": "TEST",
+                "sheet": null,
+                "row": null,
+                "quantity": 1,
+                "version": "TEST",
+                "key": null,
+                "description": "TEST"
+              },
+              "capture": null,
+              "serialState": "optional_not_captured",
+              "lastCapture": null,
+              "pending": [],
+              "evidenceRequired": false
+            },
+            {
+              "code": "A3.r6.u1",
+              "key": null,
+              "description": "Pieza TEST 6",
+              "position": "principal.1",
+              "serial": "none",
+              "automatedOnly": false,
+              "source": {
+                "file": "TEST",
+                "sheet": null,
+                "row": null,
+                "quantity": 1,
+                "version": "TEST",
+                "key": null,
+                "description": "TEST"
+              },
+              "capture": {
+                "code": "A3.r6.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              "serialState": "not_applicable",
+              "lastCapture": null,
+              "pending": [],
+              "evidenceRequired": false
+            }
+          ],
+          "version": 3,
+          "status": "validated",
+          "registrationEvidence": [],
+          "parts": [
+            {
+              "code": "A3.r1.u1",
+              "present": true,
+              "serial": "000ABC007",
+              "evidence": [
+                {
+                  "photoId": "00000000-0000-4000-8000-000000000001",
+                  "confirmed": true
+                }
+              ],
+              "observations": "Captura TEST"
+            },
+            {
+              "code": "A3.r2.u1",
+              "present": true,
+              "serial": null,
+              "evidence": [
+                {
+                  "photoId": "00000000-0000-4000-8000-000000000001",
+                  "confirmed": true
+                }
+              ],
+              "observations": "Captura TEST"
+            },
+            {
+              "code": "A3.r3.u1",
+              "present": true,
+              "serial": null,
+              "evidence": [
+                {
+                  "photoId": "00000000-0000-4000-8000-000000000001",
+                  "confirmed": true
+                }
+              ],
+              "observations": "Captura TEST"
+            },
+            {
+              "code": "A3.r4.u1",
+              "present": true,
+              "serial": null,
+              "evidence": [
+                {
+                  "photoId": "00000000-0000-4000-8000-000000000001",
+                  "confirmed": true
+                }
+              ],
+              "observations": "Captura TEST"
+            },
+            {
+              "code": "A3.r6.u1",
+              "present": true,
+              "serial": null,
+              "evidence": [
+                {
+                  "photoId": "00000000-0000-4000-8000-000000000001",
+                  "confirmed": true
+                }
+              ],
+              "observations": "Captura TEST"
+            }
+          ],
+          "partsValidated": false,
+          "installation": {
+            "baseId": "00000000-0000-4000-8000-000000000001",
+            "accountNumber": "00456",
+            "accountResolution": {
+              "decision": "use_cabinet",
+              "reason": "Resolución TEST preservada"
+            },
+            "gps": {
+              "latitude": 22,
+              "longitude": -102,
+              "accuracy": 5
+            },
+            "answers": [
+              {
+                "code": "CI001",
+                "answer": "yes",
+                "reason": "Razón TEST",
+                "evidence": []
+              },
+              {
+                "code": "CI002",
+                "answer": "no",
+                "reason": "Razón TEST",
+                "evidence": []
+              },
+              {
+                "code": "CI003",
+                "answer": "not_checked",
+                "reason": "Razón TEST",
+                "evidence": []
+              },
+              {
+                "code": "CI004",
+                "answer": "not_applicable",
+                "reason": "Razón TEST",
+                "evidence": []
+              }
+            ],
+            "evidence": {},
+            "observations": "Instalación guardada TEST"
+          },
+          "installationOperationId": null,
+          "installationValid": true,
+          "approval": null,
+          "reviewCorrection": null,
+          "pending": [
+            {
+              "code": "TEST_PENDING",
+              "subject": "CI003",
+              "classification": "mandatory_test",
+              "reason": "Sin presión"
+            }
+          ],
+          "knownFailures": [],
+          "formattedUid": "AQ26-00001-7",
+          "displayModel": "A3-A",
+          "base": {
+            "surveyId": "00000000-0000-4000-8000-000000000001",
+            "displayIdentifier": "BASE-TEST-001",
+            "status": "accepted",
+            "accountNumber": "00123",
+            "location": {
+              "latitude": 22,
+              "longitude": -102,
+              "accuracy": 5
+            }
+          },
+          "installationAccountNumber": "00456",
+          "accountDiscrepancy": true,
+          "crew": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "name": "Empresa TEST",
+            "source": "linked_base"
+          },
+          "registeredBy": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "name": "Residente TEST"
+          },
+          "createdAt": null,
+          "registeredAt": "2026-10-05T12:00:00Z",
+          "validatedAt": "2026-10-05T12:00:00Z",
+          "installedAt": "2026-10-05T12:00:00Z",
+          "deliverableAt": null,
+          "reviewedAt": null,
+          "location": {
+            "latitude": 22,
+            "longitude": -102,
+            "accuracy": 5
+          },
+          "approvalValid": false,
+          "approvalInvalidated": false,
+          "finalReviewState": "pending_review",
+          "distanceToBaseMeters": null,
+          "mandatoryTests": 0,
+          "blockingCount": 0,
+          "photos": {
+            "total": 0,
+            "relationConfirmed": 0,
+            "storageConfirmedAtLastCheck": 0,
+            "problemsAtLastCheck": 0,
+            "unknown": 0,
+            "missingAtLastCheck": 0,
+            "oldestCheckAt": null
+          }
+        }
+      },
+      {
+        "operationId": "00000000-0000-4000-8000-000000000003",
+        "type": "final_review",
+        "actor": {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "name": "Residente TEST",
+          "type": "field_user"
+        },
+        "capturedAt": "2026-10-05T12:00:00Z",
+        "receivedAt": "2026-10-05T12:00:00Z",
+        "previousVersion": 4,
+        "resultVersion": 5,
+        "status": "deliverable",
+        "approvalInvalidated": false,
+        "command": {
+          "operationId": "00000000-0000-4000-8000-000000000003",
+          "expectedVersion": 4,
+          "capturedAt": "2026-10-05T12:00:00Z",
+          "type": "final_review",
+          "fieldChecked": true,
+          "dossierConsulted": true,
+          "installationOperationId": "00000000-0000-4000-8000-000000000001",
+          "verdict": "approve",
+          "reason": "Aprobación anterior TEST",
+          "evidence": [
+            {
+              "photoId": "00000000-0000-4000-8000-000000000001",
+              "confirmed": true
+            }
+          ],
+          "evidenceConfirmed": true
+        },
+        "cabinet": {
+          "cabinetId": "00000000-0000-4000-8000-000000000001",
+          "uid": "AQ26000017",
+          "model": "A3",
+          "automated": true,
+          "catalogVersion": "ddr001-cabinets-20261005-v1",
+          "closurePolicyVersion": "ddr001-installation-v1",
+          "partDefinitions": [
+            {
+              "code": "A3.r1.u1",
+              "key": null,
+              "description": "Medidor electromagnético",
+              "position": "principal.1",
+              "serial": "required",
+              "automatedOnly": false,
+              "source": {
+                "file": "TEST",
+                "sheet": null,
+                "row": null,
+                "quantity": 1,
+                "version": "TEST",
+                "key": null,
+                "description": "TEST"
+              },
+              "capture": {
+                "code": "A3.r1.u1",
+                "present": true,
+                "serial": "000ABC007",
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              "serialState": "captured",
+              "lastCapture": {
+                "operationId": "00000000-0000-4000-8000-000000000001",
+                "actorId": "00000000-0000-4000-8000-000000000001",
+                "capturedAt": "2026-10-05T12:00:00Z",
+                "receivedAt": "2026-10-05T12:00:00Z"
+              },
+              "pending": [],
+              "evidenceRequired": false
+            },
+            {
+              "code": "A3.r2.u1",
+              "key": null,
+              "description": "Pieza TEST 2",
+              "position": "principal.1",
+              "serial": "required",
+              "automatedOnly": false,
+              "source": {
+                "file": "TEST",
+                "sheet": null,
+                "row": null,
+                "quantity": 1,
+                "version": "TEST",
+                "key": null,
+                "description": "TEST"
+              },
+              "capture": {
+                "code": "A3.r2.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              "serialState": "pending",
+              "lastCapture": null,
+              "pending": [],
+              "evidenceRequired": false
+            },
+            {
+              "code": "A3.r3.u1",
+              "key": null,
+              "description": "Pieza TEST 3",
+              "position": "principal.1",
+              "serial": "required",
+              "automatedOnly": false,
+              "source": {
+                "file": "TEST",
+                "sheet": null,
+                "row": null,
+                "quantity": 1,
+                "version": "TEST",
+                "key": null,
+                "description": "TEST"
+              },
+              "capture": {
+                "code": "A3.r3.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              "serialState": "illegible",
+              "lastCapture": null,
+              "pending": [],
+              "evidenceRequired": false
+            },
+            {
+              "code": "A3.r4.u1",
+              "key": null,
+              "description": "Pieza TEST 4",
+              "position": "principal.1",
+              "serial": "required",
+              "automatedOnly": false,
+              "source": {
+                "file": "TEST",
+                "sheet": null,
+                "row": null,
+                "quantity": 1,
+                "version": "TEST",
+                "key": null,
+                "description": "TEST"
+              },
+              "capture": {
+                "code": "A3.r4.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              "serialState": "unavailable",
+              "lastCapture": null,
+              "pending": [],
+              "evidenceRequired": false
+            },
+            {
+              "code": "A3.r5.u1",
+              "key": null,
+              "description": "Pieza TEST 5",
+              "position": "principal.1",
+              "serial": "optional",
+              "automatedOnly": false,
+              "source": {
+                "file": "TEST",
+                "sheet": null,
+                "row": null,
+                "quantity": 1,
+                "version": "TEST",
+                "key": null,
+                "description": "TEST"
+              },
+              "capture": null,
+              "serialState": "optional_not_captured",
+              "lastCapture": null,
+              "pending": [],
+              "evidenceRequired": false
+            },
+            {
+              "code": "A3.r6.u1",
+              "key": null,
+              "description": "Pieza TEST 6",
+              "position": "principal.1",
+              "serial": "none",
+              "automatedOnly": false,
+              "source": {
+                "file": "TEST",
+                "sheet": null,
+                "row": null,
+                "quantity": 1,
+                "version": "TEST",
+                "key": null,
+                "description": "TEST"
+              },
+              "capture": {
+                "code": "A3.r6.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              "serialState": "not_applicable",
+              "lastCapture": null,
+              "pending": [],
+              "evidenceRequired": false
+            }
+          ],
+          "version": 5,
+          "status": "deliverable",
+          "registrationEvidence": [],
+          "parts": [
+            {
+              "code": "A3.r1.u1",
+              "present": true,
+              "serial": "000ABC007",
+              "evidence": [
+                {
+                  "photoId": "00000000-0000-4000-8000-000000000001",
+                  "confirmed": true
+                }
+              ],
+              "observations": "Captura TEST"
+            },
+            {
+              "code": "A3.r2.u1",
+              "present": true,
+              "serial": null,
+              "evidence": [
+                {
+                  "photoId": "00000000-0000-4000-8000-000000000001",
+                  "confirmed": true
+                }
+              ],
+              "observations": "Captura TEST"
+            },
+            {
+              "code": "A3.r3.u1",
+              "present": true,
+              "serial": null,
+              "evidence": [
+                {
+                  "photoId": "00000000-0000-4000-8000-000000000001",
+                  "confirmed": true
+                }
+              ],
+              "observations": "Captura TEST"
+            },
+            {
+              "code": "A3.r4.u1",
+              "present": true,
+              "serial": null,
+              "evidence": [
+                {
+                  "photoId": "00000000-0000-4000-8000-000000000001",
+                  "confirmed": true
+                }
+              ],
+              "observations": "Captura TEST"
+            },
+            {
+              "code": "A3.r6.u1",
+              "present": true,
+              "serial": null,
+              "evidence": [
+                {
+                  "photoId": "00000000-0000-4000-8000-000000000001",
+                  "confirmed": true
+                }
+              ],
+              "observations": "Captura TEST"
+            }
+          ],
+          "partsValidated": false,
+          "installation": {
+            "baseId": "00000000-0000-4000-8000-000000000001",
+            "accountNumber": "00456",
+            "accountResolution": {
+              "decision": "use_cabinet",
+              "reason": "Resolución TEST preservada"
+            },
+            "gps": {
+              "latitude": 22,
+              "longitude": -102,
+              "accuracy": 5
+            },
+            "answers": [
+              {
+                "code": "CI001",
+                "answer": "yes",
+                "reason": "Razón TEST",
+                "evidence": []
+              },
+              {
+                "code": "CI002",
+                "answer": "no",
+                "reason": "Razón TEST",
+                "evidence": []
+              },
+              {
+                "code": "CI003",
+                "answer": "not_checked",
+                "reason": "Razón TEST",
+                "evidence": []
+              },
+              {
+                "code": "CI004",
+                "answer": "not_applicable",
+                "reason": "Razón TEST",
+                "evidence": []
+              }
+            ],
+            "evidence": {},
+            "observations": "Instalación guardada TEST"
+          },
+          "installationOperationId": null,
+          "installationValid": true,
+          "approval": {
+            "operationId": "00000000-0000-4000-8000-000000000003",
+            "version": 5
+          },
+          "reviewCorrection": null,
+          "pending": [],
+          "knownFailures": [],
+          "formattedUid": "AQ26-00001-7",
+          "displayModel": "A3-A",
+          "base": {
+            "surveyId": "00000000-0000-4000-8000-000000000001",
+            "displayIdentifier": "BASE-TEST-001",
+            "status": "accepted",
+            "accountNumber": "00123",
+            "location": {
+              "latitude": 22,
+              "longitude": -102,
+              "accuracy": 5
+            }
+          },
+          "installationAccountNumber": "00456",
+          "accountDiscrepancy": true,
+          "crew": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "name": "Empresa TEST",
+            "source": "linked_base"
+          },
+          "registeredBy": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "name": "Residente TEST"
+          },
+          "createdAt": null,
+          "registeredAt": "2026-10-05T12:00:00Z",
+          "validatedAt": "2026-10-05T12:00:00Z",
+          "installedAt": "2026-10-05T12:00:00Z",
+          "deliverableAt": null,
+          "reviewedAt": null,
+          "location": {
+            "latitude": 22,
+            "longitude": -102,
+            "accuracy": 5
+          },
+          "approvalValid": false,
+          "approvalInvalidated": false,
+          "finalReviewState": "pending_review",
+          "distanceToBaseMeters": null,
+          "mandatoryTests": 0,
+          "blockingCount": 0,
+          "photos": {
+            "total": 0,
+            "relationConfirmed": 0,
+            "storageConfirmedAtLastCheck": 0,
+            "problemsAtLastCheck": 0,
+            "unknown": 0,
+            "missingAtLastCheck": 0,
+            "oldestCheckAt": null
+          }
+        }
+      },
+      {
+        "operationId": "00000000-0000-4000-8000-000000000004",
+        "type": "identity_correct",
+        "actor": {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "name": "Residente TEST",
+          "type": "field_user"
+        },
+        "capturedAt": "2026-10-05T12:00:00Z",
+        "receivedAt": "2026-10-05T12:00:00Z",
+        "previousVersion": 5,
+        "resultVersion": 6,
+        "status": "incomplete",
+        "approvalInvalidated": true,
+        "command": {
+          "operationId": "00000000-0000-4000-8000-000000000004",
+          "expectedVersion": 4,
+          "capturedAt": "2026-10-05T12:00:00Z",
+          "type": "identity_correct",
+          "model": "A3",
+          "automated": true,
+          "reason": "Cambio de datos afectados TEST"
+        },
+        "cabinet": {
+          "cabinetId": "00000000-0000-4000-8000-000000000001",
+          "uid": "AQ26000017",
+          "model": "A3",
+          "automated": true,
+          "catalogVersion": "ddr001-cabinets-20261005-v1",
+          "closurePolicyVersion": "ddr001-installation-v1",
+          "partDefinitions": [
+            {
+              "code": "A3.r1.u1",
+              "key": null,
+              "description": "Medidor electromagnético",
+              "position": "principal.1",
+              "serial": "required",
+              "automatedOnly": false,
+              "source": {
+                "file": "TEST",
+                "sheet": null,
+                "row": null,
+                "quantity": 1,
+                "version": "TEST",
+                "key": null,
+                "description": "TEST"
+              },
+              "capture": {
+                "code": "A3.r1.u1",
+                "present": true,
+                "serial": "000ABC007",
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              "serialState": "captured",
+              "lastCapture": {
+                "operationId": "00000000-0000-4000-8000-000000000001",
+                "actorId": "00000000-0000-4000-8000-000000000001",
+                "capturedAt": "2026-10-05T12:00:00Z",
+                "receivedAt": "2026-10-05T12:00:00Z"
+              },
+              "pending": [],
+              "evidenceRequired": false
+            },
+            {
+              "code": "A3.r2.u1",
+              "key": null,
+              "description": "Pieza TEST 2",
+              "position": "principal.1",
+              "serial": "required",
+              "automatedOnly": false,
+              "source": {
+                "file": "TEST",
+                "sheet": null,
+                "row": null,
+                "quantity": 1,
+                "version": "TEST",
+                "key": null,
+                "description": "TEST"
+              },
+              "capture": {
+                "code": "A3.r2.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              "serialState": "pending",
+              "lastCapture": null,
+              "pending": [],
+              "evidenceRequired": false
+            },
+            {
+              "code": "A3.r3.u1",
+              "key": null,
+              "description": "Pieza TEST 3",
+              "position": "principal.1",
+              "serial": "required",
+              "automatedOnly": false,
+              "source": {
+                "file": "TEST",
+                "sheet": null,
+                "row": null,
+                "quantity": 1,
+                "version": "TEST",
+                "key": null,
+                "description": "TEST"
+              },
+              "capture": {
+                "code": "A3.r3.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              "serialState": "illegible",
+              "lastCapture": null,
+              "pending": [],
+              "evidenceRequired": false
+            },
+            {
+              "code": "A3.r4.u1",
+              "key": null,
+              "description": "Pieza TEST 4",
+              "position": "principal.1",
+              "serial": "required",
+              "automatedOnly": false,
+              "source": {
+                "file": "TEST",
+                "sheet": null,
+                "row": null,
+                "quantity": 1,
+                "version": "TEST",
+                "key": null,
+                "description": "TEST"
+              },
+              "capture": {
+                "code": "A3.r4.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              "serialState": "unavailable",
+              "lastCapture": null,
+              "pending": [],
+              "evidenceRequired": false
+            },
+            {
+              "code": "A3.r5.u1",
+              "key": null,
+              "description": "Pieza TEST 5",
+              "position": "principal.1",
+              "serial": "optional",
+              "automatedOnly": false,
+              "source": {
+                "file": "TEST",
+                "sheet": null,
+                "row": null,
+                "quantity": 1,
+                "version": "TEST",
+                "key": null,
+                "description": "TEST"
+              },
+              "capture": null,
+              "serialState": "optional_not_captured",
+              "lastCapture": null,
+              "pending": [],
+              "evidenceRequired": false
+            },
+            {
+              "code": "A3.r6.u1",
+              "key": null,
+              "description": "Pieza TEST 6",
+              "position": "principal.1",
+              "serial": "none",
+              "automatedOnly": false,
+              "source": {
+                "file": "TEST",
+                "sheet": null,
+                "row": null,
+                "quantity": 1,
+                "version": "TEST",
+                "key": null,
+                "description": "TEST"
+              },
+              "capture": {
+                "code": "A3.r6.u1",
+                "present": true,
+                "serial": null,
+                "evidence": [
+                  {
+                    "photoId": "00000000-0000-4000-8000-000000000001",
+                    "confirmed": true
+                  }
+                ],
+                "observations": "Captura TEST"
+              },
+              "serialState": "not_applicable",
+              "lastCapture": null,
+              "pending": [],
+              "evidenceRequired": false
+            }
+          ],
+          "version": 6,
+          "status": "incomplete",
+          "registrationEvidence": [],
+          "parts": [
+            {
+              "code": "A3.r1.u1",
+              "present": true,
+              "serial": "000ABC007",
+              "evidence": [
+                {
+                  "photoId": "00000000-0000-4000-8000-000000000001",
+                  "confirmed": true
+                }
+              ],
+              "observations": "Captura TEST"
+            },
+            {
+              "code": "A3.r2.u1",
+              "present": true,
+              "serial": null,
+              "evidence": [
+                {
+                  "photoId": "00000000-0000-4000-8000-000000000001",
+                  "confirmed": true
+                }
+              ],
+              "observations": "Captura TEST"
+            },
+            {
+              "code": "A3.r3.u1",
+              "present": true,
+              "serial": null,
+              "evidence": [
+                {
+                  "photoId": "00000000-0000-4000-8000-000000000001",
+                  "confirmed": true
+                }
+              ],
+              "observations": "Captura TEST"
+            },
+            {
+              "code": "A3.r4.u1",
+              "present": true,
+              "serial": null,
+              "evidence": [
+                {
+                  "photoId": "00000000-0000-4000-8000-000000000001",
+                  "confirmed": true
+                }
+              ],
+              "observations": "Captura TEST"
+            },
+            {
+              "code": "A3.r6.u1",
+              "present": true,
+              "serial": null,
+              "evidence": [
+                {
+                  "photoId": "00000000-0000-4000-8000-000000000001",
+                  "confirmed": true
+                }
+              ],
+              "observations": "Captura TEST"
+            }
+          ],
+          "partsValidated": false,
+          "installation": {
+            "baseId": "00000000-0000-4000-8000-000000000001",
+            "accountNumber": "00456",
+            "accountResolution": {
+              "decision": "use_cabinet",
+              "reason": "Resolución TEST preservada"
+            },
+            "gps": {
+              "latitude": 22,
+              "longitude": -102,
+              "accuracy": 5
+            },
+            "answers": [
+              {
+                "code": "CI001",
+                "answer": "yes",
+                "reason": "Razón TEST",
+                "evidence": []
+              },
+              {
+                "code": "CI002",
+                "answer": "no",
+                "reason": "Razón TEST",
+                "evidence": []
+              },
+              {
+                "code": "CI003",
+                "answer": "not_checked",
+                "reason": "Razón TEST",
+                "evidence": []
+              },
+              {
+                "code": "CI004",
+                "answer": "not_applicable",
+                "reason": "Razón TEST",
+                "evidence": []
+              }
+            ],
+            "evidence": {},
+            "observations": "Instalación guardada TEST"
+          },
+          "installationOperationId": null,
+          "installationValid": true,
+          "approval": null,
+          "reviewCorrection": null,
+          "pending": [
+            {
+              "code": "TEST_PENDING",
+              "subject": "CI003",
+              "classification": "mandatory_test",
+              "reason": "Sin presión"
+            }
+          ],
+          "knownFailures": [],
+          "formattedUid": "AQ26-00001-7",
+          "displayModel": "A3-A",
+          "base": {
+            "surveyId": "00000000-0000-4000-8000-000000000001",
+            "displayIdentifier": "BASE-TEST-001",
+            "status": "accepted",
+            "accountNumber": "00123",
+            "location": {
+              "latitude": 22,
+              "longitude": -102,
+              "accuracy": 5
+            }
+          },
+          "installationAccountNumber": "00456",
+          "accountDiscrepancy": true,
+          "crew": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "name": "Empresa TEST",
+            "source": "linked_base"
+          },
+          "registeredBy": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "name": "Residente TEST"
+          },
+          "createdAt": null,
+          "registeredAt": "2026-10-05T12:00:00Z",
+          "validatedAt": "2026-10-05T12:00:00Z",
+          "installedAt": "2026-10-05T12:00:00Z",
+          "deliverableAt": null,
+          "reviewedAt": null,
+          "location": {
+            "latitude": 22,
+            "longitude": -102,
+            "accuracy": 5
+          },
+          "approvalValid": false,
+          "approvalInvalidated": false,
+          "finalReviewState": "pending_review",
+          "distanceToBaseMeters": null,
+          "mandatoryTests": 0,
+          "blockingCount": 0,
+          "photos": {
+            "total": 0,
+            "relationConfirmed": 0,
+            "storageConfirmedAtLastCheck": 0,
+            "problemsAtLastCheck": 0,
+            "unknown": 0,
+            "missingAtLastCheck": 0,
+            "oldestCheckAt": null
+          }
+        }
+      }
+    ],
+    "evidencePolicy": "piece_photos_optional_series_required",
+    "synchronization": {
+      "serverVersion": 0,
+      "receivedOperations": 0
+    }
+  },
+  "photo": {
+    "photoId": "00000000-0000-4000-8000-000000000001",
+    "context": "parts",
+    "capturedAt": "2026-10-05T12:00:00Z",
+    "receivedAt": "2026-10-05T12:00:00Z",
+    "actor": {
+      "id": "00000000-0000-4000-8000-000000000001",
+      "name": "Residente TEST"
+    },
+    "metadata": {
+      "latitude": 22,
+      "longitude": -102,
+      "accuracy": 5,
+      "capturedAt": "2026-10-05T12:00:00Z"
+    },
+    "integrity": {
+      "photoId": "00000000-0000-4000-8000-000000000001",
+      "status": "confirmed",
+      "checkedAt": "2026-10-05T12:00:00Z",
+      "originalPresent": true,
+      "thumbnailPresent": true,
+      "storageVerified": true,
+      "retryable": false
+    },
+    "relations": [
+      {
+        "operationId": "00000000-0000-4000-8000-000000000001",
+        "photoId": "00000000-0000-4000-8000-000000000001",
+        "subject": "A3.r1.u1",
+        "confirmed": true,
+        "legible": false
+      },
+      {
+        "operationId": "00000000-0000-4000-8000-000000000001",
+        "photoId": "00000000-0000-4000-8000-000000000001",
+        "subject": "A3.r2.u1",
+        "confirmed": true,
+        "legible": false
+      }
+    ],
+    "thumbnailUrl": "/api/v1/admin/dashboard/construction/cabinets/00000000-0000-4000-8000-000000000001/photos/00000000-0000-4000-8000-000000000001/thumbnail",
+    "contentUrl": "/api/v1/admin/dashboard/construction/cabinets/00000000-0000-4000-8000-000000000001/photos/00000000-0000-4000-8000-000000000001/content"
+  },
+  "list": {
+    "items": [
+      {
+        "cabinetId": "00000000-0000-4000-8000-000000000001",
+        "uid": "AQ26000017",
+        "formattedUid": "AQ26-00001-7",
+        "model": "A3",
+        "automated": true,
+        "displayModel": "A3-A",
+        "status": "installed",
+        "version": 5,
+        "base": {
+          "surveyId": "00000000-0000-4000-8000-000000000001",
+          "displayIdentifier": "BASE-TEST-001",
+          "status": "accepted",
+          "accountNumber": "00123",
+          "location": {
+            "latitude": 22,
+            "longitude": -102,
+            "accuracy": 5
+          }
+        },
+        "installationAccountNumber": "00456",
+        "accountDiscrepancy": true,
+        "crew": {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "name": "Empresa TEST",
+          "source": "linked_base"
+        },
+        "registeredBy": {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "name": "Residente TEST"
+        },
+        "createdAt": null,
+        "registeredAt": "2026-10-05T12:00:00Z",
+        "validatedAt": "2026-10-05T12:00:00Z",
+        "installedAt": "2026-10-05T12:00:00Z",
+        "deliverableAt": null,
+        "reviewedAt": null,
+        "location": {
+          "latitude": 22,
+          "longitude": -102,
+          "accuracy": 5
+        },
+        "installationValid": true,
+        "approvalValid": false,
+        "approvalInvalidated": false,
+        "reviewCorrection": false,
+        "finalReviewState": "pending_review",
+        "distanceToBaseMeters": null,
+        "mandatoryTests": 0,
+        "blockingCount": 0,
+        "photos": {
+          "total": 0,
+          "relationConfirmed": 0,
+          "storageConfirmedAtLastCheck": 0,
+          "problemsAtLastCheck": 0,
+          "unknown": 0,
+          "missingAtLastCheck": 0,
+          "oldestCheckAt": null
+        }
+      }
+    ],
+    "page": 1,
+    "pageSize": 25,
+    "total": 26,
+    "totalPages": 2
+  },
+  "map": {
+    "items": [
+      {
+        "cabinetId": "00000000-0000-4000-8000-000000000001",
+        "uid": "AQ26000017",
+        "formattedUid": "AQ26-00001-7",
+        "model": "A3",
+        "automated": true,
+        "displayModel": "A3-A",
+        "status": "installed",
+        "version": 5,
+        "base": {
+          "surveyId": "00000000-0000-4000-8000-000000000001",
+          "displayIdentifier": "BASE-TEST-001",
+          "status": "accepted",
+          "accountNumber": "00123",
+          "location": {
+            "latitude": 22,
+            "longitude": -102,
+            "accuracy": 5
+          }
+        },
+        "installationAccountNumber": "00456",
+        "accountDiscrepancy": true,
+        "crew": {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "name": "Empresa TEST",
+          "source": "linked_base"
+        },
+        "registeredBy": {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "name": "Residente TEST"
+        },
+        "createdAt": null,
+        "registeredAt": "2026-10-05T12:00:00Z",
+        "validatedAt": "2026-10-05T12:00:00Z",
+        "installedAt": "2026-10-05T12:00:00Z",
+        "deliverableAt": null,
+        "reviewedAt": null,
+        "location": {
+          "latitude": 22,
+          "longitude": -102,
+          "accuracy": 5
+        },
+        "installationValid": true,
+        "approvalValid": false,
+        "approvalInvalidated": false,
+        "reviewCorrection": false,
+        "finalReviewState": "pending_review",
+        "distanceToBaseMeters": null,
+        "mandatoryTests": 0,
+        "blockingCount": 0,
+        "photos": {
+          "total": 0,
+          "relationConfirmed": 0,
+          "storageConfirmedAtLastCheck": 0,
+          "problemsAtLastCheck": 0,
+          "unknown": 0,
+          "missingAtLastCheck": 0,
+          "oldestCheckAt": null
+        }
+      }
+    ],
+    "limit": 2000,
+    "truncated": false,
+    "layer": "construction_cabinets"
+  }
+}

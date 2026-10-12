@@ -27,12 +27,21 @@ import {
   prefix,
   filterCount,
   validateFilters,
+  availableDomains,
 } from "./map.filters";
 import { useMapLayers } from "./map.state";
 import "./map.css";
 import { statusStyle, legendEntries } from "./map.colors";
 import { groupNearbyHydrants } from "./map.grouping";
 import { mapStatus } from "./map.api.datasource";
+import { useAuthStore } from "@/stores/auth";
+import { cabinetsApi } from "@/features/cabinets/cabinets.api";
+import { useCabinetResource } from "@/features/cabinets/cabinets.resource";
+import type { CabinetAdminMetrics } from "@/features/cabinets/cabinets.generated";
+const auth = useAuthStore();
+const permitted = computed(() => availableDomains(auth.user?.role));
+const cabinetCompanies = useCabinetResource<CabinetAdminMetrics>();
+const views = computed(() => ['all', 'hydrants', 'reviews', 'construction', 'diagnostics', ...(permitted.value.includes('cabinets') ? ['cabinets'] : [])] as MapView[]);
 const route = useRoute(),
   router = useRouter();
 const current = computed(() => readMapQuery(route.query));
@@ -46,13 +55,14 @@ const bbox = ref<Bounds>(),
 const { state, load } = useMapLayers();
 const active = computed(() =>
   current.value.view === "all"
-    ? current.value.layers
+    ? current.value.layers.filter(d => permitted.value.includes(d))
     : [
         current.value.view === "reviews"
           ? "hydrants"
           : (current.value.view as Domain),
-      ],
+      ].filter(d => permitted.value.includes(d)),
 );
+watch(() => active.value.includes("cabinets"), enabled => { if (enabled && !cabinetCompanies.data.value) void cabinetCompanies.load(signal => cabinetsApi.metrics({}, signal)); }, { immediate: true });
 const items = computed(() =>
   active.value
     .flatMap((d) => state[d].items)
@@ -81,7 +91,7 @@ const layerName = (d: Domain) =>
     ? "Revisiones"
     : domainInfo[d].name;
 const fields = (d: Domain) =>
-  filterFields[d].filter(
+  filterFields[d].map(field => d === "cabinets" && field.key === "crewId" ? { ...field, options: cabinetCompanies.data.value?.companies.filter(c => c.crewId).map(c => [c.crewId!, c.crewName || "Sin nombre"] as [string, string]) || [] } : field).filter(
     (f) => current.value.view !== "reviews" || f.key !== "hasInspections",
   );
 const selectedKey = computed({
@@ -115,6 +125,7 @@ const icons = {
   reviews: ClipboardCheck,
   construction: HardHat,
   diagnostics: Activity,
+  cabinets: Droplet,
 };
 function refresh(reset = false) {
   void load(
@@ -226,13 +237,7 @@ function recenter() {
     </header>
     <nav class="map-views" aria-label="Vista del mapa">
       <button
-        v-for="view in [
-          'all',
-          'hydrants',
-          'reviews',
-          'construction',
-          'diagnostics',
-        ] as const"
+        v-for="view in views"
         :key="view"
         class="btn"
         :aria-pressed="current.view === view"
@@ -247,6 +252,7 @@ function recenter() {
         }}
       </button>
     </nav>
+    <p v-if="current.view === 'cabinets' && !permitted.includes('cabinets')" role="alert" class="map-error">Nuevos Hidrantes requiere un rol administrador o supervisor.</p>
     <form class="map-controls card" @submit.prevent="apply">
       <div class="map-search-row">
         <label class="map-search"
@@ -270,7 +276,7 @@ function recenter() {
         </button>
       </div>
       <div v-if="current.view === 'all'" class="map-layers" aria-label="Capas">
-        <label v-for="d in domains" :key="d"
+        <label v-for="d in permitted" :key="d"
           ><input
             type="checkbox"
             :aria-label="domainInfo[d].name"
@@ -287,10 +293,12 @@ function recenter() {
             current.view === "hydrants" || current.view === "reviews"
               ? "última revisión RV"
               : current.view === "construction"
-                ? "creación del levantamiento"
+                ? "creación de la base"
+                : current.view === "cabinets"
+                  ? "registro completado del nuevo hidrante"
                 : current.view === "diagnostics"
                   ? "creación del caso"
-                  : "última revisión RV · creación del levantamiento y del caso"
+                  : "última revisión RV, creación de base/caso y registro completado de nuevos hidrantes"
           }}. Días de Hermosillo.
         </p>
         <div class="map-filter-grid">

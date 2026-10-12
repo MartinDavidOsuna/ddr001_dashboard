@@ -7,6 +7,8 @@ import {
   type MapView,
 } from "./map.types";
 import { utcDateRange } from "@/features/diagnostics/diagnostics.format";
+import { statuses, models, label, canReadCabinets } from "@/features/cabinets/cabinets.format";
+export const availableDomains = (role?: string) => domains.filter(d => d !== 'cabinets' || canReadCabinets(role));
 export type FilterField = {
   key: string;
   label: string;
@@ -20,6 +22,12 @@ export type FilterField = {
 const options = (values: string[]) =>
   values.map((v) => [v, v] as [string, string]);
 export const filterFields: Record<Domain, FilterField[]> = {
+  cabinets: [
+    { key: 'status', label: 'Estado de nuevo hidrante', options: statuses.map(s => [s, label(s)]) },
+    { key: 'model', label: 'Modelo de nuevo hidrante', options: models.map(m => [m, m]) },
+    { key: 'automated', label: 'Variante de nuevo hidrante', options: [['false', 'Estándar'], ['true', 'Automatizado']] },
+    { key: 'crewId', label: 'Empresa de nuevo hidrante', options: [] },
+  ],
   hydrants: [
     {
       key: "rvStatus",
@@ -172,6 +180,7 @@ export const filterFields: Record<Domain, FilterField[]> = {
   ],
 };
 export const prefix: Record<Domain, string> = {
+  cabinets: "n_",
   hydrants: "h_",
   construction: "c_",
   diagnostics: "d_",

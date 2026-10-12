@@ -1,6 +1,7 @@
 import { onBeforeUnmount, reactive } from "vue";
 import axios from "axios";
 import { loadMapLayer } from "./map.api.datasource";
+import { cabinetError } from '@/features/cabinets/cabinets.format';
 import {
   domains,
   type Bounds,
@@ -20,6 +21,7 @@ export function useMapLayers() {
     hydrants: empty(),
     construction: empty(),
     diagnostics: empty(),
+    cabinets: empty(),
   });
   let generation = 0,
     controller: AbortController | undefined;
@@ -49,7 +51,7 @@ export function useMapLayers() {
             // Manual refresh failures preserve the previously loaded snapshot.
             if (reset) state[d].items = [];
             state[d].error =
-              axios.isAxiosError(e) && e.response?.status === 403
+              d === 'cabinets' ? cabinetError(e) : axios.isAxiosError(e) && e.response?.status === 403
                 ? "Tu rol no permite consultar esta capa."
                 : "No fue posible consultar esta capa.";
           }

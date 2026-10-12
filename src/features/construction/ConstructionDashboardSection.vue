@@ -24,7 +24,7 @@ async function load() {
       apiSummary.value = summary
       apiMetrics.value = metrics
     } else constructionSurveys.value = await constructionDataSource.list()
-  } catch (cause) { error.value = problemMessage(cause, 'No fue posible cargar los indicadores de levantamientos.') }
+  } catch (cause) { error.value = problemMessage(cause, 'No fue posible cargar los indicadores de bases.') }
   finally { loading.value = false; emit('ready') }
 }
 onMounted(load)
@@ -73,14 +73,14 @@ const companyOption = computed<EChartsCoreOption>(() => productivityOption(compa
 <template>
   <section class="construction-dashboard" aria-labelledby="construction-dashboard-title">
     <div class="construction-heading">
-      <div><span class="eyebrow"><HardHat :size="15" /> LEVANTAMIENTOS / NUEVAS BASES</span><h2 id="construction-dashboard-title">Construcción de nuevos hidrantes</h2><p>Métricas Construction separadas de Revisión Visual.</p></div>
-      <RouterLink to="/levantamientos" class="btn">Abrir módulo</RouterLink>
+      <div><span class="eyebrow"><HardHat :size="15" /> LEVANTAMIENTOS / BASES</span><h2 id="construction-dashboard-title">Construcción de bases para nuevos hidrantes</h2><p>Métricas Construction separadas de Revisión Visual.</p></div>
+      <RouterLink to="/levantamientos/bases" class="btn">Abrir módulo</RouterLink>
     </div>
     <div v-if="loading" class="empty-box">Cargando indicadores…</div>
     <div v-else-if="error" class="empty-box" role="alert">{{ error }} <button class="btn" @click="load">Reintentar</button></div>
     <template v-else>
     <div class="construction-kpis">
-      <article class="card"><div><small>Levantamientos capturados</small><strong>{{ summary.total }}</strong></div></article>
+      <article class="card"><div><small>Bases capturadas</small><strong>{{ summary.total }}</strong></div></article>
       <article class="card"><div><small>Avance sobre meta</small><strong>{{ apiMode ? (apiSummary?.targetCompletionPercent ?? '?') : (summary.finished*100/460).toFixed(1) }}%</strong></div></article>
       <article class="card"><HardHat :size="19" /><div><small>Total de bases esperadas</small><strong>{{ apiMode ? (apiSummary?.targetBases ?? '?') : 460 }}</strong></div></article>
       <article class="card"><Clock3 :size="19" /><div><small>En construcción</small><strong>{{ summary.inProcess }}</strong></div></article>
@@ -92,11 +92,11 @@ const companyOption = computed<EChartsCoreOption>(() => productivityOption(compa
       <article class="card"><div><small>Ejecutadas / capturadas</small><strong>{{ summary.completionPercent }}%</strong></div></article>
     </div>
     <div class="construction-charts">
-      <article class="card chart"><div><strong>Estado de levantamientos</strong><small>Distribución operativa</small></div><EChart :option="statusOption" aria-label="Estado de levantamientos" /></article>
-      <article class="card chart"><div><strong>Bases por etapa actual</strong><small>Cuellos de botella</small></div><EChart :option="stageOption" aria-label="Etapa actual de levantamientos" /></article>
-      <article class="card chart chart--wide"><div><strong>Levantamientos creados / terminados</strong><small>Actividad temporal</small></div><EChart :option="activityOption" aria-label="Actividad temporal de levantamientos" /></article>
-      <article class="card chart"><div class="chart-heading"><div><strong>Levantamientos por contratista</strong><small>Métrica operacional, no ranking laboral</small></div></div><EChart :option="contractorOption" aria-label="Productividad por contratista" /></article>
-      <article class="card chart"><div class="chart-heading"><div><strong>Avance por Empresa</strong><small>Empresa asociada al levantamiento</small></div></div><EChart :option="companyOption" aria-label="Avance por Empresa" /></article>
+      <article class="card chart"><div><strong>Estado de bases</strong><small>Distribución operativa</small></div><EChart :option="statusOption" aria-label="Estado de bases" /></article>
+      <article class="card chart"><div><strong>Bases por etapa actual</strong><small>Cuellos de botella</small></div><EChart :option="stageOption" aria-label="Etapa actual de bases" /></article>
+      <article class="card chart chart--wide"><div><strong>Bases creadas / terminadas</strong><small>Actividad temporal</small></div><EChart :option="activityOption" aria-label="Actividad temporal de bases" /></article>
+      <article class="card chart"><div class="chart-heading"><div><strong>Bases por contratista</strong><small>Métrica operacional, no ranking laboral</small></div></div><EChart :option="contractorOption" aria-label="Productividad por contratista" /></article>
+      <article class="card chart"><div class="chart-heading"><div><strong>Avance por Empresa</strong><small>Empresa asociada a la base</small></div></div><EChart :option="companyOption" aria-label="Avance por Empresa" /></article>
     </div>
     <div class="secondary-metrics">
       <article class="card metric"><small>Tasa de rechazo</small><strong>{{ rejection }}%</strong><span>{{ apiMode ? 'Actualmente rechazados / revisados' : 'Rechazados o con corrección / revisados' }}</span></article>

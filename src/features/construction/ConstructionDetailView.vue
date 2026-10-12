@@ -59,11 +59,11 @@ function integrityLabel(photo: ConstructionPhoto) {
   <section class="content detail-page">
     <div v-if="loading" class="empty-box">Cargando expediente…</div>
     <div v-else-if="error" class="empty-box" role="alert">{{ error }} <button class="btn" @click="load">Reintentar</button></div>
-    <div v-else-if="!survey" class="empty-box"><FileWarning :size="28" /><strong>Levantamiento no encontrado</strong><RouterLink to="/levantamientos">Volver al listado</RouterLink></div>
+    <div v-else-if="!survey" class="empty-box"><FileWarning :size="28" /><strong>Base no encontrada</strong><RouterLink to="/levantamientos/bases">Volver al listado</RouterLink></div>
     <template v-else>
       <div class="page-head">
         <div class="heading">
-          <RouterLink to="/levantamientos" class="back-link"><ArrowLeft :size="17" /> Levantamientos</RouterLink>
+          <RouterLink to="/levantamientos/bases" class="back-link"><ArrowLeft :size="17" /> Levantamientos</RouterLink>
           <div class="eyebrow"><HardHat :size="15" /> EXPEDIENTE DE LEVANTAMIENTO</div>
           <h1 class="page-title">{{ survey.displayIdentifier }}</h1>
           <p class="page-subtitle">Seguimiento constructivo, evidencia y trazabilidad administrativa</p>

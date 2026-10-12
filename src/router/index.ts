@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
+import { canReadCabinets } from "@/features/cabinets/cabinets.format";
 import AppLayout from "@/layouts/AppLayout.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -72,17 +73,22 @@ const router = createRouter({
           component: () => import("@/features/hydrants/HydrantDetailView.vue"),
         },
         {
-          path: "levantamientos",
+          path: "levantamientos/bases",
           name: "construction-surveys",
           component: () =>
             import("@/features/construction/ConstructionListView.vue"),
         },
         {
-          path: "levantamientos/:surveyId",
+          path: "levantamientos/bases/:surveyId",
           name: "construction-survey-detail",
           component: () =>
             import("@/features/construction/ConstructionDetailView.vue"),
         },
+        { path: "levantamientos", redirect: "/levantamientos/bases" },
+        { path: "levantamientos/:surveyId", redirect: to => ({ name: "construction-survey-detail", params: { surveyId: to.params.surveyId }, query: to.query, hash: to.hash }) },
+        { path: "levantamientos/nuevos-hidrantes", name: "cabinets", component: () => import("@/features/cabinets/CabinetListView.vue"), meta: { cabinets: true } },
+        { path: "levantamientos/nuevos-hidrantes/:cabinetId", name: "cabinet-detail", component: () => import("@/features/cabinets/CabinetDetailView.vue"), meta: { cabinets: true } },
+        { path: "levantamientos/acceso-restringido", name: "cabinets-forbidden", component: () => import("@/features/cabinets/CabinetForbidden.vue") },
         {
           path: "fotografias",
           name: "photos",
@@ -126,6 +132,7 @@ router.beforeEach(async (to) => {
   await auth.restore();
   if (!to.meta.public && !auth.authenticated)
     return { name: "login", query: { redirect: to.fullPath } };
+  if (to.meta.cabinets && !canReadCabinets(auth.user?.role)) return { name: "cabinets-forbidden" };
   if (to.name === "login" && auth.authenticated) return { name: "dashboard" };
 });
 export default router;
