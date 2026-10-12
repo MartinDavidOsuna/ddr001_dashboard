@@ -2,6 +2,7 @@ import { mkdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { chromium } from 'playwright-core'
 
+const cabinets = JSON.parse(readFileSync('tests/fixtures/cabinets.json','utf8'))
 const diagnostics = JSON.parse(readFileSync(new URL('../tests/fixtures/functional-diagnostics.json', import.meta.url),'utf8'))
 const appUrl = process.env.E2E_APP_URL || 'http://127.0.0.1:4173'
 const artifactsDir = process.env.E2E_ARTIFACTS_DIR || '.artifacts/construction-ui'
@@ -12,8 +13,8 @@ const viewports = [
   { name: 'mobile-390', width: 390, height: 844 },
 ]
 const views = [
-  { path: '/dashboard', slug: 'dashboard', expected: ['Dashboard', 'Construcción de nuevos hidrantes'] },
-  { path: '/levantamientos', slug: 'levantamientos', expected: ['Levantamientos', 'Listado de levantamientos'] },
+  { path: '/dashboard', slug: 'dashboard', expected: ['Dashboard', 'Construcción de bases para nuevos hidrantes'] },
+  { path: '/levantamientos', slug: 'levantamientos', expected: ['Levantamientos', 'Listado de bases'] },
   { path: '/levantamientos/mock-survey-4', slug: 'levantamiento-detalle', expected: ['BASE DEMO 04', 'Avance de construcción', 'Correcciones'] },
   { path: '/usuarios', slug: 'usuarios', expected: ['Usuarios', 'Rol Levantamientos'] },
   { path: '/usuarios/mock-user-1', slug: 'usuario-detalle', expected: ['Detalle de usuario', 'ACCESO A LEVANTAMIENTOS'] },
@@ -76,6 +77,7 @@ function assert(condition, message) {
 mkdirSync(artifactsDir, { recursive: true })
 const browser = await chromium.launch({ headless: true, ...(process.platform==='win32'?{channel:'msedge'}:{}) })
 const context = await browser.newContext()
+let latestPage
 const forbiddenRequests = []
 const unexpectedApiRequests = []
 
@@ -96,6 +98,8 @@ await context.route('**/*', async (route) => {
   if (url.pathname === '/admin/dashboard/administration/users/mock-user-1/history') return json(route,{items:[]})
   const diagnosticKey = url.pathname.replace('/admin/dashboard/functional-diagnostics/','')
   if (['summary','metrics','trends'].includes(diagnosticKey)) return json(route,{data:diagnostics[diagnosticKey]})
+  if (url.pathname === '/admin/dashboard/construction/cabinets/summary') return json(route,cabinets.summary)
+  if (url.pathname === '/admin/dashboard/construction/cabinets/metrics') return json(route,cabinets.metrics)
   if (url.pathname === '/admin/auth/refresh') return json(route, { accessToken: 'mock-access-token', refreshToken: 'mock-refresh-token' })
   if (url.pathname === '/admin/auth/me') return json(route, { kind: 'admin', userId: 'mock-admin', role: 'admin', tokenId: 'mock-token' })
   if (url.pathname === '/admin/dashboard/summary') return json(route, summary)
@@ -103,7 +107,7 @@ await context.route('**/*', async (route) => {
   if (url.pathname === '/admin/dashboard/users/mock-user-1') return json(route, userDetail)
   if (url.pathname === '/admin/dashboard/users') return json(route, { page: 1, pageSize: 25, total: 1, items: [user] })
 
-  if (url.pathname.startsWith('/admin/') || url.pathname.includes('/construction/')) {
+  if (url.pathname.startsWith('/admin/')) {
     unexpectedApiRequests.push(`${request.method()} ${url.pathname}`)
     return json(route, { title: 'Unexpected mocked API request', status: 500 }, 500)
   }
@@ -112,7 +116,7 @@ await context.route('**/*', async (route) => {
 
 try {
   for (const viewport of viewports) {
-    const page = await context.newPage()
+    const page = await context.newPage(); latestPage = page
     await page.setViewportSize({ width: viewport.width, height: viewport.height })
     // Seed origin-scoped session state before Vue and its router guard boot.
     // The initial about:blank document has an opaque origin in Chromium.
@@ -127,7 +131,7 @@ try {
       await page.goto(`${appUrl}${view.path}`, { waitUntil: 'domcontentloaded' })
       assert(!page.url().includes('/login'), `${viewport.name} ${view.path}: redirected to login`)
       for (const text of view.expected) {
-        await page.getByText(text, { exact: false }).first().waitFor({ state: 'visible', timeout: 10_000 })
+        await page.getByText(text, { exact: false }).filter({ visible: true }).first().waitFor({ state: 'visible', timeout: 10_000 })
       }
       await page.waitForTimeout(120)
 
@@ -166,7 +170,10 @@ try {
   assert(forbiddenRequests.length === 0, `Production requests detected: ${forbiddenRequests.join(', ')}`)
   assert(unexpectedApiRequests.length === 0, `Unexpected API requests detected: ${unexpectedApiRequests.join(', ')}`)
   console.log(`Construction UI E2E PASS: ${viewports.length} viewports × ${views.length} views = ${viewports.length * views.length} responsive captures`)
-  console.log('Production/API integrity PASS: no cifra.aquafim.com and no Construction HTTP requests')
+  console.log('Production/API integrity PASS: no cifra.aquafim.com; Bases and Cabinets use isolated UI mocks')
+} catch (error) {
+  if(latestPage){console.log(latestPage.url());console.log(await latestPage.locator('body').innerText());await latestPage.screenshot({path:join(artifactsDir,'failure.png'),fullPage:true})}
+  console.log(unexpectedApiRequests);throw error
 } finally {
   await context.close()
   await browser.close()

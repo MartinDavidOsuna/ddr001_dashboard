@@ -1,8 +1,9 @@
 // Isolated UI certification: all API and tile requests are intercepted; no real records are changed.
 import { spawn } from "node:child_process";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { setTimeout as delay } from "node:timers/promises";
 import { chromium } from "playwright-core";
+const cabinetFixture = JSON.parse(readFileSync('tests/fixtures/cabinets.json','utf8'));
 const origin = "http://127.0.0.1:4176",
   artifacts = ".artifacts/global-map-ui";
 mkdirSync(artifacts, { recursive: true });
@@ -170,6 +171,8 @@ try {
         "Missing bearer",
       );
       requests.push({ path: p, query: Object.fromEntries(q) });
+      if (p === root + '/construction/cabinets/metrics') return json(cabinetFixture.metrics);
+      if (p === root + '/construction/cabinets/map') return json({...cabinetFixture.map,items:[]});
       const layer =
         p === root + "/map/hydrants"
           ? "hydrants"
@@ -302,7 +305,7 @@ try {
     );
     assert(
       !(await page.locator(".map-legend").innerText()).includes(
-        "Levantamientos",
+        "Bases",
       ),
       "legend is contextual",
     );
@@ -373,7 +376,7 @@ try {
     await page.getByRole("heading", { name: /Hidrante.*RV-100/ }).waitFor();
     await page.goBack();
     await page.locator(".global-pin,.global-cluster").first().waitFor();
-    await view("Levantamientos");
+    await view("Bases");
     if (role === "viewer") {
       assert(
         (await page.locator("[role=alert]").innerText()).includes("Tu rol"),
@@ -388,7 +391,7 @@ try {
       await page.waitForLoadState("networkidle");
       await page.locator(".global-pin.construction").click();
       await page
-        .getByRole("link", { name: "Ver levantamiento", exact: true })
+        .getByRole("link", { name: "Ver base", exact: true })
         .waitFor();
       assert(
         (await page.locator(".map-selection").innerText()).includes("BASE-200"),
