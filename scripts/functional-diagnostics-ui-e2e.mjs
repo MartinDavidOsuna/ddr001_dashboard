@@ -139,6 +139,20 @@ try {
               [
                 {
                   ...fixture.caseItem,
+                  durationSeconds: 3912,
+                  measurementSummary: {
+                    q1: {
+                      minimumErrorPct: -1.8,
+                      maximumErrorPct: 0.7,
+                      averageFlowLps: 1.23456,
+                    },
+                    q2: {
+                      minimumErrorPct: -0.9,
+                      maximumErrorPct: 1.2,
+                      averageFlowLps: null,
+                    },
+                    meanErrorPct: -0.42456789,
+                  },
                   meterId: sim
                     ? "SIMULATED-METER"
                     : url.searchParams.has("cursor")
@@ -229,6 +243,40 @@ try {
       await page
         .getByRole("link", { name: fixture.caseItem.meterId, exact: true })
         .waitFor();
+      assert(
+        (
+          await page.locator('[data-label="Q1 — Error / Flujo"]').innerText()
+        ).trim() === "-1.80% a +0.70% / 1.23 L/s",
+        "Q1 summary incorrect",
+      );
+      assert(
+        (
+          await page.locator('[data-label="Q2 — Error / Flujo"]').innerText()
+        ).trim() === "-0.90% a +1.20% / —",
+        "Q2 summary incorrect",
+      );
+      assert(
+        (
+          await page.locator('[data-label="Error promedio Q1/Q2"]').innerText()
+        ).trim() === "-0.42%",
+        "Mean error incorrect",
+      );
+      assert(
+        (await page.locator('[data-label="Duración"]').innerText()).trim() ===
+          "65:12",
+        "Duration incorrect",
+      );
+      if (width <= 768)
+        assert(
+          await page
+            .locator(".diag-case-table")
+            .evaluate((table) => table.scrollWidth <= table.clientWidth + 1),
+          "Mobile table overflows",
+        );
+      await page.screenshot({
+        path: `${artifacts}/${role}-${width}-list.png`,
+        fullPage: true,
+      });
       assert(
         requests
           .filter(

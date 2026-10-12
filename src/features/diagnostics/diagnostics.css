@@ -106,7 +106,14 @@
   white-space: nowrap;
 }
 .diag-case-table {
-  min-width: 1500px;
+  min-width: 1200px;
+}
+.diagnostics .diag-case-table th {
+  white-space: normal;
+}
+.diag-case-table td {
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
 }
 .diagnostics td a {
   font-weight: 700;
@@ -298,5 +305,38 @@
   }
   .diag-kpis strong {
     font-size: 1.35rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .diag-case-table,
+  .diag-case-table tbody,
+  .diag-case-table tr,
+  .diag-case-table td {
+    display: block;
+    min-width: 0;
+    width: 100%;
+  }
+  .diag-case-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .diag-case-table tr {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+  .diag-case-table td::before {
+    content: attr(data-label);
+    display: block;
+    color: var(--muted);
+    font-size: 0.75rem;
+    margin-bottom: 4px;
+  }
+  .diag-case-table td:last-child {
+    border-bottom: 0;
   }
 }

@@ -81,6 +81,16 @@ export interface Summary {
   };
   generatedAt: string;
 }
+export interface MeasurementSummary {
+  q1: FlowMeasurementSummary;
+  q2: FlowMeasurementSummary;
+  meanErrorPct: Numeric | null;
+}
+export interface FlowMeasurementSummary {
+  minimumErrorPct: Numeric | null;
+  maximumErrorPct: Numeric | null;
+  averageFlowLps: Numeric | null;
+}
 export interface CaseItem {
   caseId: string;
   meterId: string;
@@ -95,6 +105,7 @@ export interface CaseItem {
   closedAt: string | null;
   syncReceivedAt: string | null;
   durationSeconds: number | null;
+  measurementSummary?: MeasurementSummary | null;
   flowPointCount: number;
   sampleCount: number;
   evidenceCount: number;
