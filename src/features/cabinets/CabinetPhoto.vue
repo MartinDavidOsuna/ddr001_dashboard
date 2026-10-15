@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onBeforeUnmount, ref, watch } from "vue";
+import ImageViewer from '@/components/ImageViewer.vue';
 import type { CabinetAdminPhoto } from "./cabinets.generated";
 import { useCabinetBlob } from "./cabinets.blob";
 import { date, label, text } from "./cabinets.format";
@@ -15,7 +16,7 @@ const props = defineProps<{
 const thumb = useCabinetBlob(),
   original = useCabinetBlob(),
   root = ref<HTMLElement>(),
-  dialog = ref<HTMLDialogElement>();
+  opened = ref(false);
 let observer: IntersectionObserver | undefined,
   visible = false;
 function thumbnail() {
@@ -24,10 +25,10 @@ function thumbnail() {
 }
 function close() {
   original.clear();
-  dialog.value?.close();
+  opened.value = false;
 }
 function open() {
-  dialog.value?.showModal();
+  opened.value = true;
   void original.load(props.photo.contentUrl);
 }
 watch(
@@ -129,20 +130,8 @@ onBeforeUnmount(() => {
             : "Relación histórica sin confirmar"
         }}</a>
     </div>
-    <dialog
-      ref="dialog"
-      class="cabinet-lightbox"
-      :aria-label="`Fotografía ${photo.photoId}`"
-      @cancel.prevent="close"
-      @close="original.clear()"
-    >
-      <button
-        class="btn"
-        autofocus
-        @click="close"
-      >
-        Cerrar fotografía
-      </button>
+    <ImageViewer :open="opened" :src="original.src.value" :alt="`Fotografía ${photo.photoId}`" :photo-key="photo.photoId" @close="close" @error="original.fail()">
+      <template #status>
       <p
         v-if="original.loading.value"
         role="status"
@@ -162,13 +151,10 @@ onBeforeUnmount(() => {
           Reintentar original
         </button>
       </div>
-      <img
-        v-else-if="original.src.value"
-        :src="original.src.value"
-        :alt="`Original de ${label(photo.context)}`"
-        @error="original.fail()"
-      >
-    </dialog>
+      </template>
+      <strong>{{ label(photo.context) }}</strong> · {{ label(photo.integrity.status) }}<small>Captura: {{ date(photo.capturedAt) }} · Actor: {{ photo.actor.name || photo.actor.id }} · Verificación: {{ date(photo.integrity.checkedAt) }}</small>
+      <a v-for="r in relations" :key="r.subject" :href="r.href">{{ r.name }}</a>
+    </ImageViewer>
   </article>
 </template>
 <style scoped>
@@ -180,22 +166,5 @@ onBeforeUnmount(() => {
   border: 0;
   cursor: pointer;
   color: var(--muted);
-}
-.cabinet-lightbox {
-  border: 0;
-  border-radius: 12px;
-  width: min(1000px, 94vw);
-  max-height: 94vh;
-  padding: 18px;
-}
-.cabinet-lightbox::backdrop {
-  background: #071426bb;
-}
-.cabinet-lightbox img {
-  display: block;
-  max-width: 100%;
-  max-height: 78vh;
-  object-fit: contain;
-  margin: 12px auto;
 }
 </style>

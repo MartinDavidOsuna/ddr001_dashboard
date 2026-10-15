@@ -21,10 +21,9 @@ const props = withDefaults(
 );
 const summary = useCabinetResource<CabinetAdminSummary>(),
   metrics = useCabinetResource<CabinetAdminMetrics>();
-function load() {
-  void summary.load((signal) => cabinetsApi.summary(props.filters, signal));
-  void metrics.load((signal) => cabinetsApi.metrics(props.filters, signal));
-}
+function loadSummary() { void summary.load((signal) => cabinetsApi.summary(props.filters, signal)); }
+function loadMetrics() { void metrics.load((signal) => cabinetsApi.metrics(props.filters, signal)); }
+function load() { loadSummary(); loadMetrics(); }
 watch(() => props.filters, load, { immediate: true, deep: true });
 const kpis = computed(() => {
   const s = summary.data.value;
@@ -87,7 +86,7 @@ const kpis = computed(() => {
       {{ summary.error.value }}
       <button
         class="btn"
-        @click="load"
+        @click="loadSummary"
       >
         Reintentar indicadores
       </button>
@@ -162,7 +161,7 @@ const kpis = computed(() => {
       {{ metrics.error.value }}
       <button
         class="btn"
-        @click="load"
+        @click="loadMetrics"
       >
         Reintentar gráficas
       </button>

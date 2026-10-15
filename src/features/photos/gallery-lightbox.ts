@@ -1,6 +1,7 @@
+import { maxZoom } from '@/components/image-viewer.geometry';
 export const galleryZoom = {
   min: 1,
-  max: 3,
+  max: maxZoom,
   step: 0.25,
 } as const;
 

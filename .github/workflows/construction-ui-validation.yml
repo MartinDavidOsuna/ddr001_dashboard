@@ -56,6 +56,8 @@ jobs:
         run: npm run e2e:global-map
       - name: Run cabinets mock-only responsive E2E
         run: npm run e2e:cabinets-ui
+      - name: Run global photo viewer responsive E2E
+        run: npm run e2e:image-viewer
       - name: Upload responsive captures
         if: always()
         uses: actions/upload-artifact@v4

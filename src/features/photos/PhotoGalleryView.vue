@@ -2,21 +2,12 @@
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue";
 import {
   Camera,
-  ChevronLeft,
-  ChevronRight,
   Search,
-  X,
-  ZoomIn,
-  ZoomOut,
 } from "@lucide/vue";
 import { dashboardService } from "@/services/dashboard";
 import { problemMessage } from "@/api/client";
 import { toGalleryApiFilters } from "./gallery-filters";
-import {
-  decreaseGalleryZoom,
-  galleryZoom,
-  increaseGalleryZoom,
-} from "./gallery-lightbox";
+import ImageViewer from '@/components/ImageViewer.vue';
 import PrivateThumbnail from "./PrivateThumbnail.vue";
 import type {
   GalleryFilterOption,
@@ -34,8 +25,7 @@ const technicians = ref<GalleryFilterOption[]>([]),
 const loading = ref(true),
   error = ref("");
 const selected = ref<GalleryPhoto>(),
-  fullUrl = ref(""),
-  zoom = ref(1);
+  fullUrl = ref("");
 const filters = reactive({
   page: 1,
   pageSize: 40,
@@ -107,7 +97,6 @@ async function open(photo: GalleryPhoto) {
   const current = ++originalGeneration;
   releaseOriginal();
   selected.value = photo;
-  zoom.value = 1;
   if (photo.uploadStatus !== "verified") {
     fullUrl.value = "unavailable";
     return;
@@ -124,18 +113,11 @@ function close() {
   originalGeneration++;
   releaseOriginal();
   selected.value = undefined;
-  zoom.value = 1;
 }
 function move(delta: number) {
   const items = page.value?.items || [];
   const index = items.findIndex((x) => x.photoId === selected.value?.photoId);
   if (index >= 0) open(items[(index + delta + items.length) % items.length]!);
-}
-function key(event: KeyboardEvent) {
-  if (!selected.value) return;
-  if (event.key === "Escape") close();
-  if (event.key === "ArrowLeft") move(-1);
-  if (event.key === "ArrowRight") move(1);
 }
 function date(value: string) {
   return new Intl.DateTimeFormat("es-MX", {
@@ -152,7 +134,6 @@ const statusLabels: Record<string, string> = {
   missing: "Faltante",
 };
 onMounted(async () => {
-  window.addEventListener("keydown", key);
   try {
     const options = await dashboardService.galleryFilters();
     slots.value = options.slots;
@@ -167,7 +148,6 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   generation++;
   clearTimeout(timer);
-  window.removeEventListener("keydown", key);
   close();
 });
 </script>
@@ -335,34 +315,8 @@ onBeforeUnmount(() => {
       </button>
     </footer>
   </div>
-  <div
-    v-if="selected"
-    class="lightbox"
-    role="dialog"
-    aria-modal="true"
-    :aria-label="selected.slotLabel || selected.slotCode"
-  >
-    <button class="close" aria-label="Cerrar" @click="close"><X /></button
-    ><button class="nav prev" aria-label="Anterior" @click="move(-1)">
-      <ChevronLeft />
-    </button>
-    <div class="full">
-      <div class="image-viewport">
-        <div v-if="!fullUrl" class="skeleton loader" />
-        <p v-else-if="fullUrl === 'error'">
-          La imagen original no está disponible.
-        </p>
-        <p v-else-if="fullUrl === 'unavailable'">
-          El original privado sólo está disponible para fotografías verificadas.
-        </p>
-        <img
-          v-else
-          :src="fullUrl"
-          :alt="selected.slotLabel || selected.slotCode"
-          :style="{ transform: `scale(${zoom})` }"
-        />
-      </div>
-      <footer class="lightbox-toolbar">
+  <ImageViewer v-if="selected" :open="true" :src="fullUrl && !['error','unavailable'].includes(fullUrl) ? fullUrl : ''" :alt="selected.slotLabel || selected.slotCode" :photo-key="selected.photoId" navigation @close="close" @previous="move(-1)" @next="move(1)" @error="releaseOriginal(); fullUrl = 'error'">
+    <template #status><p v-if="fullUrl === 'error'">La imagen original no está disponible.</p><p v-else-if="fullUrl === 'unavailable'">El original privado sólo está disponible para fotografías verificadas.</p><p v-else>Cargando fotografía…</p></template>
         <div>
           <b>{{ selected.slotLabel || selected.slotCode }}</b
           ><small
@@ -385,25 +339,7 @@ onBeforeUnmount(() => {
             ></span
           >
         </div>
-        <button
-          aria-label="Alejar"
-          :disabled="zoom <= galleryZoom.min"
-          @click="zoom = decreaseGalleryZoom(zoom)"
-        >
-          <ZoomOut /></button
-        ><button
-          aria-label="Acercar"
-          :disabled="zoom >= galleryZoom.max"
-          @click="zoom = increaseGalleryZoom(zoom)"
-        >
-          <ZoomIn />
-        </button>
-      </footer>
-    </div>
-    <button class="nav next" aria-label="Siguiente" @click="move(1)">
-      <ChevronRight />
-    </button>
-  </div>
+  </ImageViewer>
 </template>
 
 <style scoped>
@@ -543,93 +479,6 @@ onBeforeUnmount(() => {
   border: 1px solid #ccd6e2;
   border-radius: 6px;
 }
-.lightbox {
-  position: fixed;
-  inset: 0;
-  background: #07111deb;
-  z-index: 100;
-  display: grid;
-  grid-template-columns: 64px minmax(0, 1fr) 64px;
-  align-items: center;
-  color: white;
-  overflow: hidden;
-  isolation: isolate;
-}
-.close {
-  position: absolute;
-  right: 18px;
-  top: 16px;
-  z-index: 5;
-}
-.close,
-.nav,
-.full footer button {
-  border: 0;
-  background: #ffffff18;
-  color: white;
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-}
-.nav {
-  justify-self: center;
-  position: relative;
-  z-index: 4;
-}
-.full {
-  height: 92vh;
-  min-width: 0;
-  display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
-  overflow: hidden;
-  position: relative;
-}
-.image-viewport {
-  min-width: 0;
-  min-height: 0;
-  overflow: hidden;
-  position: relative;
-  z-index: 1;
-  display: grid;
-  place-items: center;
-}
-.image-viewport img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  transition: transform 0.15s;
-  transform-origin: center;
-}
-.image-viewport > p,
-.loader {
-  margin: auto;
-}
-.lightbox-toolbar {
-  padding: 12px;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
-  align-items: center;
-  gap: 8px;
-  position: relative;
-  z-index: 3;
-  background: #07111df2;
-}
-.full footer div {
-  display: grid;
-  min-width: 0;
-}
-.full footer small {
-  color: #b7c4d2;
-}
-.full footer button:disabled {
-  opacity: 0.35;
-}
-.full footer button {
-  flex: 0 0 auto;
-}
 .empty-box svg {
   color: #8092aa;
 }
@@ -664,20 +513,6 @@ onBeforeUnmount(() => {
   .pagination {
     flex-wrap: wrap;
     justify-content: center;
-  }
-  .lightbox {
-    grid-template-columns: 48px minmax(0, 1fr) 48px;
-  }
-  .full {
-    height: 85vh;
-  }
-  .lightbox-toolbar {
-    padding: 9px 6px;
-    gap: 6px;
-  }
-  .nav {
-    width: 38px;
-    height: 38px;
   }
 }
 </style>

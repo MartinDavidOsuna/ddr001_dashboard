@@ -82,6 +82,10 @@ export const dashboardService = {
     ).data;
   },
   async photo(url: string) {
+    // Reject foreign/protocol-relative hosts before the client can attach its bearer.
+    if (!/^\/admin\/dashboard\/(?:inspections\/[\w-]+\/photos\/[\w-]+|construction\/surveys\/[\w-]+\/photos\/[\w-]+|photos\/[\w-]+)\/(?:thumbnail|content)$/.test(url)) {
+      throw new Error('Invalid administrative photo URL');
+    }
     return URL.createObjectURL(
       (await api.get<Blob>(url, { responseType: "blob", timeout: 30_000 }))
         .data,

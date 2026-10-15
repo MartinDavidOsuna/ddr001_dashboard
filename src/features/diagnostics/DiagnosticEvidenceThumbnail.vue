@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { diagnosticsApi } from "./diagnostics.api.datasource";
 import type { Evidence } from "./diagnostics.types";
 import { canReview, diagnosticError } from "./diagnostics.format";
+import ImageViewer from '@/components/ImageViewer.vue';
 import DiagnosticBadge from "./DiagnosticBadge.vue";
 import DiagnosticFields from "./DiagnosticFields.vue";
 const props = defineProps<{ caseId: string; evidence: Evidence }>(),
   auth = useAuthStore();
 const root = ref<HTMLElement>(),
-  dialog = ref<HTMLDialogElement>(),
+  opened = ref(false),
   url = ref(""),
   original = ref(""),
   error = ref(""),
@@ -22,6 +23,7 @@ const available = computed(
     props.evidence.integrityStatus === "VERIFIED",
 );
 let observer: IntersectionObserver | undefined;
+let originalController: AbortController | undefined;
 const controller = new AbortController();
 async function load() {
   if (loading.value || url.value || !available.value) return;
@@ -48,8 +50,10 @@ async function show() {
     props.evidence.integrityStatus !== "VERIFIED"
   )
     return;
-  await nextTick();
-  dialog.value?.showModal();
+  opened.value = true;
+  originalController?.abort();
+  const request = new AbortController();
+  originalController = request;
   originalLoading.value = true;
   originalError.value = "";
   try {
@@ -57,21 +61,29 @@ async function show() {
       props.caseId,
       props.evidence.evidenceId,
       "content",
-      controller.signal,
+      request.signal,
     );
-    if (!controller.signal.aborted && dialog.value?.open) {
+    if (!request.signal.aborted && opened.value) {
       if (original.value) URL.revokeObjectURL(original.value);
       original.value = URL.createObjectURL(blob);
     }
   } catch (e) {
-    if (!controller.signal.aborted) originalError.value = diagnosticError(e);
+    if (!request.signal.aborted) originalError.value = diagnosticError(e);
   } finally {
-    originalLoading.value = false;
+    if (!request.signal.aborted) originalLoading.value = false;
   }
 }
 function releaseOriginal() {
+  opened.value = false;
+  originalController?.abort();
+  originalLoading.value = false;
   if (original.value) URL.revokeObjectURL(original.value);
   original.value = "";
+}
+function failOriginal() {
+  if (original.value) URL.revokeObjectURL(original.value);
+  original.value = "";
+  originalError.value = "La fotografía no se pudo visualizar. Reintenta cargarla.";
 }
 onMounted(() => {
   if (!available.value) return;
@@ -139,19 +151,12 @@ onBeforeUnmount(() => {
       <summary>Integridad y metadatos de evidencia</summary>
       <DiagnosticFields :value="evidence" />
     </details>
-    <dialog
-      ref="dialog"
-      class="diag-dialog"
-      aria-label="Evidencia original"
-      @close="releaseOriginal"
-    >
-      <button class="btn" @click="dialog?.close()">Cerrar imagen</button>
-      <p v-if="originalLoading">Cargando original…</p>
-      <div v-if="originalError" role="alert">
-        {{ originalError }}
-        <button class="btn" @click="show">Reintentar original</button>
-      </div>
-      <img v-if="original" :src="original" :alt="`Original ${evidence.type}`" />
-    </dialog>
+    <ImageViewer :open="opened" :src="original" :alt="`Original ${evidence.type}`" :photo-key="evidence.evidenceId" @close="releaseOriginal" @error="failOriginal">
+      <template #status>
+        <p v-if="originalLoading">Cargando original…</p>
+        <div v-if="originalError" role="alert">{{ originalError }} <button class="btn" @click="show">Reintentar original</button></div>
+      </template>
+      <b>{{ evidence.type }}</b><small>{{ evidence.integrityStatus }} · {{ evidence.capturedAt }}</small>
+    </ImageViewer>
   </article>
 </template>

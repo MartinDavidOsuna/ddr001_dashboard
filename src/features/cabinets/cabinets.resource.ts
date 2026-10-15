@@ -25,8 +25,21 @@ export function useCabinetResource<T>() {
       const result = await request(controller.signal);
       if (token === generation) data.value = result;
     } catch (cause) {
-      if (token === generation && !axios.isCancel(cause))
+      if (token === generation && !axios.isCancel(cause)) {
         error.value = cabinetError(cause);
+        if (import.meta.env.DEV) {
+          // Never log the response/config/error object: it can contain tokens, SQL or paths.
+          const status = axios.isAxiosError(cause) ? cause.response?.status : undefined;
+          const title = axios.isAxiosError(cause) ? cause.response?.data?.title : undefined;
+          const known = ['Cabinet projection unavailable', 'Cabinet projection incomplete', 'Historical policy unavailable'];
+          console.debug('[Nuevos Hidrantes]', {
+            status: status ?? null,
+            kind: title && known.includes(title) ? title :
+              cause instanceof Error && cause.message === 'CABINETS_CONTRACT_DRIFT' ? 'contract' :
+                status ? 'http' : 'network-or-client',
+          });
+        }
+      }
     } finally {
       if (token === generation) loading.value = false;
     }

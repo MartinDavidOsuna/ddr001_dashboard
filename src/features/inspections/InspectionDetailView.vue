@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
+import ImageViewer from '@/components/ImageViewer.vue';
 import InspectionReview from './InspectionReview.vue';
 const auth = useAuthStore();
 import {
@@ -14,11 +15,6 @@ import {
   MapPin,
   Signal,
   Wifi,
-  ZoomIn,
-  ZoomOut,
-  X,
-  ChevronLeft,
-  ChevronRight,
 } from "@lucide/vue";
 import AppStatus from "@/components/AppStatus.vue";
 import InspectionMap from "@/components/InspectionMap.vue";
@@ -41,8 +37,7 @@ const route = useRoute(),
   photoUrls = ref(new Map<string, string>()),
   photoErrors = ref(new Set<string>()),
   lightbox = ref<number | null>(null),
-  fullUrl = ref(""),
-  zoomLevel = ref(1);
+  fullUrl = ref("");
 const allTabs: [string, string][] = [
   ["summary", "Resumen"],
   ["checklist", "Checklist"],
@@ -123,7 +118,6 @@ async function openPhoto(index: number) {
   const generation = ++fullPhotoGeneration;
   if (fullUrl.value && fullUrl.value !== 'error') URL.revokeObjectURL(fullUrl.value);
   lightbox.value = index;
-  zoomLevel.value = 1;
   fullUrl.value = "";
   try {
     const url = await dashboardService.photo(p.contentUrl);
@@ -140,29 +134,22 @@ function move(delta: number) {
     photoCards.value.length;
   openPhoto(next);
 }
+function imageError() {
+  if (fullUrl.value && fullUrl.value !== 'error') URL.revokeObjectURL(fullUrl.value);
+  fullUrl.value = 'error';
+}
 function close() {
   ++fullPhotoGeneration;
   if (fullUrl.value && fullUrl.value !== "error")
     URL.revokeObjectURL(fullUrl.value);
   fullUrl.value = "";
   lightbox.value = null;
-  zoomLevel.value = 1;
-}
-function changeZoom(delta: number) {
-  zoomLevel.value = Math.min(3, Math.max(1, zoomLevel.value + delta));
-}
-function key(e: KeyboardEvent) {
-  if (lightbox.value === null) return;
-  if (e.key === "Escape") close();
-  if (e.key === "ArrowLeft") move(-1);
-  if (e.key === "ArrowRight") move(1);
 }
 watch(tab, (value) => {
   if (value === "photos")
     for (const photo of data.value?.photos || []) loadPhoto(photo);
 });
 onMounted(async () => {
-  window.addEventListener("keydown", key);
   try {
     data.value = await dashboardService.inspection(String(route.params.id), route.query.archived === 'true');
     if (groups.value[0]) openSections.value.add(groups.value[0].id);
@@ -181,7 +168,6 @@ onMounted(async () => {
 });
 onBeforeUnmount(() => {
   ++photoGeneration;
-  window.removeEventListener("keydown", key);
   for (const u of photoUrls.value.values()) URL.revokeObjectURL(u);
   close();
 });
@@ -668,60 +654,10 @@ onBeforeUnmount(() => {
           </div>
         </section>
       </main>
-      <div
-        v-if="lightbox !== null"
-        class="lightbox"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Visor de fotografía"
-      >
-        <button class="close" aria-label="Cerrar" @click="close"><X /></button
-        ><button
-          class="previous"
-          aria-label="Fotografía anterior"
-          @click="move(-1)"
-        >
-          <ChevronLeft />
-        </button>
-        <div class="lightbox-content">
-          <div class="lightbox-image">
-            <img
-              v-if="fullUrl && fullUrl !== 'error'"
-              :src="fullUrl"
-              :alt="photoCards[lightbox]?.label"
-              :style="{ transform: `scale(${zoomLevel})` }"
-            /><span v-else-if="fullUrl === 'error'">Imagen no disponible</span
-            ><span v-else class="skeleton lightbox-loading"></span>
-          </div>
-          <footer>
-            <span
-              ><b>{{ photoCards[lightbox]?.label }}</b
-              ><small
-                >{{ photoCards[lightbox]?.photo?.widthPx || "—" }} ×
-                {{ photoCards[lightbox]?.photo?.heightPx || "—" }} px ·
-                {{ formatDate(photoCards[lightbox]?.photo?.capturedAt) }}</small
-              ></span
-            ><span class="zoom-controls"
-              ><button
-                aria-label="Alejar fotografía"
-                :disabled="zoomLevel <= 1"
-                @click="changeZoom(-0.5)"
-              >
-                <ZoomOut /></button
-              ><output aria-live="polite"
-                >{{ Math.round(zoomLevel * 100) }}%</output
-              ><button
-                aria-label="Acercar fotografía"
-                :disabled="zoomLevel >= 3"
-                @click="changeZoom(0.5)"
-              >
-                <ZoomIn /></button
-            ></span>
-          </footer>
-        </div>
-        <button class="next" aria-label="Fotografía siguiente" @click="move(1)">
-          <ChevronRight />
-        </button></div
+      <ImageViewer v-if="lightbox !== null" :open="true" :src="fullUrl !== 'error' ? fullUrl : ''" :alt="photoCards[lightbox]?.label" :photo-key="photoCards[lightbox]?.photo?.photoId" navigation @close="close" @previous="move(-1)" @next="move(1)" @error="imageError">
+        <template #status><p>{{ fullUrl === 'error' ? 'Imagen no disponible' : 'Cargando fotografía…' }}</p></template>
+        <b>{{ photoCards[lightbox]?.label }}</b><small>{{ photoCards[lightbox]?.photo?.widthPx || '—' }} × {{ photoCards[lightbox]?.photo?.heightPx || '—' }} px · {{ formatDate(photoCards[lightbox]?.photo?.capturedAt) }}</small>
+      </ImageViewer>
     ></template>
   </div>
 </template>
@@ -1137,89 +1073,7 @@ onBeforeUnmount(() => {
   color: #1a5fc9;
   padding: 10px 0;
 }
-.lightbox {
-  position: fixed;
-  inset: 0;
-  background: #07111dea;
-  z-index: 100;
-  display: grid;
-  grid-template-columns: 70px minmax(0, 1fr) 70px;
-  align-items: center;
-  color: white;
-  padding: 35px;
-}
-.lightbox-content {
-  max-width: 1200px;
-  max-height: 90vh;
-  margin: auto;
-  display: grid;
-  min-width: 0;
-}
-.lightbox-image {
-  overflow: auto;
-  display: grid;
-  place-items: center;
-  max-height: 75vh;
-}
-.lightbox img {
-  max-width: 100%;
-  max-height: 75vh;
-  object-fit: contain;
-  transform-origin: center;
-  transition: transform 0.15s ease;
-}
-.lightbox footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  padding: 12px;
-  background: #0e1b2b;
-}
-.lightbox footer > span:first-child {
-  display: grid;
-}
-.zoom-controls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.zoom-controls button {
-  width: 38px;
-  height: 38px;
-}
-.zoom-controls button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-.zoom-controls output {
-  min-width: 44px;
-  text-align: center;
-  font-size: 0.75rem;
-}
-.lightbox footer small {
-  color: #9eafc3;
-}
-.lightbox button {
-  border: 0;
-  background: #fff1;
-  color: white;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-}
-.lightbox .close {
-  position: absolute;
-  right: 22px;
-  top: 20px;
-}
-.lightbox-loading {
-  width: min(70vw, 800px);
-  height: 60vh;
-}
+
 .detail-loading {
   height: 70vh;
 }
@@ -1295,18 +1149,6 @@ onBeforeUnmount(() => {
   }
   .signal-hero div:last-child {
     grid-column: 2;
-  }
-  .lightbox {
-    grid-template-columns: 45px minmax(0, 1fr) 45px;
-    padding: 15px 4px;
-  }
-  .lightbox button {
-    width: 40px;
-    height: 40px;
-  }
-  .lightbox footer {
-    align-items: flex-start;
-    flex-direction: column;
   }
 }
 </style>
