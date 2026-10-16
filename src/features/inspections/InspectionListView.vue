@@ -4,16 +4,15 @@ import { onMounted, reactive, ref, watch } from "vue";
 import {
   Search,
   SlidersHorizontal,
-  Eye,
   MapPin,
-  Signal,
-  Camera,
   BarChart3,
 } from "@lucide/vue";
-import AppStatus from "@/components/AppStatus.vue";
+import InspectionListBody from "./InspectionListBody.vue";
+import { useRoute } from "vue-router";
 import { dashboardService } from "@/services/dashboard";
 import { problemMessage } from "@/api/client";
 import type { FilterOption, InspectionListItem, Page } from "@/api/types";
+const route = useRoute();
 const page = ref<Page<InspectionListItem>>(),
   loading = ref(false),
   error = ref(""),
@@ -27,7 +26,7 @@ const filters = reactive({
   search: "",
   userId: "",
   crewId: "",
-  status: "",
+  status: typeof route.query.status === "string" ? route.query.status : "",
   from: "",
   to: "",
   gps: "",
@@ -75,13 +74,6 @@ function reset() {
   });
   load();
 }
-function date(v: string) {
-  return new Intl.DateTimeFormat("es-MX", {
-    dateStyle: "short",
-    timeStyle: "short",
-    timeZone: "America/Hermosillo",
-  }).format(new Date(v));
-}
 onMounted(async () => {
   const f = await dashboardService.filters();
   technicians.value = f.technicians;
@@ -105,7 +97,7 @@ watch(() => filters.page, load);
     <div class="list-heading">
       <h2 class="list-title">Listado de revisiones</h2>
       <div class="list-actions">
-        <RouterLink class="btn" to="/dashboard#estadisticas-revisiones"><BarChart3 :size="17" />Estadísticas</RouterLink>
+        <RouterLink class="btn" to="/revisiones"><BarChart3 :size="17" />Estadísticas</RouterLink>
         <RouterLink class="btn" to="/mapa?view=reviews"><MapPin :size="17" />Mapa de revisiones</RouterLink>
       </div>
     </div>
@@ -186,115 +178,7 @@ watch(() => filters.page, load);
       <div v-for="n in 8" :key="n" class="row-skeleton skeleton" />
     </div>
     <template v-else-if="page?.items.length"
-      ><div class="table-card card desktop-table">
-        <table>
-          <thead>
-            <tr>
-              <th>Hidrante</th>
-              <th>Técnico / cuadrilla</th>
-              <th>Fecha</th>
-              <th>Rev.</th>
-              <th>Estado</th>
-              <th>Fotos</th>
-              <th>GPS</th>
-              <th>Señal</th>
-              <th>Actualización</th>
-              <th><span class="sr-only">Acción</span></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="x in page.items" :key="x.inspectionId">
-              <td>
-                <RouterLink
-                  class="account"
-                  :to="`/revisiones/${x.inspectionId}`"
-                  >{{ x.accountNumber }}</RouterLink
-                >
-              </td>
-              <td>
-                <b>{{ x.technicianName }}</b
-                ><small>{{ x.crewName || "Sin cuadrilla" }}</small>
-              </td>
-              <td>{{ date(x.startedAt) }}</td>
-              <td class="mono">#{{ x.revisionNumber }}</td>
-              <td><AppStatus :status="x.status" /></td>
-              <td>
-                <span v-if="x.status==='inactive'" class="photo-count"><Camera :size="15" />{{ x.totalPhotos }} de ausencia</span>
-                <span v-else class="photo-count" :class="{ missing: !x.mandatoryPhotosComplete }">
-                  <Camera :size="15" />
-                  <b>{{ x.mandatoryPhotosCompleted }}/{{ x.mandatoryPhotosRequired }}</b>
-                  obligatorias
-                  <small>{{ x.totalPhotos }} total</small>
-                </span>
-              </td>
-              <td>
-                <span class="signal-cell" :class="{ missing: !x.hasGps }"
-                  ><MapPin :size="15" />{{
-                    x.hasGps
-                      ? x.gpsAccuracyM
-                        ? `${x.gpsAccuracyM} m`
-                        : "Sí"
-                      : "Sin GPS"
-                  }}</span
-                >
-              </td>
-              <td>
-                <span class="signal-cell" :class="{ missing: !x.hasSignal }"
-                  ><Signal :size="15" />{{
-                    x.hasSignal
-                      ? [
-                          x.signalGeneration,
-                          x.signalDbm != null ? `${x.signalDbm} dBm` : null,
-                        ]
-                          .filter(Boolean)
-                          .join(" · ")
-                      : "Sin señal"
-                  }}</span
-                >
-              </td>
-              <td>{{ date(x.updatedAt) }}</td>
-              <td>
-                <RouterLink class="view" :to="`/revisiones/${x.inspectionId}`"
-                  ><Eye :size="16" />Ver</RouterLink
-                >
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="mobile-list">
-        <article
-          v-for="x in page.items"
-          :key="x.inspectionId"
-          class="card review-card"
-        >
-          <header>
-            <RouterLink class="account" :to="`/revisiones/${x.inspectionId}`"
-              >Hidrante {{ x.accountNumber }}</RouterLink
-            ><AppStatus :status="x.status" />
-          </header>
-          <b>{{ x.technicianName }}</b
-          ><small
-            >{{ x.crewName || "Sin cuadrilla" }} ·
-            {{ date(x.startedAt) }}</small
-          >
-          <div>
-            <span v-if="x.status==='inactive'"><Camera :size="15" />{{ x.totalPhotos }} de ausencia</span><span v-else
-              ><Camera :size="15" />{{ x.mandatoryPhotosCompleted }}/{{
-                x.mandatoryPhotosRequired
-              }} · {{ x.totalPhotos }} total</span
-            ><span><MapPin :size="15" />{{ x.hasGps ? "GPS" : "Sin GPS" }}</span
-            ><span
-              ><Signal :size="15" />{{
-                x.signalGeneration || "Sin señal"
-              }}</span
-            >
-          </div>
-          <RouterLink class="btn" :to="`/revisiones/${x.inspectionId}`"
-            ><Eye :size="16" />Ver revisión</RouterLink
-          >
-        </article>
-      </div>
+      ><InspectionListBody :items="page.items" />
       <footer class="pagination">
         <span
           >{{ (page.page - 1) * page.pageSize + 1 }}–{{

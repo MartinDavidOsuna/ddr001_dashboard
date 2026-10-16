@@ -1,3 +1,4 @@
+import type { AnalyticsQuery, RvAnalyticsResponse } from '@/features/inspections/rv-analytics.types';
 import { api } from "@/api/client";
 import type {
   DashboardSummary,
@@ -27,6 +28,9 @@ import {
   type InspectionExportFilters,
 } from "@/features/exports/export-utils";
 export const dashboardService = {
+  async rvAnalytics(filters: AnalyticsQuery, signal?: AbortSignal) {
+    return (await api.get<RvAnalyticsResponse>('/admin/dashboard/rv-analytics', { params: filters, signal, timeout: 30_000 })).data;
+  },
   async summary() {
     return (await api.get<DashboardSummary>("/admin/dashboard/summary")).data;
   },
