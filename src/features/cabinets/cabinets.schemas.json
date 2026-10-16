@@ -2,6 +2,9 @@
   "CabinetAdminRow": {
     "type": "object",
     "properties": {
+      "missingUnits": {
+        "type": "integer"
+      },
       "cabinetId": {
         "type": "string",
         "format": "uuid"
@@ -237,6 +240,7 @@
       }
     },
     "required": [
+      "missingUnits",
       "cabinetId",
       "uid",
       "formattedUid",
@@ -478,7 +482,8 @@
       "catalogVersion": {
         "type": "string",
         "enum": [
-          "ddr001-cabinets-20261005-v1"
+          "ddr001-cabinets-20261005-v1",
+          "ddr001-cabinets-20261015-v2"
         ]
       }
     }
@@ -1218,6 +1223,14 @@
       "source"
     ],
     "properties": {
+      "displayName": {
+        "type": "string",
+        "description": "Model-specific engineering label; optional for historical and automation-package definitions. Never identity."
+      },
+      "canonicalPartKey": {
+        "type": "string",
+        "description": "Stable model and engineering key for missing-unit aggregation."
+      },
       "code": {
         "type": "string"
       },
@@ -1485,6 +1498,18 @@
   "CabinetAdminSummary": {
     "type": "object",
     "properties": {
+      "productionTarget": {
+        "type": "integer"
+      },
+      "produced": {
+        "type": "integer"
+      },
+      "productionPercent": {
+        "type": "number"
+      },
+      "remainingToProduce": {
+        "type": "integer"
+      },
       "total": {
         "type": "integer"
       },
@@ -1599,6 +1624,10 @@
       }
     },
     "required": [
+      "productionTarget",
+      "produced",
+      "productionPercent",
+      "remainingToProduce",
       "total",
       "draft",
       "registered",
@@ -1693,6 +1722,52 @@
   "CabinetAdminMetrics": {
     "type": "object",
     "properties": {
+      "missingParts": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "partCode": {
+              "type": "string"
+            },
+            "canonicalPartKey": {
+              "type": "string"
+            },
+            "displayName": {
+              "type": "string"
+            },
+            "model": {
+              "type": "string"
+            },
+            "automated": {
+              "type": "boolean"
+            },
+            "missingUnits": {
+              "type": "integer"
+            },
+            "affectedCabinets": {
+              "type": "integer"
+            },
+            "confirmedAbsentUnits": {
+              "type": "integer"
+            },
+            "notReviewedUnits": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "partCode",
+            "canonicalPartKey",
+            "displayName",
+            "model",
+            "automated",
+            "missingUnits",
+            "affectedCabinets",
+            "confirmedAbsentUnits",
+            "notReviewedUnits"
+          ]
+        }
+      },
       "models": {
         "type": "array",
         "items": {
@@ -1731,6 +1806,18 @@
             "installedMilestone": {
               "type": "integer"
             },
+            "productionTarget": {
+              "type": "integer"
+            },
+            "produced": {
+              "type": "integer"
+            },
+            "productionPercent": {
+              "type": "number"
+            },
+            "remainingToProduce": {
+              "type": "integer"
+            },
             "model": {
               "type": "string"
             },
@@ -1750,6 +1837,10 @@
             "automated",
             "registeredMilestone",
             "installedMilestone",
+            "productionTarget",
+            "produced",
+            "productionPercent",
+            "remainingToProduce",
             "model",
             "target"
           ]
@@ -1965,6 +2056,7 @@
       }
     },
     "required": [
+      "missingParts",
       "models",
       "states",
       "variants",
@@ -1981,6 +2073,50 @@
   "CabinetAdminDossier": {
     "type": "object",
     "properties": {
+      "missingParts": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "partCode": {
+              "type": "string"
+            },
+            "canonicalPartKey": {
+              "type": "string"
+            },
+            "displayName": {
+              "type": "string"
+            },
+            "missing": {
+              "type": "boolean"
+            },
+            "reviewState": {
+              "type": "string",
+              "enum": [
+                "present",
+                "absent",
+                "not_reviewed"
+              ]
+            },
+            "serialPending": {
+              "type": "boolean"
+            },
+            "observations": {
+              "type": "string",
+              "nullable": true
+            }
+          },
+          "required": [
+            "partCode",
+            "canonicalPartKey",
+            "displayName",
+            "missing",
+            "reviewState",
+            "serialPending",
+            "observations"
+          ]
+        }
+      },
       "identification": {
         "type": "object",
         "properties": {
@@ -2522,6 +2658,7 @@
       }
     },
     "required": [
+      "missingParts",
       "identification",
       "base",
       "pieces",

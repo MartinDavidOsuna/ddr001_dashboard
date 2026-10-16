@@ -9,6 +9,7 @@ import type {
 } from "./cabinets.generated";
 export const cabinetsRoot = "/admin/dashboard/construction/cabinets";
 export type CabinetParams = {
+  missingPartCode?: string;
   search?: string;
   uid?: string;
   accountNumber?: string;

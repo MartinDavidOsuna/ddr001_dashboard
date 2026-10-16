@@ -3,6 +3,7 @@ import { utcDateRange } from "@/features/diagnostics/diagnostics.format";
 import type { CabinetParams } from "./cabinets.api";
 import { models, statuses } from "./cabinets.format";
 export const filterKeys = [
+  "missingPartCode",
   "search",
   "uid",
   "accountNumber",

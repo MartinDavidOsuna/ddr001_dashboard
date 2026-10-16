@@ -1,5 +1,6 @@
 {
   "row": {
+    "missingUnits": 1,
     "cabinetId": "00000000-0000-4000-8000-000000000001",
     "uid": "AQ26000017",
     "formattedUid": "AQ26-00001-7",
@@ -60,6 +61,10 @@
     }
   },
   "summary": {
+    "productionTarget": 460,
+    "produced": 7,
+    "productionPercent": 1.5,
+    "remainingToProduce": 453,
     "total": 8,
     "draft": 0,
     "registered": 0,
@@ -97,6 +102,19 @@
     "timeBasis": "TEST"
   },
   "metrics": {
+    "missingParts": [
+      {
+        "partCode": "A3.key.fixture",
+        "canonicalPartKey": "A3.key.fixture",
+        "displayName": "Válvula de salida TEST",
+        "model": "A3",
+        "automated": true,
+        "missingUnits": 1,
+        "affectedCabinets": 1,
+        "confirmedAbsentUnits": 0,
+        "notReviewedUnits": 1
+      }
+    ],
     "models": [
       {
         "total": 2,
@@ -111,6 +129,10 @@
         "registeredMilestone": 2,
         "installedMilestone": 0,
         "model": "A1",
+        "productionTarget": 41,
+        "produced": 2,
+        "productionPercent": 4.9,
+        "remainingToProduce": 39,
         "target": 41
       },
       {
@@ -126,6 +148,10 @@
         "registeredMilestone": 2,
         "installedMilestone": 0,
         "model": "A2",
+        "productionTarget": 105,
+        "produced": 2,
+        "productionPercent": 1.9,
+        "remainingToProduce": 103,
         "target": 105
       },
       {
@@ -141,6 +167,10 @@
         "registeredMilestone": 2,
         "installedMilestone": 0,
         "model": "A3",
+        "productionTarget": 290,
+        "produced": 2,
+        "productionPercent": 0.7,
+        "remainingToProduce": 288,
         "target": 290
       },
       {
@@ -156,6 +186,10 @@
         "registeredMilestone": 2,
         "installedMilestone": 0,
         "model": "A4",
+        "productionTarget": 24,
+        "produced": 2,
+        "productionPercent": 8.3,
+        "remainingToProduce": 22,
         "target": 24
       }
     ],
@@ -261,6 +295,10 @@
         "registeredMilestone": 2,
         "installedMilestone": 0,
         "model": "A1",
+        "productionTarget": 41,
+        "produced": 2,
+        "productionPercent": 4.9,
+        "remainingToProduce": 39,
         "target": 41,
         "crewId": "00000000-0000-4000-8000-000000000001",
         "crewName": "Empresa TEST"
@@ -278,6 +316,10 @@
         "registeredMilestone": 2,
         "installedMilestone": 0,
         "model": "A2",
+        "productionTarget": 105,
+        "produced": 2,
+        "productionPercent": 1.9,
+        "remainingToProduce": 103,
         "target": 105,
         "crewId": null,
         "crewName": null
@@ -314,7 +356,19 @@
     "cycleBasis": "TEST"
   },
   "dossier": {
+    "missingParts": [
+      {
+        "partCode": "A3.r5.u1",
+        "canonicalPartKey": "A3.key.fixture",
+        "displayName": "Válvula de salida TEST",
+        "missing": true,
+        "reviewState": "not_reviewed",
+        "serialPending": false,
+        "observations": null
+      }
+    ],
     "identification": {
+      "missingUnits": 1,
       "cabinetId": "00000000-0000-4000-8000-000000000001",
       "uid": "AQ26000017",
       "formattedUid": "AQ26-00001-7",
@@ -565,7 +619,8 @@
           "serialState": "optional_not_captured",
           "lastCapture": null,
           "pending": [],
-          "evidenceRequired": false
+          "evidenceRequired": false,
+          "displayName": "Válvula de salida TEST"
         },
         {
           "code": "A3.r6.u1",
@@ -787,7 +842,8 @@
                 "serialState": "optional_not_captured",
                 "lastCapture": null,
                 "pending": [],
-                "evidenceRequired": false
+                "evidenceRequired": false,
+                "displayName": "Válvula de salida TEST"
               },
               {
                 "code": "A3.r6.u1",
@@ -943,6 +999,7 @@
               }
             ],
             "knownFailures": [],
+            "missingUnits": 1,
             "formattedUid": "AQ26-00001-7",
             "displayModel": "A3-A",
             "base": {
@@ -1180,7 +1237,8 @@
                 "serialState": "optional_not_captured",
                 "lastCapture": null,
                 "pending": [],
-                "evidenceRequired": false
+                "evidenceRequired": false,
+                "displayName": "Válvula de salida TEST"
               },
               {
                 "code": "A3.r6.u1",
@@ -1336,6 +1394,7 @@
               }
             ],
             "knownFailures": [],
+            "missingUnits": 1,
             "formattedUid": "AQ26-00001-7",
             "displayModel": "A3-A",
             "base": {
@@ -1724,7 +1783,8 @@
                 "serialState": "optional_not_captured",
                 "lastCapture": null,
                 "pending": [],
-                "evidenceRequired": false
+                "evidenceRequired": false,
+                "displayName": "Válvula de salida TEST"
               },
               {
                 "code": "A3.r6.u1",
@@ -1876,6 +1936,7 @@
             "reviewCorrection": null,
             "pending": [],
             "knownFailures": [],
+            "missingUnits": 1,
             "formattedUid": "AQ26-00001-7",
             "displayModel": "A3-A",
             "base": {
@@ -2118,7 +2179,8 @@
                 "serialState": "optional_not_captured",
                 "lastCapture": null,
                 "pending": [],
-                "evidenceRequired": false
+                "evidenceRequired": false,
+                "displayName": "Válvula de salida TEST"
               },
               {
                 "code": "A3.r6.u1",
@@ -2274,6 +2336,7 @@
               }
             ],
             "knownFailures": [],
+            "missingUnits": 1,
             "formattedUid": "AQ26-00001-7",
             "displayModel": "A3-A",
             "base": {
@@ -2597,7 +2660,8 @@
               "serialState": "optional_not_captured",
               "lastCapture": null,
               "pending": [],
-              "evidenceRequired": false
+              "evidenceRequired": false,
+              "displayName": "Válvula de salida TEST"
             },
             {
               "code": "A3.r6.u1",
@@ -2753,6 +2817,7 @@
             }
           ],
           "knownFailures": [],
+          "missingUnits": 1,
           "formattedUid": "AQ26-00001-7",
           "displayModel": "A3-A",
           "base": {
@@ -2990,7 +3055,8 @@
               "serialState": "optional_not_captured",
               "lastCapture": null,
               "pending": [],
-              "evidenceRequired": false
+              "evidenceRequired": false,
+              "displayName": "Válvula de salida TEST"
             },
             {
               "code": "A3.r6.u1",
@@ -3146,6 +3212,7 @@
             }
           ],
           "knownFailures": [],
+          "missingUnits": 1,
           "formattedUid": "AQ26-00001-7",
           "displayModel": "A3-A",
           "base": {
@@ -3395,7 +3462,8 @@
               "serialState": "optional_not_captured",
               "lastCapture": null,
               "pending": [],
-              "evidenceRequired": false
+              "evidenceRequired": false,
+              "displayName": "Válvula de salida TEST"
             },
             {
               "code": "A3.r6.u1",
@@ -3547,6 +3615,7 @@
           "reviewCorrection": null,
           "pending": [],
           "knownFailures": [],
+          "missingUnits": 1,
           "formattedUid": "AQ26-00001-7",
           "displayModel": "A3-A",
           "base": {
@@ -3787,7 +3856,8 @@
               "serialState": "optional_not_captured",
               "lastCapture": null,
               "pending": [],
-              "evidenceRequired": false
+              "evidenceRequired": false,
+              "displayName": "Válvula de salida TEST"
             },
             {
               "code": "A3.r6.u1",
@@ -3943,6 +4013,7 @@
             }
           ],
           "knownFailures": [],
+          "missingUnits": 1,
           "formattedUid": "AQ26-00001-7",
           "displayModel": "A3-A",
           "base": {
@@ -4048,6 +4119,7 @@
   "list": {
     "items": [
       {
+        "missingUnits": 1,
         "cabinetId": "00000000-0000-4000-8000-000000000001",
         "uid": "AQ26000017",
         "formattedUid": "AQ26-00001-7",
@@ -4116,6 +4188,7 @@
   "map": {
     "items": [
       {
+        "missingUnits": 1,
         "cabinetId": "00000000-0000-4000-8000-000000000001",
         "uid": "AQ26000017",
         "formattedUid": "AQ26-00001-7",

@@ -29,7 +29,7 @@ export function photoRelations(
     map.set(r.subject, {
       subject: r.subject,
       name: piece
-        ? `Pieza ${piece.description} (${piece.code})`
+        ? `Pieza ${piece.displayName ?? piece.description} (${piece.code})`
         : question
           ? `Pregunta ${question.code}`
           : label(r.subject),

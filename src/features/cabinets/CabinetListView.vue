@@ -64,7 +64,7 @@ function apply() {
 }
 function page(value: number) {
   void router.push({
-    query: writeQuery(current.value.filters, value, current.value.pageSize),
+    query: {...writeQuery(current.value.filters, value, current.value.pageSize), missingPartName:route.query.missingPartName},
   });
 }
 function clear() {
@@ -125,6 +125,12 @@ const detailLink = (id: string) => ({
     <section class="card cabinet-stack">
       <h2>Listado de Nuevos Hidrantes</h2>
       <p
+        v-if="current.filters.missingPartCode"
+        role="status"
+      >
+        Gabinetes con faltante: {{ route.query.missingPartName || choices.data.value?.missingParts?.find(p => p.partCode === current.filters.missingPartCode)?.displayName || current.filters.missingPartCode }}
+      </p>
+      <p
         v-if="list.loading.value"
         role="status"
         class="cabinet-loading"
@@ -160,6 +166,9 @@ const detailLink = (id: string) => ({
             <thead>
               <tr>
                 <th>UID</th>
+                <th v-if="current.filters.missingPartCode">
+                  Unidades faltantes de la pieza
+                </th>
                 <th>Modelo</th>
                 <th>Estado</th>
                 <th>Base</th>
@@ -181,6 +190,12 @@ const detailLink = (id: string) => ({
                   <RouterLink :to="detailLink(row.cabinetId)">
                     {{ row.formattedUid }}
                   </RouterLink>
+                </td>
+                <td
+                  v-if="current.filters.missingPartCode"
+                  data-label="Unidades faltantes de la pieza"
+                >
+                  {{ row.missingUnits }}
                 </td>
                 <td data-label="Modelo">
                   {{ displayModel(row) }}

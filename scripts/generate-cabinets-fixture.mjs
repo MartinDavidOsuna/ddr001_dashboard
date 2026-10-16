@@ -64,6 +64,7 @@ const summary = {
   incomplete: 2,
   standard: 4,
   automated: 4,
+  productionTarget:460, produced:7, productionPercent:1.5, remainingToProduce:453,
   target: 460,
   targets: { A1: 41, A2: 105, A3: 290, A4: 24 },
   registeredPercent: 1.5,
@@ -71,6 +72,8 @@ const summary = {
   deliverablePercent: 0.2,
 };
 const metrics = make("CabinetAdminMetrics");
+metrics.missingParts = [{partCode:'A3.key.fixture', canonicalPartKey:'A3.key.fixture', displayName:'Válvula de salida TEST',model:'A3',automated:true,missingUnits:1,affectedCabinets:1,confirmedAbsentUnits:0,notReviewedUnits:1}];
+row.missingUnits = 1;
 metrics.models = ["A1", "A2", "A3", "A4"].map((model) => ({
   total: 2,
   draft: 0,
@@ -84,6 +87,7 @@ metrics.models = ["A1", "A2", "A3", "A4"].map((model) => ({
   registeredMilestone: 2,
   installedMilestone: 0,
   model,
+  productionTarget:summary.targets[model], produced:2, productionPercent:Math.round(2000/summary.targets[model])/10, remainingToProduce:summary.targets[model]-2,
   target: summary.targets[model],
 }));
 metrics.states = [
@@ -193,6 +197,8 @@ dossier.pieces.groups = [
     partCodes: dossier.pieces.instances.map((p) => p.code),
   },
 ];
+dossier.pieces.instances[4].displayName = 'Válvula de salida TEST';
+dossier.missingParts = [{partCode:dossier.pieces.instances[4].code,canonicalPartKey:'A3.key.fixture',displayName:'Válvula de salida TEST',missing:true,reviewState:'not_reviewed',serialPending:false,observations:null}];
 photo.relations = dossier.pieces.instances.slice(0, 2).map((p) => ({
   operationId: id,
   photoId: id,
