@@ -105,3 +105,10 @@ Metadata fotografica 200; muestra existente de TEST: thumbnail 200 image/webp (7
 **Deployment productivo BLOQUEADO**: IIS no certificado/omitido por instruccion, casos positivos historicos reales no disponibles, CI/PR y autorizacion de merge/deployment pendientes. Entorno local VS Code funcional y probado contra TEST. No hay merge ni deployment productivo, cambios moviles, checklist, migraciones productivas, CORS productivo o reinicios productivos.
 
 Ver rv-analytics-deployment.md para candidatos, PR, checklist y rollback. Los datos de autenticacion temporales ya fueron eliminados.
+
+## PR de revision
+
+- API, borrador: https://github.com/MartinDavidOsuna/ddr001_api/pull/21
+- Frontend, borrador: https://github.com/MartinDavidOsuna/ddr001_dashboard/pull/5
+
+Sin merge ni deployment productivo. CI se consulta en los PR; no confundir checks locales/TEST aprobados con CI remoto.

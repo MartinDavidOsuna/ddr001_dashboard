@@ -61,7 +61,7 @@ El runner usa HTTP real y Edge, sin respuestas mock ni JWT creados a mano. El us
 
 Los PR ajenos API #19/frontend #4 siguen fuera de alcance. API candidata parte del `main` con Stage 4G; la portabilidad RV no alteró esos archivos.
 
-## Borradores de PR — no publicados
+## Textos base de los PR de revision
 
 ### API: integration/rv-analytics-certification → main
 
@@ -132,3 +132,10 @@ Copiar únicamente tras autorización y respaldo verificado. Probar acceso/refre
 GET health/live, health/ready y version; login administrativo autorizado; auth/me; GET rv-analytics; GET inspections?page=1&pageSize=10; abrir dashboard; GET metadata de fotografías. Login/refresh sólo generan estado de autenticación; no escribir sobre revisiones reales. No marcar validaciones, rechazos, retiros, exportaciones nuevas ni reparaciones de almacenamiento durante el smoke.
 
 Autenticación TEST, E2E, roles, responsive y performance reales ya pasaron. Deployment productivo permanece BLOQUEADO hasta resolver el gate IIS omitido, revisar los límites históricos y obtener CI/aprobación de merge y despliegue. No se hizo merge ni despliegue productivo.
+
+## PR de revision
+
+- API, borrador: https://github.com/MartinDavidOsuna/ddr001_api/pull/21
+- Frontend, borrador: https://github.com/MartinDavidOsuna/ddr001_dashboard/pull/5
+
+Sin merge ni deployment productivo. CI se consulta en los PR; no confundir checks locales/TEST aprobados con CI remoto.
