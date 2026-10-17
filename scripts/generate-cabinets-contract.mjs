@@ -106,7 +106,7 @@ const out = resolve("src/features/cabinets");
 mkdirSync(out, { recursive: true });
 writeFileSync(
   resolve(out, "cabinets.generated.ts"),
-  "// Generated from ddr001_api PR #16, fbae6771c8457d623f652427ada9ac853f381f1f.\n" +
+  `// Generated from ddr001_api ${execFileSync("git", ["rev-parse", "HEAD"], {cwd:apiRoot,encoding:"utf8"}).trim()}.\n` +
     Object.entries(selected)
       .map(([name, schema]) => `export type ${name} = ${type(schema)};`)
       .join("\n") +

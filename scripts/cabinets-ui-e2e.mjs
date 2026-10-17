@@ -254,6 +254,15 @@ try {
       await page.getByRole("button", { name: "Expandir menú" }).click();
     }
     await noOverflow(page, `${width} list`);
+    if (!real) {
+      await page.getByRole('link', {name:'Válvula de salida TEST',exact:true}).click();
+      await page.waitForURL(u => u.searchParams.get('missingPartCode') === 'A3.key.fixture');
+      await page.getByText('Gabinetes con faltante: Válvula de salida TEST').waitFor();
+      await page.reload();
+      await page.getByText('Gabinetes con faltante: Válvula de salida TEST').waitFor();
+      assert(requests.some(x => x.includes('missingPartCode=A3.key.fixture')), 'Missing filter reaches API');
+      await noOverflow(page, `${width} filtered missing parts`);
+    }
     for (const chart of await page.locator(".cabinets .chart").all()) {
       await chart.scrollIntoViewIfNeeded();
       await chart.locator("canvas").first().waitFor();

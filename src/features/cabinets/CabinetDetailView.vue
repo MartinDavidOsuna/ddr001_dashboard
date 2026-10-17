@@ -204,7 +204,8 @@ const piecePhotos = (code: string) =>
             :key="part.code"
             class="cabinet-piece"
           >
-            <h3>{{ part.description }}</h3>
+            <h3>{{ part.displayName ?? part.description }}</h3>
+            <small v-if="part.displayName">{{ part.description }}</small>
             <dl class="cabinet-fields">
               <div>
                 <dt>Código / instancia</dt>
@@ -423,6 +424,21 @@ const piecePhotos = (code: string) =>
         <p v-if="!dossier.photos.length">
           Sin fotografías registradas.
         </p>
+        <div class="card">
+          <h3>Piezas faltantes: {{ dossier.missingParts?.length ?? 0 }}</h3>
+          <p v-if="!dossier.missingParts?.length">
+            Sin piezas faltantes
+          </p>
+          <ul>
+            <li
+              v-for="p in dossier.missingParts"
+              :key="p.partCode"
+            >
+              {{ p.displayName }} · {{ p.partCode }} · {{ p.reviewState === 'not_reviewed' ? 'Sin revisar' : 'Ausente' }}
+              <span v-if="p.observations"> · {{ p.observations }}</span>
+            </li>
+          </ul>
+        </div>
         <section
           v-for="group in photoGroups(dossier.photos)"
           :key="group.context"

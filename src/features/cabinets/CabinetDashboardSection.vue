@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useRoute } from "vue-router";
 import { computed, watch } from "vue";
 import EChart from "@/components/EChart.vue";
 import { cabinetsApi, type CabinetParams } from "./cabinets.api";
@@ -15,6 +16,7 @@ import {
 } from "./cabinets.charts";
 import { cycle, date } from "./cabinets.format";
 import "./cabinets.css";
+const route = useRoute();
 const props = withDefaults(
   defineProps<{ filters?: CabinetParams; compact?: boolean }>(),
   { filters: () => ({}) },
@@ -25,6 +27,7 @@ function loadSummary() { void summary.load((signal) => cabinetsApi.summary(props
 function loadMetrics() { void metrics.load((signal) => cabinetsApi.metrics(props.filters, signal)); }
 function load() { loadSummary(); loadMetrics(); }
 watch(() => props.filters, load, { immediate: true, deep: true });
+const missing = computed(() => [...(metrics.data.value?.missingParts ?? [])].sort((a,b) => b.missingUnits - a.missingUnits));
 const kpis = computed(() => {
   const s = summary.data.value;
   if (!s) return [];
@@ -93,12 +96,13 @@ const kpis = computed(() => {
     </div>
     <template v-if="summary.data.value">
       <div class="card cabinet-progress">
-        <strong>{{ summary.data.value.registeredMilestone }} /
-          {{ summary.data.value.target }}</strong><span>Registro alcanzado contra meta ·
-          {{ summary.data.value.registeredPercent }}%</span><progress
-          :max="summary.data.value.target || 1"
-          :value="summary.data.value.registeredMilestone"
-          aria-label="Avance de registro contra meta"
+        <h3>AVANCE DE PRODUCCIÓN</h3>
+        <strong>{{ summary.data.value.produced }} /
+          {{ summary.data.value.productionTarget }}</strong><span>Producidos / objetivo ·
+          {{ summary.data.value.productionPercent }}%</span><progress
+          :max="summary.data.value.productionTarget || 1"
+          :value="summary.data.value.produced"
+          aria-label="Avance de producción"
         /><small>Instalación válida {{ summary.data.value.installedPercent }}% ·
           Entregables {{ summary.data.value.deliverablePercent }}%</small>
       </div>
@@ -167,6 +171,60 @@ const kpis = computed(() => {
       </button>
     </div>
     <template v-if="metrics.data.value">
+      <div
+        class="cabinet-kpis"
+        aria-label="Producción por modelo"
+      >
+        <article
+          v-for="m in metrics.data.value.models"
+          :key="m.model"
+          class="card cabinet-progress"
+        >
+          <h3>{{ m.model }}</h3><strong>{{ m.produced }} / {{ m.productionTarget }}</strong>
+          <span>{{ m.productionPercent }}% · {{ m.remainingToProduce }} por producir</span>
+          <progress
+            :value="m.produced"
+            :max="m.productionTarget || 1"
+            :aria-label="`Producción ${m.model}`"
+          />
+        </article>
+      </div>
+      <section class="card">
+        <h3>PIEZAS FALTANTES</h3>
+        <p>Unidades ausentes o sin revisar. Series y evidencia pendientes se consultan por separado en el expediente.</p>
+        <div class="cabinet-scroll">
+          <table class="cabinet-table">
+            <thead><tr><th>Pieza</th><th>Modelo</th><th>Unidades faltantes</th><th>Gabinetes afectados</th><th>Ausencia confirmada</th><th>Sin revisar</th></tr></thead>
+            <tbody>
+              <tr
+                v-for="p in missing"
+                :key="`${p.partCode}-${p.automated}`"
+              >
+                <td data-label="Pieza">
+                  <RouterLink :to="{path:'/levantamientos/nuevos-hidrantes',query:{...route?.query,missingPartCode:p.partCode,missingPartName:p.displayName,model:p.model,automated:String(p.automated),page:'1'}}">
+                    {{ p.displayName }}
+                  </RouterLink>
+                </td>
+                <td data-label="Modelo">
+                  {{ p.model }}{{ p.automated ? '-A' : '' }}
+                </td>
+                <td data-label="Unidades faltantes">
+                  {{ p.missingUnits }}
+                </td><td data-label="Gabinetes afectados">
+                  {{ p.affectedCabinets }}
+                </td>
+                <td data-label="Ausencia confirmada">
+                  {{ p.confirmedAbsentUnits }}
+                </td><td data-label="Sin revisar">
+                  {{ p.notReviewedUnits }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div><p v-if="!missing.length">
+          Sin piezas faltantes para estos filtros.
+        </p>
+      </section>
       <div
         class="cabinet-charts"
         :class="{ compact }"
