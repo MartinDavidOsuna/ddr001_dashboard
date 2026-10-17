@@ -14,6 +14,7 @@
     "e2e:global-map": "node scripts/global-map-ui-e2e.mjs",
     "dev": "vite",
     "build": "vue-tsc --noEmit -p tsconfig.app.json && vite build",
+    "build:iis": "npm run build -- --base=/ddr001/",
     "typecheck": "vue-tsc --noEmit -p tsconfig.app.json",
     "lint": "eslint \"src/**/*.{ts,vue}\" \"scripts/**/*.mjs\" vite.config.ts eslint.config.js",
     "test": "vitest run",

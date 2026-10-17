@@ -20,29 +20,46 @@ function apply() {
     aria-label="Filtros del análisis RV"
     @submit.prevent="apply"
   >
-    <label>Modo<select v-model="fields.mode" aria-label="Modo"><option value="current">Estado actual</option><option value="history">Histórico de revisiones</option></select></label>
+    <label>Modo<select
+      v-model="fields.mode"
+      aria-label="Modo"
+    ><option value="current">Estado actual</option><option value="history">Histórico de revisiones</option></select></label>
     <label>Desde<input
-      v-model="fields.from" aria-label="Desde"
+      v-model="fields.from"
+      aria-label="Desde"
       type="date"
       :max="fields.to || undefined"
     ></label>
     <label>Hasta<input
-      v-model="fields.to" aria-label="Hasta"
+      v-model="fields.to"
+      aria-label="Hasta"
       type="date"
       :min="fields.from || undefined"
     ></label>
-    <label>Técnico<select v-model="fields.userId" aria-label="Técnico"><option value="">Todos</option><option
+    <label>Técnico<select
+      v-model="fields.userId"
+      aria-label="Técnico"
+    ><option value="">Todos</option><option
       v-for="t in technicians"
       :key="t.id"
       :value="t.id"
     >{{ t.label }}</option></select></label>
-    <label>Cuadrilla<select v-model="fields.crewId" aria-label="Cuadrilla"><option value="">Todas</option><option
+    <label>Cuadrilla<select
+      v-model="fields.crewId"
+      aria-label="Cuadrilla"
+    ><option value="">Todas</option><option
       v-for="c in crews"
       :key="c.id"
       :value="c.id"
     >{{ c.label }}</option></select></label>
-    <label>Estado<select v-model="fields.status" aria-label="Estado"><option value="">Todos</option><option value="submitted">Enviada</option><option value="validated">Validada</option><option value="inactive">Ausente</option></select></label>
-    <label>Agrupar por<select v-model="fields.grain" aria-label="Agrupar por"><option value="day">Día</option><option value="week">Semana</option><option value="month">Mes</option></select></label>
+    <label>Estado<select
+      v-model="fields.status"
+      aria-label="Estado"
+    ><option value="">Todos</option><option value="submitted">Enviada</option><option value="validated">Validada</option><option value="inactive">Ausente</option></select></label>
+    <label>Agrupar por<select
+      v-model="fields.grain"
+      aria-label="Agrupar por"
+    ><option value="day">Día</option><option value="week">Semana</option><option value="month">Mes</option></select></label>
     <button
       class="btn btn--primary"
       type="submit"
