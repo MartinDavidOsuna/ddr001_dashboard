@@ -1,3 +1,15 @@
+if (process.argv.includes('--rv-real-regression')) {
+  await import('./rv-analytics-real-regression.mjs');
+  process.exit(0);
+}
+if (process.argv.includes('--rv-real')) {
+  await import('./rv-analytics-real-edge.mjs');
+  process.exit(0);
+}
+if (process.argv.includes('--rv-analytics')) {
+  await import('./rv-analytics-edge.mjs');
+  process.exit(0);
+}
 import { access, mkdir, stat, writeFile } from "node:fs/promises";
 import process from "node:process";
 import { fileURLToPath } from "node:url";

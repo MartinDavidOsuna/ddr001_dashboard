@@ -179,7 +179,7 @@ onBeforeUnmount(() => {
     </div>
     <div v-else-if="error" class="content">
       <div class="error-box" role="alert">
-        {{ error }}<br /><RouterLink class="btn" to="/revisiones"
+        {{ error }}<br /><RouterLink class="btn" to="/revisiones/listado"
           >Volver</RouterLink
         >
       </div>
@@ -187,7 +187,7 @@ onBeforeUnmount(() => {
     <template v-else-if="data"
       ><section class="detail-head">
         <div class="identity">
-          <RouterLink to="/revisiones" aria-label="Volver a revisiones"
+          <RouterLink to="/revisiones/listado" aria-label="Volver a revisiones"
             ><ArrowLeft
           /></RouterLink>
           <div>
