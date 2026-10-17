@@ -1,3 +1,7 @@
+if (process.argv.includes('--rv-real-regression')) {
+  await import('./rv-analytics-real-regression.mjs');
+  process.exit(0);
+}
 if (process.argv.includes('--rv-real')) {
   await import('./rv-analytics-real-edge.mjs');
   process.exit(0);

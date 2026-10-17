@@ -1,6 +1,6 @@
 # RV Analytics — preparación de despliegue y rollback
 
-Estado al 17 de octubre de 2026: **BLOQUEADO**. No ejecutar merge ni deployment productivo con esta evidencia parcial. Ver `rv-analytics-certification.md`.
+Estado al 17 de octubre de 2026: **TEST autenticado ejecutado; deployment productivo BLOQUEADO** por IIS omitido, límites históricos documentados y autorización pendiente. No ejecutar merge ni deployment productivo. Ver `rv-analytics-certification.md`.
 
 ## Entorno autorizado actual
 
@@ -46,7 +46,9 @@ Con correo/contraseña de cuentas TEST existentes en variables E2E del proceso o
 npm run e2e:edge -- --rv-real
 ```
 
-El runner usa HTTP real y Edge, sin respuestas mock ni JWT creados a mano. Lee credenciales por rol (`E2E_VIEWER_EMAIL/PASSWORD`, equivalentes SUPERVISOR/ADMIN) sin registrarlas. No usar prefijo `VITE_` para secretos. Falta ejecutar el runner más allá del preflight por ausencia de estas credenciales. Una cuenta o rol faltante se debe informar; no cambiar roles para completar el informe.
+Alternativa autorizada usada en esta campaña: desde API, ejecutar `npx tsx scripts/rv-analytics-test-accounts.ts`; desde frontend, definir `RV_CERT_CREDENTIALS_FILE` con la ruta local a `reports/rv-analytics/accounts.private.json`, ejecutar el runner anterior y `npm run e2e:edge -- --rv-real-regression`; al finalizar, desde API ejecutar `npx tsx scripts/rv-analytics-test-accounts.ts --cleanup`. No imprimir ese archivo ni versionarlo. El helper sólo crea fixtures nuevos en TEST y retira exclusivamente sus cuentas/sesiones.
+
+El runner usa HTTP real y Edge, sin respuestas mock ni JWT creados a mano. El usuario autorizó cuentas temporales para los tres roles; los runners reales pasaron y las cuentas/sesiones se eliminaron después. Para repetir la campaña, ejecutar el helper TEST de cuentas y usar `RV_CERT_CREDENTIALS_FILE` con el archivo local ignorado generado. No usar prefijo `VITE_` para secretos ni cambiar roles de cuentas existentes.
 
 ## Gates para PR y aprobación
 
@@ -67,7 +69,7 @@ Título: `feat(admin): integrar y certificar el motor analítico RV de lectura`
 
 El dashboard RV necesita agregados institucionales versionados sin descargar respuestas crudas. Integra el motor RV ya implementado sobre el main actual, conservando Stage 4G y hardenings posteriores. Agrega consultas independientes de certificación y un launcher TEST aislado; sin cambios móviles, checklist, escrituras de captura, migraciones persistentes ni workers.
 
-Validación local: npm ci, type-check/lint/build, 907 unitarias y cinco integraciones SQL2014 en TEST. SQL independiente coincide con el motor para fugas, puertas, aplicabilidad, campos sin dato, scope y componentes parcelarios. **HTTP autenticado, roles, UI y performance HTTP pendientes; PR no listo para merge/deployment.**
+Validación local: npm ci, type-check/lint/build, 907 unitarias y cinco integraciones SQL2014 en TEST. SQL independiente coincide con HTTP autenticado y UI para fugas, puertas, aplicabilidad y campos sin dato. **Roles, responsive y performance reales aprobados. Current p50 5.305 s y p95 aproximado 5.442 s; tres concurrentes máximo 12.591 s. Casos positivos históricos v1/undefined/inactive no presentes en datos reales; fixtures SQL temporales aprobados. IIS omitido. PR para revisión, no para merge/deployment sin autorización.**
 
 Riesgos: transacción REPEATABLE_READ, límite de consulta y latencia bajo concurrencia aún por medir vía HTTP. Rollback: restaurar artefacto API anterior y su configuración, reiniciar únicamente el proceso autorizado. No hay migraciones RV que revertir. Se preserva la compatibilidad móvil.
 
@@ -77,7 +79,7 @@ Título: `feat(rv): integrar el dashboard analítico RV y preparar certificació
 
 `/revisiones` presenta el contrato server-side; el listado completo vive en `/revisiones/listado`. Conserva detalle, comparador, archivo y dashboard general. Incluye runner Edge real, build reproducible `/ddr001/` y corrección de siete warnings nuevos de labels, sin funcionalidad adicional ni recálculos en Vue.
 
-Validación local: npm ci, typecheck, 383 unitarias, lint sin errores (2921 warnings frente a 3044 de main), build y rutas SPA locales. ECharts idéntico a main (552398 bytes). **Certificación real autenticada y responsive contra TEST pendientes por credenciales; no presentar mocks como evidencia real.**
+Validación local: npm ci, typecheck, 383 unitarias, lint sin errores (2921 warnings frente a 3044 de main), build y rutas SPA locales. ECharts idéntico a main (552398 bytes). **Edge real y responsive 1440/768/390 aprobados; ajuste mínimo CSS por overflow descubierto con datos reales. Fotografías y regresión admin aprobadas. IIS omitido por instrucción.**
 
 Riesgos: disponibilidad de API Analytics antes de publicar frontend; las últimas revisiones son actividad general independiente del universo analítico. Rollback: restaurar el sitio/artefacto frontend previo; conservar configuración del servidor. Sin cambios móviles o de captura.
 
@@ -129,4 +131,4 @@ Copiar únicamente tras autorización y respaldo verificado. Probar acceso/refre
 
 GET health/live, health/ready y version; login administrativo autorizado; auth/me; GET rv-analytics; GET inspections?page=1&pageSize=10; abrir dashboard; GET metadata de fotografías. Login/refresh sólo generan estado de autenticación; no escribir sobre revisiones reales. No marcar validaciones, rechazos, retiros, exportaciones nuevas ni reparaciones de almacenamiento durante el smoke.
 
-No se declara LISTO PARA DEPLOYMENT mientras falte autenticación TEST, E2E/roles/responsive/performance reales y revisión final de artefactos/rollback. No se hizo merge ni despliegue productivo.
+Autenticación TEST, E2E, roles, responsive y performance reales ya pasaron. Deployment productivo permanece BLOQUEADO hasta resolver el gate IIS omitido, revisar los límites históricos y obtener CI/aprobación de merge y despliegue. No se hizo merge ni despliegue productivo.
