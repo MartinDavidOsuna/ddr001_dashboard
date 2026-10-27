@@ -6,6 +6,41 @@ import fixture from "../../../tests/fixtures/cabinets.json";
 vi.mock("@/api/client", () => ({ api: { get: vi.fn() } }));
 beforeEach(() => vi.clearAllMocks());
 describe("Cabinets real administrative contract", () => {
+  it("accepts a historical base with unknown GPS accuracy without weakening installation captures", () => {
+    const value = structuredClone(fixture.list) as unknown as {
+      items: Array<{ base: { location: { accuracy: number | null } } }>;
+    };
+    value.items[0]!.base.location.accuracy = null;
+    expect(assertContract("CabinetAdminList", value)).toEqual(value);
+    const invalid = structuredClone(fixture.dossier) as unknown as {
+      installation: { data: { gps: { accuracy: number | null } } };
+    };
+    invalid.installation.data.gps.accuracy = null;
+    expect(() => assertContract("CabinetAdminDossier", invalid)).toThrow(
+      "CABINETS_CONTRACT_DRIFT",
+    );
+  });
+  it.each(["linked_base", "registration_profile", "session_history_consensus"])(
+    "accepts real company source %s while preserving pagination and null historical values",
+    (source) => {
+      const value = structuredClone(fixture.list);
+      value.items[0]!.crew = { ...fixture.row.crew, source };
+      expect(assertContract("CabinetAdminList", value)).toEqual(value);
+    },
+  );
+  it("reports the incompatible field without returning an empty list", () => {
+    const value = structuredClone(fixture.list);
+    value.items[0]!.crew = { ...fixture.row.crew, source: "unknown_source" };
+    try {
+      assertContract("CabinetAdminList", value);
+      throw new Error("must reject");
+    } catch (error) {
+      expect(error).toMatchObject({
+        message: "CABINETS_CONTRACT_DRIFT",
+        field: "$response.items[0].crew.source",
+      });
+    }
+  });
   it.each([
     ["CabinetAdminSummary", "summary"],
     ["CabinetAdminMetrics", "metrics"],

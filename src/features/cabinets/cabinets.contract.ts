@@ -14,6 +14,36 @@ type Schema = {
   anyOf?: Schema[];
 };
 const schemas = definitions as Record<string, Schema>;
+export class CabinetContractError extends Error {
+  constructor(
+    public readonly contract: string,
+    public readonly field: string,
+  ) {
+    super("CABINETS_CONTRACT_DRIFT");
+  }
+}
+function failure(schema: Schema, value: unknown, path = "$response"): string {
+  if (schema.$ref)
+    return failure(schemas[schema.$ref.split("/").at(-1)!]!, value, path);
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    const record = value as Record<string, unknown>;
+    const missing = schema.required?.find((key) => !(key in record));
+    if (missing) return `${path}.${missing}`;
+    for (const [key, child] of Object.entries(schema.properties || {})) {
+      if (key in record && !valid(child, record[key]))
+        return failure(child, record[key], `${path}.${key}`);
+    }
+  }
+  if (Array.isArray(value) && schema.items) {
+    const index = value.findIndex((item) => !valid(schema.items!, item));
+    if (index >= 0)
+      return failure(schema.items, value[index], `${path}[${index}]`);
+  }
+  for (const child of schema.allOf || []) {
+    if (!valid(child, value)) return failure(child, value, path);
+  }
+  return path;
+}
 function valid(schema: Schema, value: unknown): boolean {
   if (value === null) return schema.nullable === true;
   if (schema.$ref)
@@ -59,6 +89,7 @@ export function assertContract<T>(
   name: keyof typeof definitions,
   value: unknown,
 ): T {
-  if (!valid(schemas[name]!, value)) throw new Error("CABINETS_CONTRACT_DRIFT");
+  if (!valid(schemas[name]!, value))
+    throw new CabinetContractError(name, failure(schemas[name]!, value));
   return value as T;
 }

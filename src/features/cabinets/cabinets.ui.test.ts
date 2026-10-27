@@ -1,6 +1,7 @@
 import { mount, flushPromises } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createMemoryHistory, createRouter } from "vue-router";
+import { createPinia, setActivePinia } from "pinia";
 import { assertContract } from "./cabinets.contract";
 import { cabinetsApi } from "./cabinets.api";
 import { label } from "./cabinets.format";
@@ -30,6 +31,7 @@ const dossier = () =>
     structuredClone(fixture.dossier),
   );
 beforeEach(() => {
+  setActivePinia(createPinia());
   vi.clearAllMocks();
   vi.mocked(cabinetsApi.list).mockResolvedValue(
     assertContract<CabinetAdminList>("CabinetAdminList", fixture.list),

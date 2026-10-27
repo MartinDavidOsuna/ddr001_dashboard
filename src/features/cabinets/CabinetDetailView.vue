@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { cabinetsApi } from "./cabinets.api";
-import type { CabinetAdminDossier, CabinetGps } from "./cabinets.generated";
+import type { CabinetAdminDossier } from "./cabinets.generated";
 import { useCabinetResource } from "./cabinets.resource";
 import { date, label, text, presence, displayModel } from "./cabinets.format";
 import {
@@ -13,17 +13,29 @@ import {
 import CabinetPending from "./CabinetPending.vue";
 import CabinetTimeline from "./CabinetTimeline.vue";
 import CabinetPhoto from "./CabinetPhoto.vue";
+import CabinetAdministration from "./CabinetAdministration.vue";
 import "./cabinets.css";
 const route = useRoute(),
   resource = useCabinetResource<CabinetAdminDossier>();
 const dossier = computed(() => resource.data.value);
+const administrationNotice = ref("");
+function administrativeChanged(message: string) {
+  administrationNotice.value = message;
+  load();
+}
 function load() {
   void resource.load((signal) =>
     cabinetsApi.detail(String(route.params.cabinetId), signal),
   );
 }
 watch(() => route.params.cabinetId, load, { immediate: true });
-const gps = (value?: CabinetGps | null) =>
+const gps = (
+  value?: {
+    latitude: number;
+    longitude: number;
+    accuracy: number | null;
+  } | null,
+) =>
   value
     ? `${value.latitude}, ${value.longitude} · precisión ${text(value.accuracy)} m`
     : "—";
@@ -42,31 +54,27 @@ const piecePhotos = (code: string) =>
     >
       ← Volver a Nuevos Hidrantes
     </RouterLink>
-    <p
-      v-if="resource.loading.value"
-      role="status"
-      class="card cabinet-loading"
-    >
+    <p v-if="resource.loading.value" role="status" class="card cabinet-loading">
       Cargando expediente de nuevo hidrante…
     </p>
-    <div
-      v-else-if="resource.error.value"
-      role="alert"
-      class="cabinet-error"
-    >
+    <div v-else-if="resource.error.value" role="alert" class="cabinet-error">
       {{ resource.error.value }}
-      <button
-        class="btn"
-        @click="load"
-      >
-        Reintentar expediente
-      </button>
+      <button class="btn" @click="load">Reintentar expediente</button>
     </div>
     <template v-if="dossier">
-      <header
-        id="registration"
-        class="card cabinet-head"
-      >
+      <p v-if="administrationNotice" role="status" class="card">
+        {{ administrationNotice }}
+      </p>
+      <CabinetAdministration
+        :dossier="dossier"
+        @changed="administrativeChanged"
+        @deleted="
+          administrativeChanged(
+            'Gabinete eliminado del listado activo; se conserva el expediente histórico.',
+          )
+        "
+      />
+      <header id="registration" class="card cabinet-head">
         <div>
           <h1 class="page-title">
             {{ dossier.identification.formattedUid }}
@@ -82,22 +90,21 @@ const piecePhotos = (code: string) =>
           }}</span>
         </div>
         <div>
-          <small>Versión {{ dossier.identification.version }} · Catálogo
-            {{ dossier.identification.catalogVersion }}<br>Política
-            {{ dossier.identification.policyVersion }}</small>
+          <small
+            >Versión {{ dossier.identification.version }} · Catálogo
+            {{ dossier.identification.catalogVersion }}<br />Política
+            {{ dossier.identification.policyVersion }}</small
+          >
           <p>
             Registro: {{ date(dossier.identification.registeredAt)
-            }}<br>Validación: {{ date(dossier.identification.validatedAt)
-            }}<br>Instalación: {{ date(dossier.identification.installedAt)
-            }}<br>Entregable vigente:
+            }}<br />Validación: {{ date(dossier.identification.validatedAt)
+            }}<br />Instalación: {{ date(dossier.identification.installedAt)
+            }}<br />Entregable vigente:
             {{ date(dossier.identification.deliverableAt) }}
           </p>
         </div>
       </header>
-      <nav
-        class="cabinet-tabs"
-        aria-label="Secciones del expediente"
-      >
+      <nav class="cabinet-tabs" aria-label="Secciones del expediente">
         <a
           v-for="[id, name] in [
             ['base', 'Base'],
@@ -110,19 +117,25 @@ const piecePhotos = (code: string) =>
           :key="id"
           class="btn"
           :href="`#${id}`"
-        >{{ name }}</a>
+          >{{ name }}</a
+        >
       </nav>
-      <section
-        id="base"
-        class="card"
-      >
+      <section id="base" class="card">
         <h2>Base vinculada</h2>
         <p>
           Empresa:
           {{
             dossier.identification.crew?.name || "Sin empresa / Sin asignación"
           }}
-          · Fuente: cuadrilla actual de la base.
+          · Fuente:
+          {{
+            dossier.identification.crew?.source === "linked_base"
+              ? "base vinculada"
+              : dossier.identification.crew?.source ===
+                  "session_history_consensus"
+                ? "consenso del historial de sesiones"
+                : "empresa de registro"
+          }}.
         </p>
         <template v-if="dossier.base">
           <dl class="cabinet-fields">
@@ -155,10 +168,7 @@ const piecePhotos = (code: string) =>
               </dd>
             </div>
           </dl>
-          <p
-            v-if="dossier.base.accountDiscrepancy"
-            class="cabinet-warning"
-          >
+          <p v-if="dossier.base.accountDiscrepancy" class="cabinet-warning">
             La cuenta de la base y la cuenta de instalación son distintas. Se
             conservan ambos datos; consulta la resolución registrada.
           </p>
@@ -169,14 +179,9 @@ const piecePhotos = (code: string) =>
             Ver expediente de base
           </RouterLink>
         </template>
-        <p v-else>
-          Sin base vinculada.
-        </p>
+        <p v-else>Sin base vinculada.</p>
       </section>
-      <section
-        id="pieces"
-        class="card"
-      >
+      <section id="pieces" class="card">
         <h2>Revisión de piezas</h2>
         <p>
           {{
@@ -235,24 +240,20 @@ const piecePhotos = (code: string) =>
               <div>
                 <dt>Última captura</dt>
                 <dd v-if="part.lastCapture">
-                  {{ actor(part.lastCapture.actorId) }}<br>Captura
-                  {{ date(part.lastCapture.capturedAt) }}<br>Recepción
+                  {{ actor(part.lastCapture.actorId) }}<br />Captura
+                  {{ date(part.lastCapture.capturedAt) }}<br />Recepción
                   {{ date(part.lastCapture.receivedAt) }}
                 </dd>
-                <dd v-else>
-                  —
-                </dd>
+                <dd v-else>—</dd>
               </div>
             </dl>
-            <CabinetPending
-              :items="part.pending"
-              :dossier="dossier"
-            /><a
+            <CabinetPending :items="part.pending" :dossier="dossier" /><a
               v-for="photo in piecePhotos(part.code)"
               :key="photo.photoId"
               class="btn"
               :href="`#photo-${photo.photoId}`"
-            >Ver fotografía relacionada</a>
+              >Ver fotografía relacionada</a
+            >
           </article>
         </details>
         <details>
@@ -262,11 +263,22 @@ const piecePhotos = (code: string) =>
           <CabinetTimeline :events="dossier.pieces.attempts" />
         </details>
       </section>
-      <section
-        id="installation"
-        class="card"
-      >
+      <section id="installation" class="card">
         <h2>Instalación</h2>
+        <p v-if="dossier.administration?.cancellation" class="cabinet-warning">
+          Instalación anterior cancelada el
+          {{ date(dossier.administration.cancellation.cancelledAt) }}. Motivo:
+          {{ dossier.administration.cancellation.reason }}. El historial y las
+          evidencias se conservan.
+        </p>
+        <p v-if="dossier.administration?.installationDate">
+          Fecha administrativa de instalación:
+          {{ date(dossier.administration.installationDate) }}.
+        </p>
+        <p v-if="dossier.administration?.administrativeNotes">
+          Información administrativa:
+          {{ dossier.administration.administrativeNotes }}
+        </p>
         <p :class="{ 'cabinet-warning': !dossier.installation.valid }">
           {{
             dossier.installation.valid
@@ -328,8 +340,8 @@ const piecePhotos = (code: string) =>
             <strong>{{ q.code }} · {{ q.label }}</strong>
             <p>
               {{ label(q.answer?.answer) }} · {{ label(q.applicability)
-              }}<br>Razón: {{ text(q.answer?.reason) }} · Motivo pendiente:
-              {{ label(q.answer?.pendingReason) }}<br>Clasificación
+              }}<br />Razón: {{ text(q.answer?.reason) }} · Motivo pendiente:
+              {{ label(q.answer?.pendingReason) }}<br />Clasificación
               registrada: {{ label(q.answer?.assessment) }}
             </p>
             <p v-if="q.answer?.impact">
@@ -342,15 +354,13 @@ const piecePhotos = (code: string) =>
               {{ date(q.capturedBy.capturedAt) }} · Recepción
               {{ date(q.capturedBy.receivedAt) }}
             </p>
-            <CabinetPending
-              :items="q.pending"
-              :dossier="dossier"
-            /><a
+            <CabinetPending :items="q.pending" :dossier="dossier" /><a
               v-for="e in q.evidence"
               :key="e.photoId"
               class="btn"
               :href="`#photo-${e.photoId}`"
-            >Ver evidencia {{ e.photoId }}</a>
+              >Ver evidencia {{ e.photoId }}</a
+            >
           </article>
         </details>
         <details>
@@ -362,18 +372,12 @@ const piecePhotos = (code: string) =>
           <CabinetTimeline :events="dossier.installation.captures" />
         </details>
       </section>
-      <section
-        id="final-review"
-        class="card"
-      >
+      <section id="final-review" class="card">
         <h2>Revisión final</h2>
         <p>
           <strong>{{ label(dossier.finalReview.state) }}</strong>
         </p>
-        <p
-          v-if="dossier.finalReview.correction"
-          class="cabinet-warning"
-        >
+        <p v-if="dossier.finalReview.correction" class="cabinet-warning">
           Corrección actual: {{ dossier.finalReview.correction.reason }}
         </p>
         <p v-if="dossier.finalReview.approval">
@@ -411,10 +415,7 @@ const piecePhotos = (code: string) =>
           <CabinetTimeline :events="dossier.finalReview.invalidations" />
         </details>
       </section>
-      <section
-        id="photos"
-        class="card"
-      >
+      <section id="photos" class="card">
         <h2>Fotografías</h2>
         <p>
           Relaciones históricas e integridad verificada en vivo por el
@@ -454,10 +455,7 @@ const piecePhotos = (code: string) =>
           </div>
         </section>
       </section>
-      <section
-        id="history"
-        class="card"
-      >
+      <section id="history" class="card">
         <h2>Historial de capturas y recepción</h2>
         <CabinetTimeline :events="dossier.history" />
         <p>
