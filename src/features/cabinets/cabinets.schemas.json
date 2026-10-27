@@ -501,12 +501,6 @@
       "automated": {
         "type": "boolean"
       },
-      "expectedCrewId": {
-        "type": "string",
-        "format": "uuid",
-        "nullable": true,
-        "description": "Optional company captured offline; mismatch blocks reassignment."
-      },
       "catalogVersion": {
         "type": "string",
         "enum": [
@@ -514,6 +508,12 @@
           "ddr001-cabinets-20261015-v2",
           "ddr001-cabinets-20261023-v3"
         ]
+      },
+      "expectedCrewId": {
+        "type": "string",
+        "format": "uuid",
+        "nullable": true,
+        "description": "Optional company captured offline; mismatch blocks reassignment."
       }
     }
   },
@@ -1112,31 +1112,6 @@
         "type": "string",
         "format": "uuid"
       },
-      "registrationCompany": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "id",
-          "name",
-          "source"
-        ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "source": {
-            "type": "string",
-            "enum": [
-              "registration_profile",
-              "session_history_consensus"
-            ]
-          }
-        }
-      },
       "uid": {
         "type": "string",
         "pattern": "^AQ[0-9]{8}$"
@@ -1272,6 +1247,31 @@
         "minItems": 0,
         "maxItems": 84
       },
+      "registrationCompany": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "source"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "registration_profile",
+              "session_history_consensus"
+            ]
+          }
+        }
+      },
       "partsReviewPolicyVersion": {
         "type": "string",
         "enum": [
@@ -1280,74 +1280,128 @@
         ]
       },
       "partsReviewPolicy": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "version",
-          "evidenceRequired",
-          "universalParts",
-          "parts"
-        ],
-        "properties": {
-          "version": {
-            "type": "string",
-            "enum": [
-              "ddr001-parts-20261019-v1",
-              "ddr001-parts-20261019-v2"
-            ]
-          },
-          "evidenceRequired": {
-            "type": "boolean"
-          },
-          "universalParts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CabinetPhysicalPart"
-            },
-            "minItems": 0,
-            "maxItems": 60
-          },
-          "parts": {
+        "oneOf": [
+          {
             "type": "object",
-            "additionalProperties": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "side",
-                "step",
-                "order",
-                "serial"
-              ],
-              "properties": {
-                "side": {
-                  "type": "string",
-                  "enum": [
-                    "district",
-                    "producer"
-                  ]
-                },
-                "step": {
-                  "type": "string",
-                  "enum": [
-                    "district",
-                    "producer",
-                    "automation"
-                  ]
-                },
-                "order": {
-                  "type": "number"
-                },
-                "serial": {
-                  "type": "string",
-                  "enum": [
-                    "required",
-                    "none"
-                  ]
+            "additionalProperties": false,
+            "required": [
+              "version",
+              "evidenceRequired",
+              "parts"
+            ],
+            "properties": {
+              "version": {
+                "type": "string",
+                "enum": [
+                  "ddr001-parts-20261019-v1"
+                ]
+              },
+              "evidenceRequired": {
+                "type": "boolean"
+              },
+              "parts": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "side",
+                    "order",
+                    "serial"
+                  ],
+                  "properties": {
+                    "side": {
+                      "type": "string",
+                      "enum": [
+                        "district",
+                        "producer"
+                      ]
+                    },
+                    "order": {
+                      "type": "number"
+                    },
+                    "serial": {
+                      "type": "string",
+                      "enum": [
+                        "required",
+                        "none"
+                      ]
+                    }
+                  }
                 }
               }
             }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "version",
+              "evidenceRequired",
+              "parts",
+              "universalParts"
+            ],
+            "properties": {
+              "version": {
+                "type": "string",
+                "enum": [
+                  "ddr001-parts-20261019-v2"
+                ]
+              },
+              "evidenceRequired": {
+                "type": "boolean"
+              },
+              "parts": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "side",
+                    "order",
+                    "serial",
+                    "step"
+                  ],
+                  "properties": {
+                    "side": {
+                      "type": "string",
+                      "enum": [
+                        "district",
+                        "producer"
+                      ]
+                    },
+                    "order": {
+                      "type": "number"
+                    },
+                    "serial": {
+                      "type": "string",
+                      "enum": [
+                        "required",
+                        "none"
+                      ]
+                    },
+                    "step": {
+                      "type": "string",
+                      "enum": [
+                        "district",
+                        "producer",
+                        "automation"
+                      ]
+                    }
+                  }
+                }
+              },
+              "universalParts": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CabinetPhysicalPart"
+                },
+                "minItems": 0,
+                "maxItems": 60
+              }
+            }
           }
-        }
+        ]
       }
     }
   },
@@ -1618,16 +1672,20 @@
             "nullable": true
           },
           "latitude": {
-            "type": "number"
+            "type": "number",
+            "nullable": true
           },
           "longitude": {
-            "type": "number"
+            "type": "number",
+            "nullable": true
           },
           "accuracy": {
-            "type": "number"
+            "type": "number",
+            "nullable": true
           },
           "altitude": {
-            "type": "number"
+            "type": "number",
+            "nullable": true
           }
         },
         "required": [

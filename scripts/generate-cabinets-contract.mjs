@@ -40,6 +40,14 @@ if (process.argv.includes("--check")) {
     cwd: apiRoot,
     encoding: "utf8",
   }).trim();
+  const header = readFileSync(
+    "src/features/cabinets/cabinets.generated.ts",
+    "utf8",
+  ).split(/\r?\n/, 1)[0];
+  if (header !== `// Generated from ddr001_api ${head}.`)
+    throw Error(
+      "Cabinets API reference drift: regenerate from the current committed API HEAD",
+    );
   const paths = Object.entries(document.paths).filter(([path]) =>
     path.startsWith("/admin/dashboard/construction/cabinets"),
   );

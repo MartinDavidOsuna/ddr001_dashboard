@@ -1,4 +1,4 @@
-// Generated from ddr001_api 494bcb9fdd5a10a289823b1314105f9c77a83299.
+// Generated from ddr001_api a9af81193e8470d6f472de609421a58c6418853a.
 export type CabinetAdminRow = {
   missingUnits: number;
   cabinetId: string;
@@ -110,11 +110,11 @@ export type CabinetRegister = {
   uid: string;
   model: "A1" | "A2" | "A3" | "A4";
   automated: boolean;
-  expectedCrewId?: string | null;
   catalogVersion:
     | "ddr001-cabinets-20261005-v1"
     | "ddr001-cabinets-20261015-v2"
     | "ddr001-cabinets-20261023-v3";
+  expectedCrewId?: string | null;
 };
 export type CabinetRegistrationClose = {
   operationId: string;
@@ -216,11 +216,6 @@ export type CabinetFinalReview = {
 export type CabinetSnapshot = {
   administration?: CabinetAdminAdministration;
   cabinetId: string;
-  registrationCompany?: {
-    id: string;
-    name: string;
-    source: "registration_profile" | "session_history_consensus";
-  };
   uid: string;
   model: "A1" | "A2" | "A3" | "A4";
   automated: boolean;
@@ -245,22 +240,40 @@ export type CabinetSnapshot = {
   reviewCorrection: { operationId: string; reason: string } | null;
   pending: Array<CabinetPending>;
   knownFailures: Array<string>;
+  registrationCompany?: {
+    id: string;
+    name: string;
+    source: "registration_profile" | "session_history_consensus";
+  };
   partsReviewPolicyVersion?:
     "ddr001-parts-20261019-v1" | "ddr001-parts-20261019-v2";
-  partsReviewPolicy?: {
-    version: "ddr001-parts-20261019-v1" | "ddr001-parts-20261019-v2";
-    evidenceRequired: boolean;
-    universalParts: Array<CabinetPhysicalPart>;
-    parts: Record<
-      string,
-      {
-        side: "district" | "producer";
-        step: "district" | "producer" | "automation";
-        order: number;
-        serial: "required" | "none";
+  partsReviewPolicy?:
+    | {
+        version: "ddr001-parts-20261019-v1";
+        evidenceRequired: boolean;
+        parts: Record<
+          string,
+          {
+            side: "district" | "producer";
+            order: number;
+            serial: "required" | "none";
+          }
+        >;
       }
-    >;
-  };
+    | {
+        version: "ddr001-parts-20261019-v2";
+        evidenceRequired: boolean;
+        parts: Record<
+          string,
+          {
+            side: "district" | "producer";
+            order: number;
+            serial: "required" | "none";
+            step: "district" | "producer" | "automation";
+          }
+        >;
+        universalParts: Array<CabinetPhysicalPart>;
+      };
 };
 export type CabinetAdminAdministration = {
   installationDate?: string | null;
@@ -326,10 +339,10 @@ export type CabinetAdminPhoto = {
   actor: { id: string; name: string | null };
   metadata: {
     capturedAt: string | null;
-    latitude: number;
-    longitude: number;
-    accuracy: number;
-    altitude?: number;
+    latitude: number | null;
+    longitude: number | null;
+    accuracy: number | null;
+    altitude?: number | null;
   };
   integrity: CabinetAdminIntegrity;
   relations: Array<{

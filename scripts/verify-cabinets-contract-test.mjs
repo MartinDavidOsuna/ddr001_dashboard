@@ -3,13 +3,18 @@
 import { resolve, join } from "node:path";
 import { pathToFileURL } from "node:url";
 import assert from "node:assert/strict";
+import { createRequire } from "node:module";
+import { readFile } from "node:fs/promises";
 import { assertContract } from "../src/features/cabinets/cabinets.contract.ts";
 
-const apiRoot = process.argv[2];
+const apiRoot = process.argv[2] ? resolve(process.argv[2]) : undefined;
 if (!apiRoot)
   throw new Error(
     "Usage: node --import <API>/node_modules/tsx/dist/loader.mjs scripts/verify-cabinets-contract-test.mjs <existing API checkout>",
   );
+// The API's construction-test guard resolves its isolated root from cwd.
+// Change it before loading API configuration, without weakening that guard.
+if (process.argv.includes("--http")) process.chdir(apiRoot);
 process.env.DOTENV_CONFIG_PATH ??= join(resolve(apiRoot), ".env");
 const moduleAt = (path) =>
   import(pathToFileURL(join(resolve(apiRoot), path)).href);
@@ -80,6 +85,73 @@ try {
     .query(
       "SELECT CONVERT(varchar(40),SERVERPROPERTY('ProductVersion')) productVersion,compatibility_level compatibilityLevel FROM sys.databases WHERE name=DB_NAME()",
     );
+  let httpChecks = 0;
+  if (process.argv.includes("--http")) {
+    assert.equal(env.CONFIG_PROFILE, "construction-test");
+    assert.equal(
+      resolve(env.STORAGE_ROOT),
+      join(resolve(apiRoot), ".storage/construction-test"),
+    );
+    assert.equal(env.ARCHIVE_STORAGE_ENABLED, false);
+    const { createApp } = await moduleAt("src/app.ts");
+    const { issueAdminTokens } = await moduleAt("src/security/jwt.ts");
+    const request = createRequire(join(resolve(apiRoot), "package.json"))(
+      "supertest",
+    );
+    const actors = await (
+      await db()
+    )
+      .request()
+      .query(
+        "SELECT TOP(1) admin_user_id FROM rv.admin_users WHERE role='admin' AND is_active=1 ORDER BY admin_user_id",
+      );
+    assert(
+      actors.recordset[0],
+      "Existing active TEST admin required; this check never creates users",
+    );
+    // In-process HTTP only. This token is never printed, persisted or sent to an external host.
+    const token = issueAdminTokens({
+      userId: actors.recordset[0].admin_user_id,
+      role: "admin",
+    }).accessToken;
+    const app = createApp(),
+      root = "/api/v1/admin/dashboard/construction/cabinets";
+    const get = async (suffix, schema, query = {}) => {
+      const response = await request(app)
+        .get(root + suffix)
+        .set("Authorization", `Bearer ${token}`)
+        .query(query);
+      assert.equal(response.status, 200, `Current API HTTP ${suffix || "/"}`);
+      assertContract(schema, response.body);
+      httpChecks++;
+      return response.body;
+    };
+    await get("", "CabinetAdminList", { page: 1, pageSize: 100 });
+    await get("/summary", "CabinetAdminSummary");
+    await get("/metrics", "CabinetAdminMetrics");
+    await get("/map", "CabinetAdminMap");
+    await get("/administration-options", "CabinetAdminOptions");
+    for (const row of all.items)
+      await get("/" + row.cabinetId, "CabinetAdminDossier");
+  }
+  let mutationChecks = 0;
+  const captureIndex = process.argv.indexOf("--mutations");
+  if (captureIndex >= 0) {
+    const captured = JSON.parse(
+      await readFile(process.argv[captureIndex + 1], "utf8"),
+    );
+    assert.deepEqual(Object.keys(captured).sort(), [
+      "cancel",
+      "delete",
+      "edit",
+    ]);
+    for (const result of Object.values(captured)) {
+      assertContract("CabinetAdminMutationResult", result);
+      mutationChecks++;
+    }
+    assert.equal(captured.cancel.cabinet.installation, null);
+    assert(captured.delete.cabinet.administration.archivedAt);
+  }
   console.log(
     JSON.stringify({
       status: "PASS",
@@ -92,6 +164,8 @@ try {
       ],
       pageChecks: 2,
       filtered,
+      httpChecks,
+      mutationChecks,
       writes: 0,
     }),
   );
