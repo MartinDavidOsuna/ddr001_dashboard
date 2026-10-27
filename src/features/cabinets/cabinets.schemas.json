@@ -3013,6 +3013,7 @@
           "installationDate": {
             "type": "string",
             "format": "date-time",
+            "description": "UTC date-time, year 0001 through 9999 (SQL Server datetime2).",
             "nullable": true
           },
           "administrativeNotes": {

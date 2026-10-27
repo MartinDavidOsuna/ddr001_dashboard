@@ -1,4 +1,4 @@
-// Generated from ddr001_api a9af81193e8470d6f472de609421a58c6418853a.
+// Generated from ddr001_api 3fb381a25c2b9639050d84a6d1b0e8fe900f04e8.
 export type CabinetAdminRow = {
   missingUnits: number;
   cabinetId: string;
