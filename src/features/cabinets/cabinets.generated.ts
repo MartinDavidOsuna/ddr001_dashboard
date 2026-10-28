@@ -1,4 +1,4 @@
-// Generated from ddr001_api cf6105b15f0b84d522ef04a7d5bcf4ac23516f96.
+// Generated from ddr001_api 46cdd3b552c445879277d2e022a382f3b11d1411.
 export type CabinetAdminRow = {
   missingUnits: number;
   cabinetId: string;
@@ -591,8 +591,8 @@ export type CabinetAdminDossier = {
   synchronization: { serverVersion: number; receivedOperations: number };
   administration?: CabinetAdminAdministration;
   administrativeHistory?: Array<{
-    audit_id: number;
-    actor_id: string;
+    audit_id: string;
+    actor_id: string | null;
     actorName: string | null;
     action: string;
     before_json: string | null;

@@ -54,6 +54,30 @@ function button(w: ReturnType<typeof view>, text: string) {
   return w.findAll("button").find((b) => b.text() === text)!;
 }
 describe("Cabinet administration controls", () => {
+  it("renders the complete reopened history with lossless IDs and unknown historical actors", () => {
+    const value = dossier();
+    value.administrativeHistory = [
+      "cancel_installation",
+      "edit",
+      "archive",
+    ].map((action, i) => ({
+      audit_id: (9007199254740993n + BigInt(i)).toString(),
+      actor_id: null,
+      actorName: null,
+      action: `cabinet.admin.${action}`,
+      before_json: "{}",
+      after_json: '{"synthetic":true}',
+      occurred_at: "2026-10-28T12:00:00.000Z",
+    }));
+    value.administration = { archivedAt: "2026-10-28T12:00:00.000Z" };
+    const w = view("admin", value);
+    expect(w.text()).toContain("Historial administrativo (3)");
+    expect(w.findAll("article")).toHaveLength(3);
+    expect(w.text()).toContain("Administrador no disponible");
+    for (const action of ["cancel_installation", "edit", "archive"])
+      expect(w.text()).toContain(`cabinet.admin.${action}`);
+    w.unmount();
+  });
   it.each(["supervisor", "viewer"] as const)(
     "hides administrative controls for %s",
     (role) => {

@@ -4,6 +4,7 @@ type Schema = {
   $ref?: string;
   nullable?: boolean;
   type?: string;
+  format?: string;
   enum?: unknown[];
   properties?: Record<string, Schema>;
   required?: string[];
@@ -58,7 +59,13 @@ function valid(schema: Schema, value: unknown): boolean {
       Number.isFinite(value) &&
       (schema.type !== "integer" || Number.isInteger(value))
     );
-  if (schema.type === "string") return typeof value === "string";
+  if (schema.type === "string") {
+    if (typeof value !== "string") return false;
+    if (schema.format !== "sql-bigint") return true;
+    if (!/^(0|-?[1-9][0-9]{0,18})$/.test(value)) return false;
+    const id = BigInt(value);
+    return id >= -9223372036854775808n && id <= 9223372036854775807n;
+  }
   if (schema.type === "boolean") return typeof value === "boolean";
   if (schema.type === "array")
     return Array.isArray(value) && value.every((v) => valid(schema.items!, v));
