@@ -6,6 +6,125 @@ import fixture from "../../../tests/fixtures/cabinets.json";
 vi.mock("@/api/client", () => ({ api: { get: vi.fn() } }));
 beforeEach(() => vi.clearAllMocks());
 describe("Cabinets real administrative contract", () => {
+  const event = {
+    audit_id: "9007199254740993",
+    actor_id: null,
+    actorName: null,
+    action: "cabinet.admin.edit",
+    before_json: null,
+    after_json: "{}",
+    occurred_at: "2026-10-28T12:00:00.000Z",
+  };
+  it.each([
+    "0",
+    "9007199254740993",
+    "9223372036854775807",
+    "-9223372036854775808",
+  ])(
+    "accepts exact SQL BIGINT decimal %s without numeric coercion",
+    (audit_id) => {
+      const value = {
+        ...structuredClone(fixture.dossier),
+        administrativeHistory: [{ ...event, audit_id }],
+      };
+      expect(assertContract("CabinetAdminDossier", value)).toEqual(value);
+    },
+  );
+  it.each([
+    1,
+    null,
+    {},
+    [],
+    "",
+    "01",
+    "-0",
+    "+1",
+    "1.5",
+    "1e3",
+    " 1",
+    "1 ",
+    "9223372036854775808",
+    "-9223372036854775809",
+    "11111111-1111-4111-8111-111111111111",
+  ])(
+    "rejects corrupt administrative audit ID %j with its exact field",
+    (audit_id) => {
+      const value = {
+        ...structuredClone(fixture.dossier),
+        administrativeHistory: [{ ...event, audit_id }],
+      };
+      expect(() => assertContract("CabinetAdminDossier", value)).toThrow(
+        expect.objectContaining({
+          field: "$response.administrativeHistory[0].audit_id",
+        }),
+      );
+    },
+  );
+  it.each([
+    "actor_id",
+    "actorName",
+    "before_json",
+    "after_json",
+    "occurred_at",
+    "action",
+  ])("continues rejecting corrupt history field %s", (field) => {
+    const value = {
+      ...structuredClone(fixture.dossier),
+      administrativeHistory: [{ ...event, [field]: { invalid: true } }],
+    };
+    expect(() => assertContract("CabinetAdminDossier", value)).toThrow(
+      expect.objectContaining({
+        field: `$response.administrativeHistory[0].${field}`,
+      }),
+    );
+  });
+  it("loads empty and multi-event administrative history through the real API client parser", async () => {
+    const empty = {
+      ...structuredClone(fixture.dossier),
+      administrativeHistory: [],
+    };
+    vi.mocked(api.get).mockResolvedValueOnce({ data: empty });
+    expect(await cabinetsApi.detail(fixture.row.cabinetId)).toEqual(empty);
+    const value = {
+      ...empty,
+      administrativeHistory: [
+        { ...event, action: "cabinet.admin.cancel_installation" },
+        { ...event, audit_id: "9007199254740994" },
+        {
+          ...event,
+          audit_id: "9007199254740995",
+          action: "cabinet.admin.archive",
+        },
+      ],
+    };
+    vi.mocked(api.get).mockResolvedValueOnce({ data: value });
+    expect(await cabinetsApi.detail(fixture.row.cabinetId)).toEqual(value);
+    vi.mocked(api.get).mockResolvedValueOnce({
+      data: { ...value, administrativeHistory: [{ ...event, audit_id: 1 }] },
+    });
+    await expect(
+      cabinetsApi.detail(fixture.row.cabinetId),
+    ).rejects.toMatchObject({
+      field: "$response.administrativeHistory[0].audit_id",
+    });
+  });
+  it("reopens a dossier with the lossless SQL BIGINT administrative history", () => {
+    const value = {
+      ...structuredClone(fixture.dossier),
+      administrativeHistory: [
+        {
+          audit_id: "9007199254740993",
+          actor_id: null,
+          actorName: null,
+          action: "cabinet.admin.cancel_installation",
+          before_json: null,
+          after_json: JSON.stringify({ reason: "Synthetic cancellation" }),
+          occurred_at: "2026-10-28T12:00:00.000Z",
+        },
+      ],
+    };
+    expect(assertContract("CabinetAdminDossier", value)).toEqual(value);
+  });
   it("accepts explicit unknown historical photo GPS but rejects corrupt values", () => {
     const value = structuredClone(fixture.dossier) as unknown as {
       photos: Array<{

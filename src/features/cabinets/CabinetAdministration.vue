@@ -407,7 +407,7 @@ async function submit() {
         :key="event.audit_id"
       >
         <p>
-          {{ event.actorName ?? event.actor_id }} ·
+          {{ event.actorName ?? event.actor_id ?? "Administrador no disponible" }} ·
           {{ date(event.occurred_at) }} · {{ event.action }}
         </p>
         <details>
