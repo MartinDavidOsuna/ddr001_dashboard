@@ -6,6 +6,99 @@ import fixture from "../../../tests/fixtures/cabinets.json";
 vi.mock("@/api/client", () => ({ api: { get: vi.fn() } }));
 beforeEach(() => vi.clearAllMocks());
 describe("Cabinets real administrative contract", () => {
+  it("accepts explicit unknown historical photo GPS but rejects corrupt values", () => {
+    const value = structuredClone(fixture.dossier) as unknown as {
+      photos: Array<{
+        metadata: {
+          latitude: number | string | null;
+          longitude: number | null;
+          accuracy: number | null;
+          altitude?: number | null;
+        };
+      }>;
+    };
+    Object.assign(value.photos[0]!.metadata, {
+      latitude: null,
+      longitude: null,
+      accuracy: null,
+      altitude: null,
+    });
+    expect(assertContract("CabinetAdminDossier", value)).toEqual(value);
+    value.photos[0]!.metadata.latitude = "invalid";
+    expect(() => assertContract("CabinetAdminDossier", value)).toThrow(
+      "CABINETS_CONTRACT_DRIFT",
+    );
+  });
+  it("accepts persisted v1 history without universal parts and requires them for v2", () => {
+    const value = structuredClone(fixture.dossier) as unknown as {
+      history: Array<{
+        cabinet: {
+          partsReviewPolicy: {
+            version: string;
+            evidenceRequired: boolean;
+            parts: object;
+            universalParts?: object[];
+          };
+        };
+      }>;
+    };
+    const policy = {
+      version: "ddr001-parts-20261019-v1",
+      evidenceRequired: false,
+      parts: { historical: { side: "district", order: 1, serial: "none" } },
+    };
+    value.history[0]!.cabinet.partsReviewPolicy = policy;
+    expect(assertContract("CabinetAdminDossier", value)).toEqual(value);
+    policy.version = "ddr001-parts-20261019-v2";
+    expect(() => assertContract("CabinetAdminDossier", value)).toThrow(
+      "CABINETS_CONTRACT_DRIFT",
+    );
+    value.history[0]!.cabinet.partsReviewPolicy.universalParts = [];
+    expect(() => assertContract("CabinetAdminDossier", value)).toThrow(
+      "CABINETS_CONTRACT_DRIFT",
+    );
+    Object.assign(policy.parts.historical, { step: "district" });
+    expect(assertContract("CabinetAdminDossier", value)).toEqual(value);
+    policy.version = "unknown-future-policy";
+    expect(() => assertContract("CabinetAdminDossier", value)).toThrow(
+      "CABINETS_CONTRACT_DRIFT",
+    );
+  });
+  it("accepts a historical base with unknown GPS accuracy without weakening installation captures", () => {
+    const value = structuredClone(fixture.list) as unknown as {
+      items: Array<{ base: { location: { accuracy: number | null } } }>;
+    };
+    value.items[0]!.base.location.accuracy = null;
+    expect(assertContract("CabinetAdminList", value)).toEqual(value);
+    const invalid = structuredClone(fixture.dossier) as unknown as {
+      installation: { data: { gps: { accuracy: number | null } } };
+    };
+    invalid.installation.data.gps.accuracy = null;
+    expect(() => assertContract("CabinetAdminDossier", invalid)).toThrow(
+      "CABINETS_CONTRACT_DRIFT",
+    );
+  });
+  it.each(["linked_base", "registration_profile", "session_history_consensus"])(
+    "accepts real company source %s while preserving pagination and null historical values",
+    (source) => {
+      const value = structuredClone(fixture.list);
+      value.items[0]!.crew = { ...fixture.row.crew, source };
+      expect(assertContract("CabinetAdminList", value)).toEqual(value);
+    },
+  );
+  it("reports the incompatible field without returning an empty list", () => {
+    const value = structuredClone(fixture.list);
+    value.items[0]!.crew = { ...fixture.row.crew, source: "unknown_source" };
+    try {
+      assertContract("CabinetAdminList", value);
+      throw new Error("must reject");
+    } catch (error) {
+      expect(error).toMatchObject({
+        message: "CABINETS_CONTRACT_DRIFT",
+        field: "$response.items[0].crew.source",
+      });
+    }
+  });
   it.each([
     ["CabinetAdminSummary", "summary"],
     ["CabinetAdminMetrics", "metrics"],

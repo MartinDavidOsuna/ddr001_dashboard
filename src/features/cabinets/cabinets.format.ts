@@ -101,7 +101,12 @@ export function cycle(seconds: number | null | undefined) {
 }
 export function cabinetError(error: unknown) {
   if (error instanceof Error && error.message === "CABINETS_CONTRACT_DRIFT")
-    return "La respuesta de Nuevos Hidrantes no coincide con el contrato administrativo esperado. Se requiere actualizar la integración.";
+    return (
+      "La respuesta de Nuevos Hidrantes no coincide con el contrato administrativo esperado." +
+      ("field" in error && typeof error.field === "string"
+        ? ` Campo incompatible: ${error.field}.`
+        : " Se requiere actualizar la integración.")
+    );
   const status = axios.isAxiosError(error) ? error.response?.status : undefined;
   return (
     (

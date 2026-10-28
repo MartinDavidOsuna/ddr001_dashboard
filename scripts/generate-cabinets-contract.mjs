@@ -40,25 +40,33 @@ if (process.argv.includes("--check")) {
     cwd: apiRoot,
     encoding: "utf8",
   }).trim();
+  const header = readFileSync(
+    "src/features/cabinets/cabinets.generated.ts",
+    "utf8",
+  ).split(/\r?\n/, 1)[0];
+  if (header !== `// Generated from ddr001_api ${head}.`)
+    throw Error(
+      "Cabinets API reference drift: regenerate from the current committed API HEAD",
+    );
   const paths = Object.entries(document.paths).filter(([path]) =>
     path.startsWith("/admin/dashboard/construction/cabinets"),
   );
   if (
-    paths.length !== 7 ||
-    paths.some(
-      ([, operations]) =>
-        !operations.get ||
-        Object.keys(operations).some((k) =>
-          ["post", "put", "patch", "delete"].includes(k),
-        ),
-    )
+    paths.filter(([, operations]) => operations.get).length !== 8 ||
+    !document.paths["/admin/dashboard/construction/cabinets/{cabinetId}"]
+      ?.patch ||
+    !document.paths["/admin/dashboard/construction/cabinets/{cabinetId}"]
+      ?.delete ||
+    !document.paths[
+      "/admin/dashboard/construction/cabinets/{cabinetId}/cancel-installation"
+    ]?.post
   )
-    throw Error("Administrative GET route contract drift");
+    throw Error("Administrative route contract drift");
   console.log(
     JSON.stringify({
       status: "PASS",
       schemas: Object.keys(selected).length,
-      getEndpoints: paths.length,
+      getEndpoints: paths.filter(([, operations]) => operations.get).length,
       apiHead: head,
     }),
   );
@@ -103,10 +111,19 @@ function type(schema) {
   return schema.nullable ? `(${value}) | null` : value;
 }
 const out = resolve("src/features/cabinets");
+const apiHead = execFileSync("git", ["rev-parse", "HEAD"], {
+  cwd: apiRoot,
+  encoding: "utf8",
+}).trim();
+const contractDirty = execFileSync(
+  "git",
+  ["status", "--porcelain", "--", "docs/openapi.yaml"],
+  { cwd: apiRoot, encoding: "utf8" },
+).trim();
 mkdirSync(out, { recursive: true });
 writeFileSync(
   resolve(out, "cabinets.generated.ts"),
-  `// Generated from ddr001_api ${execFileSync("git", ["rev-parse", "HEAD"], {cwd:apiRoot,encoding:"utf8"}).trim()}.\n` +
+  `// Generated from ddr001_api ${apiHead}${contractDirty ? " plus reviewed working-tree contract" : ""}.\n` +
     Object.entries(selected)
       .map(([name, schema]) => `export type ${name} = ${type(schema)};`)
       .join("\n") +

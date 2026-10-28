@@ -308,8 +308,8 @@ const kpis = computed(() => {
         <section class="card">
           <h3>Avance por empresa</h3>
           <p>
-            Cuadrilla actual de la base vinculada; no es ownership histórico ni
-            ranking de personas.
+            Empresa de registro conservada en el expediente; para datos históricos
+            sin atribución se utiliza la empresa de la base vinculada.
           </p>
           <div class="cabinet-scroll">
             <table>

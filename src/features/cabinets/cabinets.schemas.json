@@ -66,7 +66,7 @@
             "nullable": true,
             "allOf": [
               {
-                "$ref": "#/components/schemas/CabinetGps"
+                "$ref": "#/components/schemas/CabinetAdminBaseLocation"
               }
             ]
           }
@@ -100,7 +100,9 @@
           "source": {
             "type": "string",
             "enum": [
-              "linked_base"
+              "linked_base",
+              "registration_profile",
+              "session_history_consensus"
             ]
           }
         },
@@ -270,6 +272,26 @@
       "mandatoryTests",
       "blockingCount",
       "photos"
+    ]
+  },
+  "CabinetAdminBaseLocation": {
+    "type": "object",
+    "properties": {
+      "latitude": {
+        "type": "number"
+      },
+      "longitude": {
+        "type": "number"
+      },
+      "accuracy": {
+        "type": "number",
+        "nullable": true
+      }
+    },
+    "required": [
+      "latitude",
+      "longitude",
+      "accuracy"
     ]
   },
   "CabinetGps": {
@@ -483,8 +505,15 @@
         "type": "string",
         "enum": [
           "ddr001-cabinets-20261005-v1",
-          "ddr001-cabinets-20261015-v2"
+          "ddr001-cabinets-20261015-v2",
+          "ddr001-cabinets-20261023-v3"
         ]
+      },
+      "expectedCrewId": {
+        "type": "string",
+        "format": "uuid",
+        "nullable": true,
+        "description": "Optional company captured offline; mismatch blocks reassignment."
       }
     }
   },
@@ -591,6 +620,13 @@
         "type": "string",
         "minLength": 3,
         "maxLength": 2000
+      },
+      "partsReviewPolicyVersion": {
+        "type": "string",
+        "enum": [
+          "ddr001-parts-20261019-v1",
+          "ddr001-parts-20261019-v2"
+        ]
       }
     }
   },
@@ -1069,6 +1105,9 @@
       "knownFailures"
     ],
     "properties": {
+      "administration": {
+        "$ref": "#/components/schemas/CabinetAdminAdministration"
+      },
       "cabinetId": {
         "type": "string",
         "format": "uuid"
@@ -1207,8 +1246,220 @@
         },
         "minItems": 0,
         "maxItems": 84
+      },
+      "registrationCompany": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "source"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "registration_profile",
+              "session_history_consensus"
+            ]
+          }
+        }
+      },
+      "partsReviewPolicyVersion": {
+        "type": "string",
+        "enum": [
+          "ddr001-parts-20261019-v1",
+          "ddr001-parts-20261019-v2"
+        ]
+      },
+      "partsReviewPolicy": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "version",
+              "evidenceRequired",
+              "parts"
+            ],
+            "properties": {
+              "version": {
+                "type": "string",
+                "enum": [
+                  "ddr001-parts-20261019-v1"
+                ]
+              },
+              "evidenceRequired": {
+                "type": "boolean"
+              },
+              "parts": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "side",
+                    "order",
+                    "serial"
+                  ],
+                  "properties": {
+                    "side": {
+                      "type": "string",
+                      "enum": [
+                        "district",
+                        "producer"
+                      ]
+                    },
+                    "order": {
+                      "type": "number"
+                    },
+                    "serial": {
+                      "type": "string",
+                      "enum": [
+                        "required",
+                        "none"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "version",
+              "evidenceRequired",
+              "parts",
+              "universalParts"
+            ],
+            "properties": {
+              "version": {
+                "type": "string",
+                "enum": [
+                  "ddr001-parts-20261019-v2"
+                ]
+              },
+              "evidenceRequired": {
+                "type": "boolean"
+              },
+              "parts": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "side",
+                    "order",
+                    "serial",
+                    "step"
+                  ],
+                  "properties": {
+                    "side": {
+                      "type": "string",
+                      "enum": [
+                        "district",
+                        "producer"
+                      ]
+                    },
+                    "order": {
+                      "type": "number"
+                    },
+                    "serial": {
+                      "type": "string",
+                      "enum": [
+                        "required",
+                        "none"
+                      ]
+                    },
+                    "step": {
+                      "type": "string",
+                      "enum": [
+                        "district",
+                        "producer",
+                        "automation"
+                      ]
+                    }
+                  }
+                }
+              },
+              "universalParts": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CabinetPhysicalPart"
+                },
+                "minItems": 0,
+                "maxItems": 60
+              }
+            }
+          }
+        ]
       }
     }
+  },
+  "CabinetAdminAdministration": {
+    "type": "object",
+    "properties": {
+      "installationDate": {
+        "type": "string",
+        "format": "date-time",
+        "nullable": true
+      },
+      "administrativeNotes": {
+        "type": "string"
+      },
+      "archivedAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "cancellation": {
+        "type": "object",
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "installationOperationId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "baseId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "reason": {
+            "type": "string"
+          },
+          "actorId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "cancelledAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "operationId",
+          "installationOperationId",
+          "baseId",
+          "reason",
+          "actorId",
+          "cancelledAt"
+        ]
+      }
+    },
+    "required": []
   },
   "CabinetPhysicalPart": {
     "type": "object",
@@ -1421,16 +1672,20 @@
             "nullable": true
           },
           "latitude": {
-            "type": "number"
+            "type": "number",
+            "nullable": true
           },
           "longitude": {
-            "type": "number"
+            "type": "number",
+            "nullable": true
           },
           "accuracy": {
-            "type": "number"
+            "type": "number",
+            "nullable": true
           },
           "altitude": {
-            "type": "number"
+            "type": "number",
+            "nullable": true
           }
         },
         "required": [
@@ -2172,7 +2427,9 @@
               "source": {
                 "type": "string",
                 "enum": [
-                  "linked_base"
+                  "linked_base",
+                  "registration_profile",
+                  "session_history_consensus"
                 ]
               }
             },
@@ -2262,7 +2519,7 @@
             "nullable": true,
             "allOf": [
               {
-                "$ref": "#/components/schemas/CabinetGps"
+                "$ref": "#/components/schemas/CabinetAdminBaseLocation"
               }
             ]
           },
@@ -2655,6 +2912,53 @@
           "serverVersion",
           "receivedOperations"
         ]
+      },
+      "administration": {
+        "$ref": "#/components/schemas/CabinetAdminAdministration"
+      },
+      "administrativeHistory": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "audit_id": {
+              "type": "integer"
+            },
+            "actor_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "actorName": {
+              "type": "string",
+              "nullable": true
+            },
+            "action": {
+              "type": "string"
+            },
+            "before_json": {
+              "type": "string",
+              "nullable": true
+            },
+            "after_json": {
+              "type": "string",
+              "nullable": true
+            },
+            "occurred_at": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            }
+          },
+          "required": [
+            "audit_id",
+            "actor_id",
+            "actorName",
+            "action",
+            "before_json",
+            "after_json",
+            "occurred_at"
+          ]
+        }
       }
     },
     "required": [
@@ -2669,6 +2973,194 @@
       "history",
       "evidencePolicy",
       "synchronization"
+    ]
+  },
+  "CabinetAdminEditRequest": {
+    "type": "object",
+    "properties": {
+      "operationId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "expectedVersion": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "reason": {
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 2000
+      },
+      "changes": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string",
+            "enum": [
+              "A1",
+              "A2",
+              "A3",
+              "A4"
+            ]
+          },
+          "automated": {
+            "type": "boolean"
+          },
+          "companyId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "installationDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC date-time, year 0001 through 9999 (SQL Server datetime2).",
+            "nullable": true
+          },
+          "administrativeNotes": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "installationObservations": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [],
+        "additionalProperties": false,
+        "minProperties": 1
+      }
+    },
+    "required": [
+      "operationId",
+      "expectedVersion",
+      "reason",
+      "changes"
+    ],
+    "additionalProperties": false
+  },
+  "CabinetAdminCancelRequest": {
+    "type": "object",
+    "properties": {
+      "operationId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "expectedVersion": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "reason": {
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 2000
+      },
+      "confirm": {
+        "type": "boolean",
+        "enum": [
+          true
+        ]
+      }
+    },
+    "required": [
+      "operationId",
+      "expectedVersion",
+      "reason",
+      "confirm"
+    ],
+    "additionalProperties": false
+  },
+  "CabinetAdminDeleteRequest": {
+    "type": "object",
+    "properties": {
+      "operationId": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "expectedVersion": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "reason": {
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 2000
+      },
+      "confirmUid": {
+        "type": "string"
+      },
+      "confirm": {
+        "type": "boolean",
+        "enum": [
+          true
+        ]
+      }
+    },
+    "required": [
+      "operationId",
+      "expectedVersion",
+      "reason",
+      "confirmUid",
+      "confirm"
+    ],
+    "additionalProperties": false
+  },
+  "CabinetAdminMutationResult": {
+    "type": "object",
+    "properties": {
+      "cabinet": {
+        "$ref": "#/components/schemas/CabinetSnapshot"
+      },
+      "approvalInvalidated": {
+        "type": "boolean"
+      },
+      "replayed": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "cabinet",
+      "approvalInvalidated",
+      "replayed"
+    ]
+  },
+  "CabinetAdminOptions": {
+    "type": "object",
+    "properties": {
+      "models": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "A1",
+            "A2",
+            "A3",
+            "A4"
+          ]
+        }
+      },
+      "companies": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "name"
+          ]
+        }
+      }
+    },
+    "required": [
+      "models",
+      "companies"
     ]
   }
 }

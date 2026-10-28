@@ -6,6 +6,11 @@ import type {
   CabinetAdminList,
   CabinetAdminDossier,
   CabinetAdminMap,
+  CabinetAdminOptions,
+  CabinetAdminEditRequest,
+  CabinetAdminCancelRequest,
+  CabinetAdminDeleteRequest,
+  CabinetAdminMutationResult,
 } from "./cabinets.generated";
 export const cabinetsRoot = "/admin/dashboard/construction/cabinets";
 export type CabinetParams = {
@@ -35,6 +40,41 @@ async function get<T>(
   );
 }
 export const cabinetsApi = {
+  options: async () =>
+    assertContract<CabinetAdminOptions>(
+      "CabinetAdminOptions",
+      (await api.get(cabinetsRoot + "/administration-options")).data,
+    ),
+  edit: async (id: string, body: CabinetAdminEditRequest) =>
+    assertContract<CabinetAdminMutationResult>(
+      "CabinetAdminMutationResult",
+      (
+        await api.patch(`${cabinetsRoot}/${encodeURIComponent(id)}`, body, {
+          headers: { "Idempotency-Key": body.operationId },
+        })
+      ).data,
+    ),
+  cancelInstallation: async (id: string, body: CabinetAdminCancelRequest) =>
+    assertContract<CabinetAdminMutationResult>(
+      "CabinetAdminMutationResult",
+      (
+        await api.post(
+          `${cabinetsRoot}/${encodeURIComponent(id)}/cancel-installation`,
+          body,
+          { headers: { "Idempotency-Key": body.operationId } },
+        )
+      ).data,
+    ),
+  delete: async (id: string, body: CabinetAdminDeleteRequest) =>
+    assertContract<CabinetAdminMutationResult>(
+      "CabinetAdminMutationResult",
+      (
+        await api.delete(`${cabinetsRoot}/${encodeURIComponent(id)}`, {
+          data: body,
+          headers: { "Idempotency-Key": body.operationId },
+        })
+      ).data,
+    ),
   summary: (params: CabinetParams = {}, signal?: AbortSignal) =>
     get<CabinetAdminSummary>("/summary", "CabinetAdminSummary", params, signal),
   metrics: (params: CabinetParams = {}, signal?: AbortSignal) =>
