@@ -3,6 +3,7 @@ import {computed,onBeforeUnmount,ref,watch} from 'vue';
 import {useRoute} from 'vue-router';
 import ImageViewer from '@/components/ImageViewer.vue';
 import {problemMessage} from '@/api/client';
+import HydrostaticVideo from './HydrostaticVideo.vue';
 import HydrostaticPhoto from './HydrostaticPhoto.vue';
 import {hydroApi,type Detail,type Evidence,type History} from './hydrostatic.api';
 import {bar,date,duration,label} from './hydrostatic.format';
@@ -107,14 +108,7 @@ watch(id,()=>{photoPage.value=1;historyPage.value=1;void load();},{immediate:tru
       <section class="card">
         <h2>Sincronización documental</h2><p>{{ detail.documentReceived?'Documento recibido':'Documento no recibido' }} · revisión fuente {{ detail.sourceRevision }} · versión servidor {{ detail.serverVersion }}<br>Recepción: {{ date(detail.receivedAt) }}<br>Estado: {{ label(detail.validationState) }}<br>Historial local pendiente de transferencia: {{ detail.pendingHistorySegments??'No disponible' }} segmentos<br>Revisión necesaria: {{ detail.requiresReview?'Sí':'No marcada' }}</p><p>El historial remoto puede no contener todas las operaciones locales del dispositivo.</p>
       </section>
-      <section class="card">
-        <h2>Video de WhatsApp</h2><p>Declaración del operador: {{ label(detail.videoDeclaration) }}<br>Fecha declarada: {{ date(detail.videoDeclaredAt) }}<br>Actor de la declaración: {{ detail.videoDeclaredBy || "No disponible" }}<br>Asociación administrativa: {{ label(detail.videoLinkState) }}</p><p>{{ detail.videoPolicy.message }}</p><button
-          class="btn"
-          disabled
-        >
-          Vincular video — infraestructura pendiente
-        </button><details><summary>Procedimiento administrativo controlado</summary><ol><li>Recuperar externamente el archivo del grupo autorizado; no automatizar WhatsApp.</li><li>Comprobar propietario, UID físico, testId y declaración; no usar solo el número local de intento.</li><li>Antes de habilitar la carga, ampliar el contrato con objeto de almacenamiento autorizado, tipo, tamaño, hash, auditoría y sustitución preservando el vínculo anterior.</li><li>Verificar el archivo en TEST y servirlo únicamente por un endpoint administrativo autorizado. No introducir rutas NAS ni URLs manuales.</li></ol></details>
-      </section>
+      <HydrostaticVideo :test-id="id" />
       <section class="card">
         <h2>Historial administrativo y de sincronización</h2><p>Registro de solo lectura; IDs BIGINT conservados como texto.</p><p v-if="!history.length">
           Sin eventos remotos disponibles.

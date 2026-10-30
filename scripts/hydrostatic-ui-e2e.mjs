@@ -24,7 +24,8 @@ try{
  else if(p.endsWith('/auth/me'))data={userId:'synthetic',role,name:'Certificación HAPI-5'};
  else if(p.includes('/hydrostatic-tests')){hydroReads++;
  if(p.endsWith('/original')||p.endsWith('/thumbnail'))return route.fulfill({status:200,contentType:'image/png',body:png});
- if(p.endsWith('/summary'))data=summary;
+ if(p.endsWith('/video'))data={declaration:'DECLARED_SENT',declaredAt:null,link:null,maxBytes:104857600};
+ else if(p.endsWith('/summary'))data=summary;
  else if(p.endsWith('/metrics'))data=metrics;
  else if(p.endsWith('/history'))data={items:[{id:'9007199254740993',kind:'AUDIT',action:'REGISTER_DOCUMENT',receivedAt:attempt.receivedAt}],hasMore:false};
  else if(p.endsWith('/evidences'))data={items:[photo(3),photo(4)],hasMore:false};
