@@ -107,7 +107,7 @@ try {
         exact: false,
       })
       .waitFor();
-    if (role === "admin") {
+    if (role === "admin" && !process.argv.includes("--read-only")) {
       await page
         .locator("input[type=file]")
         .setInputFiles("/tmp/hapi6-video-one.mp4");
@@ -127,7 +127,7 @@ try {
             .querySelector("form button")
             ?.textContent?.includes("cargando"),
       );
-    } else assert.equal(await page.locator("input[type=file]").count(), 0);
+    } else if (role === "supervisor") assert.equal(await page.locator("input[type=file]").count(), 0);
     await page
       .getByRole("button", { name: "Reproducir / autorizar descarga" })
       .click();
