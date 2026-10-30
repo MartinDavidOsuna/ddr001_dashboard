@@ -1,3 +1,4 @@
+import { canReadHydrostatic } from '@/features/hydrostatic/hydrostatic.format';
 import { createRouter, createWebHistory } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { canReadCabinets } from "@/features/cabinets/cabinets.format";
@@ -91,6 +92,9 @@ const router = createRouter({
         },
         { path: "levantamientos", redirect: "/levantamientos/bases" },
         { path: "levantamientos/:surveyId", redirect: to => ({ name: "construction-survey-detail", params: { surveyId: to.params.surveyId }, query: to.query, hash: to.hash }) },
+        { path: "levantamientos/nuevos-hidrantes/hidrostaticas", name: "hydrostatic", component: () => import("@/features/hydrostatic/HydrostaticListView.vue"), meta: { hydrostatic: true } },
+        { path: "levantamientos/nuevos-hidrantes/hidrostaticas/gabinetes/:cabinetId", name: "hydrostatic-cabinet", component: () => import("@/features/hydrostatic/HydrostaticListView.vue"), meta: { hydrostatic: true } },
+        { path: "levantamientos/nuevos-hidrantes/hidrostaticas/intentos/:testId", name: "hydrostatic-detail", component: () => import("@/features/hydrostatic/HydrostaticDetailView.vue"), meta: { hydrostatic: true } },
         { path: "levantamientos/nuevos-hidrantes", name: "cabinets", component: () => import("@/features/cabinets/CabinetListView.vue"), meta: { cabinets: true } },
         { path: "levantamientos/nuevos-hidrantes/:cabinetId", name: "cabinet-detail", component: () => import("@/features/cabinets/CabinetDetailView.vue"), meta: { cabinets: true } },
         { path: "levantamientos/acceso-restringido", name: "cabinets-forbidden", component: () => import("@/features/cabinets/CabinetForbidden.vue") },
@@ -137,6 +141,7 @@ router.beforeEach(async (to) => {
   await auth.restore();
   if (!to.meta.public && !auth.authenticated)
     return { name: "login", query: { redirect: to.fullPath } };
+  if (to.meta.hydrostatic && !canReadHydrostatic(auth.user?.role)) return { name: "cabinets-forbidden" };
   if (to.meta.cabinets && !canReadCabinets(auth.user?.role)) return { name: "cabinets-forbidden" };
   if (to.name === "login" && auth.authenticated) return { name: "dashboard" };
 });
