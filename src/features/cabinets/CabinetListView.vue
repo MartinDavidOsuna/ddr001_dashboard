@@ -80,6 +80,7 @@ const detailLink = (id: string) => ({
 </script>
 <template>
   <main class="content cabinets cabinet-stack">
+<RouterLink class="btn" to="/levantamientos/nuevos-hidrantes/hidrostaticas">Pruebas Hidrostáticas · consulta global</RouterLink>
     <header class="cabinet-head">
       <div>
         <h1 class="page-title">

@@ -60,7 +60,7 @@ const visibleGroups = computed(() => groups.map(group => ({
 })));
 const surveyLinks = computed(() => [
   ["Bases", "/levantamientos/bases", HardHat],
-  ...(canReadCabinets(auth.user?.role) ? [["Nuevos Hidrantes", "/levantamientos/nuevos-hidrantes", Droplets]] : []),
+  ...(canReadCabinets(auth.user?.role) ? [["Nuevos Hidrantes", "/levantamientos/nuevos-hidrantes", Droplets], ["Pruebas Hidrostáticas", "/levantamientos/nuevos-hidrantes/hidrostaticas", Droplets]] : []),
 ] as Array<[string, string, typeof HardHat]>);
 function expandSurveys() {
   expandedGroup.value = "Levantamientos";

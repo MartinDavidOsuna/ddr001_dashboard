@@ -62,6 +62,7 @@ const piecePhotos = (code: string) =>
       <button class="btn" @click="load">Reintentar expediente</button>
     </div>
     <template v-if="dossier">
+      <RouterLink class="btn" :to="`/levantamientos/nuevos-hidrantes/hidrostaticas/gabinetes/${route.params.cabinetId}`">Ver pruebas hidrostáticas</RouterLink>
       <p v-if="administrationNotice" role="status" class="card">
         {{ administrationNotice }}
       </p>

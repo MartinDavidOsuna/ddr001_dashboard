@@ -1,0 +1,8 @@
+export const canReadHydrostatic=(role?:string)=>role==='admin'||role==='supervisor';
+const labels:Record<string,string>={PASS:'APROBADO (declarado)',LEAK:'FUGA',PENDING:'PENDIENTE',DISCARDED:'DESCARTADA',NOT_APPLICABLE:'No declarado',DECLARED_SENT:'Declarado enviado',UNLINKED:'Sin vínculo administrativo',LINKED:'Vínculo registrado sin reproducción disponible',VERIFY_PENDING:'Vínculo pendiente de verificación',UNAVAILABLE:'No disponible',VERIFIED:'Verificada',UNKNOWN:'Sin clasificar / desconocido',SYNTHETIC:'Sintético',OPERATIONAL:'Operativo',STORED:'Recibida',DECLARED:'Declarada',NEEDS_REVIEW:'Revisión necesaria',RECEIVED:'Documento recibido',EVIDENCE_PENDING:'Evidencia pendiente',HISTORY_PENDING:'Historial pendiente',CONSISTENT:'Consistente',RECONSTRUCTED:'Reconstruido',CLEAN:'Sin recuperación',RECOVERED:'Recuperado',INVALID:'Inválido',VALIDATED:'Validación registrada',INITIAL_SETUP:'Inicial',MANOMETER5_BAR:'Manómetro 5 bar',FINAL4_BAR:'Manómetro final 4 bar',LEAK_EVIDENCE:'Evidencia de fuga'};
+export const label=(v:string|null|undefined)=>v?labels[v]??v:'No disponible';
+export const number=(v:unknown,digits=1)=>v===null||v===undefined||!Number.isFinite(Number(v))?'No calculable':Number(v).toLocaleString('es-MX',{maximumFractionDigits:digits});
+export const bar=(v:unknown)=>v===null||v===undefined?'No calculable':`${number(Number(v)/1000,3)} bar`;
+export const duration=(v:unknown)=>v===null||v===undefined?'No calculable':`${number(Number(v)/60000,2)} min`;
+export const date=(v:string|null|undefined)=>v?new Date(v).toLocaleString('es-MX'):'No disponible';
+export function cleanFilters(f:Record<string,string|number>){return Object.fromEntries(Object.entries(f).filter(([,v])=>v!==''));}
